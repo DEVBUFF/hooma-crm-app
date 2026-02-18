@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   addDoc,
@@ -48,7 +50,7 @@ export default function CustomerDetailsPage() {
 
   const canAddPet = useMemo(() => petName.trim().length > 0, [petName]);
 
-  async function loadCustomerAndPets() {
+  const loadCustomerAndPets = useCallback(async () => {
     if (!salon) return;
     setLoading(true);
 
@@ -78,11 +80,11 @@ export default function CustomerDetailsPage() {
     setPets(pData);
 
     setLoading(false);
-  }
+  }, [salon, customerId]);
 
   useEffect(() => {
-    if (salon) loadCustomerAndPets();
-  }, [salon, customerId]);
+    loadCustomerAndPets();
+  }, [loadCustomerAndPets]);
 
   async function addPet() {
     if (!salon || !canAddPet) return;

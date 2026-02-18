@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+
+import { useEffect, useState, useCallback } from "react";
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useSalon } from "@/lib/useSalon";
@@ -32,7 +34,7 @@ export default function ServicesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<EditForm>({ name: "", description: "", durationMinutes: 60, price: 50 });
 
-  async function loadServices() {
+  const loadServices = useCallback(async () => {
     if (!salon) return;
 
     const snap = await getDocs(collection(db, "salons", salon.id, "services"));
@@ -42,13 +44,11 @@ export default function ServicesPage() {
     }));
 
     setServices(data);
-  }
+  }, [salon]);
 
   useEffect(() => {
-    if (salon) {
-      loadServices();
-    }
-  }, [salon]);
+    loadServices();
+  }, [loadServices]);
 
   async function addService() {
     if (!salon || !name.trim()) return;

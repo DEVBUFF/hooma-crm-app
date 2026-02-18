@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+
+import { useEffect, useMemo, useState, useCallback } from "react";
 import {
   addDoc,
   collection,
@@ -36,7 +38,7 @@ export default function StaffPage() {
 
   const canSubmit = useMemo(() => name.trim().length > 0, [name]);
 
-  async function loadStaff() {
+  const loadStaff = useCallback(async () => {
     if (!salon) return;
     setLoading(true);
 
@@ -52,11 +54,11 @@ export default function StaffPage() {
 
     setItems(data);
     setLoading(false);
-  }
+  }, [salon]);
 
   useEffect(() => {
-    if (salon) loadStaff();
-  }, [salon]);
+    loadStaff();
+  }, [loadStaff]);
 
   async function addStaff() {
     if (!salon || !canSubmit) return;

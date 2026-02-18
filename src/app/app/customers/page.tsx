@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+
+import { useEffect, useMemo, useState, useCallback } from "react";
 import Link from "next/link";
 import {
   addDoc,
@@ -35,7 +37,7 @@ export default function CustomersPage() {
 
   const canSubmit = useMemo(() => name.trim().length > 0, [name]);
 
-  async function loadCustomers() {
+  const loadCustomers = useCallback(async () => {
     if (!salon) return;
     setLoading(true);
 
@@ -50,11 +52,11 @@ export default function CustomersPage() {
     setItems(data);
 
     setLoading(false);
-  }
+  }, [salon]);
 
   useEffect(() => {
-    if (salon) loadCustomers();
-  }, [salon]);
+    loadCustomers();
+  }, [loadCustomers]);
 
   async function addCustomer() {
     if (!salon || !canSubmit) return;

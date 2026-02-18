@@ -5,7 +5,6 @@ import {
   addDoc,
   collection,
   doc,
-  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -225,21 +224,16 @@ export default function CalendarPage() {
     setNotes("");
   }
 
-  function makeDateFromHHMM(dateISO: string, hhmm: string) {
-  const base = dateISOToLocalDate(dateISO);
-  const [h, m] = hhmm.split(":").map(Number);
-  const d = new Date(base);
-  d.setHours(h, m, 0, 0);
-  return d;
-}
-
   async function loadBaseData() {
     if (!salon) return;
 
     // staff
     const staffRef = collection(db, "salons", salon.id, "staff");
     const staffSnap = await getDocs(staffRef);
-    const staffData: Staff[] = staffSnap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+    const staffData: Staff[] = staffSnap.docs.map((d) => {
+      const data = d.data() as Omit<Staff, 'id'>;
+      return { id: d.id, ...data };
+    });
     staffData.sort((a, b) => a.name.localeCompare(b.name));
     setStaff(staffData);
 
@@ -249,14 +243,20 @@ export default function CalendarPage() {
     // services
     const servicesRef = collection(db, "salons", salon.id, "services");
     const servicesSnap = await getDocs(servicesRef);
-    const servicesData: Service[] = servicesSnap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+    const servicesData: Service[] = servicesSnap.docs.map((d) => {
+      const data = d.data() as Omit<Service, 'id'>;
+      return { id: d.id, ...data };
+    });
     servicesData.sort((a, b) => a.name.localeCompare(b.name));
     setServices(servicesData);
 
     // customers
     const customersRef = collection(db, "salons", salon.id, "customers");
     const customersSnap = await getDocs(customersRef);
-    const customersData: Customer[] = customersSnap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+    const customersData: Customer[] = customersSnap.docs.map((d) => {
+      const data = d.data() as Omit<Customer, 'id'>;
+      return { id: d.id, ...data };
+    });
     customersData.sort((a, b) => a.name.localeCompare(b.name));
     setCustomers(customersData);
   }
@@ -278,7 +278,10 @@ export default function CalendarPage() {
     );
 
     const snap = await getDocs(qDay);
-    const data: Booking[] = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+    const data: Booking[] = snap.docs.map((d) => {
+      const docData = d.data() as Omit<Booking, 'id'>;
+      return { id: d.id, ...docData };
+    });
     setBookings(data);
 
     setLoading(false);
@@ -304,7 +307,10 @@ export default function CalendarPage() {
       }
       const petsRef = collection(db, "salons", salon.id, "customers", customerId, "pets");
       const snap = await getDocs(petsRef);
-      const data: Pet[] = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      const data: Pet[] = snap.docs.map((d) => {
+        const petData = d.data() as Omit<Pet, 'id'>;
+        return { id: d.id, ...petData };
+      });
       data.sort((a, b) => a.name.localeCompare(b.name));
       setPetsForCustomer(data);
       setPetId("");
@@ -506,7 +512,7 @@ export default function CalendarPage() {
     const ref = doc(db, "salons", salon.id, "bookings", b.id);
 
     // When switching away from canceled, clear canceled fields (optional)
-    const patch: any = {
+    const patch: Record<string, unknown> = {
         status,
         updatedAt: serverTimestamp(),
     };

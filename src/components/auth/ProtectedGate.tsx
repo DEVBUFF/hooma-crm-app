@@ -27,7 +27,6 @@ export function ProtectedGate({ children }: { children: React.ReactNode }) {
       const salon = await getSalonByOwnerId(user.uid);
 
       const isOnboarding = pathname.startsWith("/onboarding");
-      const isInApp = pathname.startsWith("/app");
 
       if (!salon && !isOnboarding) {
         router.replace("/onboarding");
