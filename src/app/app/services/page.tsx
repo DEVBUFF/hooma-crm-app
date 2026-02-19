@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useSalon } from "@/lib/useSalon";
-import { cn } from "@/lib/utils";
+import { t } from "@/lib/tokens";
 import { Sparkles, Plus, Pencil, Trash2, Check, X, Clock, BadgeDollarSign } from "lucide-react";
 
 type Service = {
@@ -22,6 +22,12 @@ type EditForm = {
   description: string;
   durationMinutes: number;
   price: number;
+};
+
+const inputStyle: React.CSSProperties = {
+  background: t.colors.component.input.bg,
+  color: t.colors.component.input.text,
+  borderRadius: `${t.radius.md}px`,
 };
 
 export default function ServicesPage() {
@@ -92,18 +98,22 @@ export default function ServicesPage() {
       {/* Header row */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-medium text-[#A8998C] uppercase tracking-widest mb-1">Catalogue</p>
-          <p className="text-[#7A655A] text-sm">Everything you offer, beautifully organised.</p>
+          <p
+            className="text-xs font-medium uppercase tracking-widest mb-1"
+            style={{ color: t.colors.semantic.textSubtle }}
+          >
+            Catalogue
+          </p>
+          <p className="text-sm" style={{ color: t.colors.semantic.textMuted }}>
+            Everything you offer, beautifully organised.
+          </p>
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
-          className={cn(
-            "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold",
-            "bg-[#7FA6C9] text-white",
-            "shadow-[0_2px_12px_rgba(127,166,201,0.3)]",
-            "hover:shadow-[0_4px_20px_rgba(127,166,201,0.4)] hover:-translate-y-0.5",
-            "transition-all duration-200 cursor-pointer"
-          )}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5"
+          style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
+          onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLgHover }}
+          onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLg }}
         >
           <Plus size={16} />
           New service
@@ -112,39 +122,52 @@ export default function ServicesPage() {
 
       {/* Add form */}
       {showForm && (
-        <div className="rounded-[24px] bg-[#EDE4D8] shadow-[0_4px_24px_rgba(62,47,42,0.08)] p-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          <h3 className="font-semibold text-[#3E2F2A]">Add a new service</h3>
+        <div
+          className="p-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
+          style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.xl}px`, boxShadow: t.shadow.card }}
+        >
+          <h3 className="font-semibold" style={{ color: t.colors.semantic.text }}>Add a new service</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               placeholder="Service name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="col-span-full rounded-[14px] bg-[#F5EFE6] px-4 py-3 text-sm text-[#3E2F2A] placeholder:text-[#B5A396] outline-none focus:ring-2 focus:ring-[#7FA6C9]/30"
+              className="col-span-full px-4 py-3 text-sm outline-none"
+              style={inputStyle}
             />
             <input
               placeholder="Description (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="col-span-full rounded-[14px] bg-[#F5EFE6] px-4 py-3 text-sm text-[#3E2F2A] placeholder:text-[#B5A396] outline-none focus:ring-2 focus:ring-[#7FA6C9]/30"
+              className="col-span-full px-4 py-3 text-sm outline-none"
+              style={inputStyle}
             />
-            <div className="flex items-center gap-2 rounded-[14px] bg-[#F5EFE6] px-4 py-3">
-              <Clock size={15} className="text-[#B5A396] shrink-0" />
+            <div
+              className="flex items-center gap-2 px-4 py-3"
+              style={{ ...inputStyle }}
+            >
+              <Clock size={15} className="shrink-0" style={{ color: t.colors.semantic.placeholder }} />
               <input
                 type="number"
                 placeholder="Duration (min)"
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
-                className="flex-1 bg-transparent text-sm text-[#3E2F2A] placeholder:text-[#B5A396] outline-none"
+                className="flex-1 bg-transparent text-sm outline-none"
+                style={{ color: t.colors.semantic.text }}
               />
             </div>
-            <div className="flex items-center gap-2 rounded-[14px] bg-[#F5EFE6] px-4 py-3">
-              <BadgeDollarSign size={15} className="text-[#B5A396] shrink-0" />
+            <div
+              className="flex items-center gap-2 px-4 py-3"
+              style={{ ...inputStyle }}
+            >
+              <BadgeDollarSign size={15} className="shrink-0" style={{ color: t.colors.semantic.placeholder }} />
               <input
                 type="number"
                 placeholder="Price"
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
-                className="flex-1 bg-transparent text-sm text-[#3E2F2A] placeholder:text-[#B5A396] outline-none"
+                className="flex-1 bg-transparent text-sm outline-none"
+                style={{ color: t.colors.semantic.text }}
               />
             </div>
           </div>
@@ -152,13 +175,15 @@ export default function ServicesPage() {
             <button
               onClick={addService}
               disabled={!name.trim()}
-              className="px-6 py-2.5 rounded-full bg-[#7FA6C9] text-white text-sm font-semibold disabled:opacity-40 cursor-pointer hover:bg-[#6A92B8] transition-colors"
+              className="px-6 py-2.5 rounded-full text-sm font-semibold disabled:opacity-40 cursor-pointer transition-colors"
+              style={{ background: t.colors.semantic.primary, color: "#fff" }}
             >
               Add service
             </button>
             <button
               onClick={() => setShowForm(false)}
-              className="px-6 py-2.5 rounded-full bg-[#F5EFE6] text-[#7A655A] text-sm font-medium cursor-pointer hover:bg-[#EDE4D8] transition-colors"
+              className="px-6 py-2.5 rounded-full text-sm font-medium cursor-pointer transition-colors"
+              style={{ background: t.colors.semantic.bg, color: t.colors.semantic.textMuted }}
             >
               Cancel
             </button>
@@ -168,19 +193,28 @@ export default function ServicesPage() {
 
       {/* Empty state */}
       {services.length === 0 && !showForm && (
-        <div className="rounded-[28px] bg-[#EDE4D8] shadow-[0_4px_24px_rgba(62,47,42,0.06)] p-16 flex flex-col items-center text-center gap-4">
-          <div className="w-16 h-16 rounded-[20px] bg-[#FAEAE4] flex items-center justify-center">
-            <Sparkles size={28} strokeWidth={1.5} className="text-[#7FA6C9]" />
+        <div
+          className="p-16 flex flex-col items-center text-center gap-4"
+          style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius["2xl"]}px`, boxShadow: t.shadow.card }}
+        >
+          <div
+            className="w-16 h-16 flex items-center justify-center"
+            style={{ background: t.colors.semantic.accentTint, borderRadius: `${t.radius.lg}px` }}
+          >
+            <Sparkles size={28} strokeWidth={1.5} style={{ color: t.colors.semantic.primary }} />
           </div>
           <div>
-            <p className="text-lg font-semibold text-[#3E2F2A]">Let&apos;s add your first service.</p>
-            <p className="text-sm text-[#A8998C] mt-1 max-w-xs">
+            <p className="text-lg font-semibold" style={{ color: t.colors.semantic.text }}>
+              Let&apos;s add your first service.
+            </p>
+            <p className="text-sm mt-1 max-w-xs" style={{ color: t.colors.semantic.textSubtle }}>
               What kind of care do you offer? Add a grooming session, bath, or anything in between.
             </p>
           </div>
           <button
             onClick={() => setShowForm(true)}
-            className="mt-2 px-6 py-2.5 rounded-full bg-[#7FA6C9] text-white text-sm font-semibold shadow-[0_2px_12px_rgba(127,166,201,0.25)] hover:shadow-[0_4px_20px_rgba(127,166,201,0.35)] transition-all cursor-pointer"
+            className="mt-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all cursor-pointer"
+            style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
           >
             Add your first service
           </button>
@@ -192,45 +226,78 @@ export default function ServicesPage() {
         <div className="space-y-3">
           {services.map((service) =>
             editingId === service.id ? (
-              <div key={service.id} className="rounded-[20px] bg-[#EDE4D8] shadow-[0_2px_16px_rgba(62,47,42,0.08)] p-5 space-y-3">
+              <div
+                key={service.id}
+                className="p-5 space-y-3"
+                style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.lg}px`, boxShadow: t.shadow.card }}
+              >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} placeholder="Service name"
-                    className="col-span-full rounded-[14px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none" />
+                    className="col-span-full px-4 py-2.5 text-sm outline-none" style={inputStyle} />
                   <input value={editForm.description} onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description"
-                    className="col-span-full rounded-[14px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none" />
+                    className="col-span-full px-4 py-2.5 text-sm outline-none" style={inputStyle} />
                   <input type="number" value={editForm.durationMinutes} onChange={(e) => setEditForm((f) => ({ ...f, durationMinutes: Number(e.target.value) }))}
-                    className="rounded-[14px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none" />
+                    className="px-4 py-2.5 text-sm outline-none" style={inputStyle} />
                   <input type="number" value={editForm.price} onChange={(e) => setEditForm((f) => ({ ...f, price: Number(e.target.value) }))}
-                    className="rounded-[14px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none" />
+                    className="px-4 py-2.5 text-sm outline-none" style={inputStyle} />
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => saveEdit(service.id)} className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#A8BBA3] text-white text-xs font-semibold cursor-pointer hover:bg-[#96A990] transition-colors">
+                  <button onClick={() => saveEdit(service.id)}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold cursor-pointer transition-colors"
+                    style={{ background: t.colors.semantic.successAccent, color: "#fff" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.successAccentHover }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.successAccent }}
+                  >
                     <Check size={13} /> Save
                   </button>
-                  <button onClick={() => setEditingId(null)} className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#F5EFE6] text-[#7A655A] text-xs font-medium cursor-pointer hover:bg-[#EDE4D8] transition-colors">
+                  <button onClick={() => setEditingId(null)}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium cursor-pointer transition-colors"
+                    style={{ background: t.colors.semantic.bg, color: t.colors.semantic.textMuted }}
+                  >
                     <X size={13} /> Cancel
                   </button>
                 </div>
               </div>
             ) : (
-              <div key={service.id} className="group flex items-center gap-4 rounded-[20px] bg-[#EDE4D8] shadow-[0_2px_12px_rgba(62,47,42,0.06)] px-5 py-4 hover:shadow-[0_4px_20px_rgba(62,47,42,0.09)] transition-all">
-                <div className="w-10 h-10 rounded-2xl bg-[#FAEAE4] flex items-center justify-center shrink-0">
-                  <Sparkles size={16} strokeWidth={1.8} className="text-[#7FA6C9]" />
+              <div
+                key={service.id}
+                className="group flex items-center gap-4 px-5 py-4 transition-all"
+                style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.lg}px`, boxShadow: t.shadow.sm }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.md }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.sm }}
+              >
+                <div
+                  className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+                  style={{ background: t.colors.semantic.accentTint }}
+                >
+                  <Sparkles size={16} strokeWidth={1.8} style={{ color: t.colors.semantic.primary }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[#3E2F2A] text-sm">{service.name}</p>
-                  {service.description && <p className="text-xs text-[#A8998C] truncate">{service.description}</p>}
+                  <p className="font-semibold text-sm" style={{ color: t.colors.semantic.text }}>{service.name}</p>
+                  {service.description && (
+                    <p className="text-xs truncate" style={{ color: t.colors.semantic.textSubtle }}>{service.description}</p>
+                  )}
                 </div>
-                <div className="flex items-center gap-3 text-xs text-[#A8998C]">
+                <div className="flex items-center gap-3 text-xs" style={{ color: t.colors.semantic.textSubtle }}>
                   <span className="flex items-center gap-1"><Clock size={12} />{service.durationMinutes} min</span>
                   <span className="flex items-center gap-1"><BadgeDollarSign size={12} />{service.price}€</span>
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => startEdit(service)} className="w-8 h-8 rounded-xl bg-[#F5EFE6] flex items-center justify-center cursor-pointer hover:bg-[#E8DFD0] transition-colors">
-                    <Pencil size={13} className="text-[#7A655A]" />
+                  <button onClick={() => startEdit(service)}
+                    className="w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
+                    style={{ background: t.colors.semantic.bg }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.surfaceHover }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}
+                  >
+                    <Pencil size={13} style={{ color: t.colors.semantic.textMuted }} />
                   </button>
-                  <button onClick={() => removeService(service.id)} className="w-8 h-8 rounded-xl bg-[#F5EFE6] flex items-center justify-center cursor-pointer hover:bg-[#F0D8D3] transition-colors">
-                    <Trash2 size={13} className="text-[#C4605A]" />
+                  <button onClick={() => removeService(service.id)}
+                    className="w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
+                    style={{ background: t.colors.semantic.bg }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.errorBg }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}
+                  >
+                    <Trash2 size={13} style={{ color: t.colors.semantic.error }} />
                   </button>
                 </div>
               </div>

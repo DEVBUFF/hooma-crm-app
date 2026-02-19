@@ -3,10 +3,10 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Mail, Lock, Eye, EyeOff, Loader2, User, Store, ArrowRight, ArrowLeft, Check } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { setDoc, doc, serverTimestamp } from "firebase/firestore"
 import { auth, db } from "@/lib/firebase"
+import { t } from "@/lib/tokens"
 import Link from "next/link"
 
 type Step = "info" | "password"
@@ -16,7 +16,11 @@ function FieldWrapper({ children, error }: { children: React.ReactNode; error?: 
     <div className="space-y-1.5">
       {children}
       {error && (
-        <p className="text-xs text-[#A04040] pl-1 animate-in fade-in slide-in-from-top-1 duration-200" role="alert">
+        <p
+          className="text-xs pl-1 animate-in fade-in slide-in-from-top-1 duration-200"
+          style={{ color: t.colors.semantic.error }}
+          role="alert"
+        >
           {error}
         </p>
       )}
@@ -47,9 +51,21 @@ function InputField({
   rightSlot?: React.ReactNode
   error?: boolean
 }) {
+  const baseStyle: React.CSSProperties = {
+    background: t.colors.component.input.bg,
+    color: t.colors.component.input.text,
+    border: `1px solid ${error ? t.colors.semantic.errorBorder : t.colors.semantic.borderSubtle}`,
+    borderRadius: `${t.radius.md}px`,
+  }
+
   return (
     <div className="relative">
-      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A8998C]">{icon}</span>
+      <span
+        className="absolute left-4 top-1/2 -translate-y-1/2"
+        style={{ color: t.colors.semantic.textSubtle }}
+      >
+        {icon}
+      </span>
       <input
         id={id}
         type={type}
@@ -58,15 +74,10 @@ function InputField({
         placeholder={placeholder}
         autoComplete={autoComplete}
         autoFocus={autoFocus}
-        className={cn(
-          "w-full pl-11 pr-5 py-3.5 rounded-[16px] text-sm font-medium",
-          "bg-[#F0E8DC] text-[#3E2F2A] placeholder:text-[#B5A396]",
-          "border border-[#E5DACB]/60",
-          "transition-all duration-200",
-          "focus:outline-none focus:bg-[#EDE4D8] focus:border-primary",
-          rightSlot && "pr-11",
-          error && "border-[#C4605A]/60 focus:border-[#C4605A]"
-        )}
+        className="w-full pl-11 pr-5 py-3.5 text-sm font-medium transition-all duration-200 focus:outline-none"
+        style={{ ...baseStyle, paddingRight: rightSlot ? "2.75rem" : undefined }}
+        onFocus={(e) => { e.currentTarget.style.background = t.colors.component.input.bgFocus }}
+        onBlur={(e) => { e.currentTarget.style.background = t.colors.component.input.bg }}
       />
       {rightSlot && (
         <span className="absolute right-4 top-1/2 -translate-y-1/2">{rightSlot}</span>
@@ -159,40 +170,72 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
     <div className="w-full">
       {/* Step indicator */}
       <div className="flex items-center gap-2 mb-6">
-        {(["info", "password"] as Step[]).map((s, i) => (
-          <div key={s} className="flex items-center gap-2">
-            <div className={cn(
-              "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300",
-              step === s
-                ? "bg-primary text-primary-foreground shadow-[0_2px_8px_rgba(127,166,201,0.35)]"
-                : stepDone || i === 0
-                  ? "bg-[#E8EFE7] text-[#5A8A6A]"
-                  : "bg-[#EDE4D8] text-[#B5A396]"
-            )}>
-              {(step !== s && i === 0) ? <Check size={10} /> : i + 1}
+        {(["info", "password"] as Step[]).map((s, i) => {
+          const isActive = step === s
+          const isDone = !isActive && i === 0 && stepDone
+
+          let bubbleBg: string
+          let bubbleFg: string
+          let bubbleShadow: string | undefined
+
+          if (isActive) {
+            bubbleBg = t.colors.semantic.primary
+            bubbleFg = "#fff"
+            bubbleShadow = t.shadow.primaryLg
+          } else if (isDone) {
+            bubbleBg = t.colors.semantic.successBg
+            bubbleFg = t.colors.semantic.successStrong
+            bubbleShadow = undefined
+          } else {
+            bubbleBg = t.colors.semantic.surface
+            bubbleFg = t.colors.semantic.placeholder
+            bubbleShadow = undefined
+          }
+
+          return (
+            <div key={s} className="flex items-center gap-2">
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300"
+                style={{ background: bubbleBg, color: bubbleFg, boxShadow: bubbleShadow }}
+              >
+                {isDone ? <Check size={10} /> : i + 1}
+              </div>
+              <span
+                className="text-xs font-medium transition-colors duration-200"
+                style={{ color: isActive ? t.colors.semantic.text : t.colors.semantic.placeholder }}
+              >
+                {s === "info" ? "Your info" : "Password"}
+              </span>
+              {i < 1 && (
+                <div className="flex-1 h-px w-6 mx-1" style={{ background: t.colors.semantic.divider }} />
+              )}
             </div>
-            <span className={cn(
-              "text-xs font-medium transition-colors duration-200",
-              step === s ? "text-[#3E2F2A]" : "text-[#B5A396]"
-            )}>
-              {s === "info" ? "Your info" : "Password"}
-            </span>
-            {i < 1 && <div className="flex-1 h-px w-6 bg-[#DDD4C4] mx-1" />}
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Step 1 — Info */}
       {step === "info" && (
         <form onSubmit={handleInfoNext} className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
           {errors.general && (
-            <div className="rounded-[14px] bg-[#F0D8D3] px-4 py-3 text-xs text-[#A04040] font-medium">
+            <div
+              className="px-4 py-3 text-xs font-medium"
+              style={{
+                background: t.colors.semantic.errorBg,
+                color: t.colors.semantic.error,
+                borderRadius: `${t.radius.md}px`,
+              }}
+            >
               {errors.general}
             </div>
           )}
 
           <FieldWrapper error={errors.name}>
-            <label htmlFor="name" className="block text-xs font-semibold text-[#7A655A] uppercase tracking-wide">
+            <label
+              htmlFor="name"
+              className="block text-xs font-semibold uppercase tracking-wide"
+              style={{ color: t.colors.semantic.textMuted }}
+            >
               Your name
             </label>
             <InputField
@@ -208,7 +251,11 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
           </FieldWrapper>
 
           <FieldWrapper error={errors.salonName}>
-            <label htmlFor="salonName" className="block text-xs font-semibold text-[#7A655A] uppercase tracking-wide">
+            <label
+              htmlFor="salonName"
+              className="block text-xs font-semibold uppercase tracking-wide"
+              style={{ color: t.colors.semantic.textMuted }}
+            >
               Salon / business name
             </label>
             <InputField
@@ -223,7 +270,11 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
           </FieldWrapper>
 
           <FieldWrapper error={errors.email}>
-            <label htmlFor="email" className="block text-xs font-semibold text-[#7A655A] uppercase tracking-wide">
+            <label
+              htmlFor="email"
+              className="block text-xs font-semibold uppercase tracking-wide"
+              style={{ color: t.colors.semantic.textMuted }}
+            >
               Email
             </label>
             <InputField
@@ -241,23 +292,21 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
           <button
             type="submit"
             disabled={!name || !salonName || !email}
-            className={cn(
-              "w-full flex items-center justify-center gap-2 py-3.5 px-6 mt-2",
-              "rounded-full font-bold text-sm",
-              "bg-primary text-primary-foreground",
-              "shadow-[0_2px_8px_rgba(127,166,201,0.25)]",
-              "hover:opacity-90 hover:shadow-[0_4px_16px_rgba(127,166,201,0.35)]",
-              "transition-all duration-200 active:scale-[0.99]",
-              "disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            )}
+            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 mt-2 rounded-full font-bold text-sm transition-all duration-200 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primary }}
+            onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryHover }}
+            onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primary }}
           >
             Continue <ArrowRight size={15} />
           </button>
 
-          <p className="text-center text-xs text-[#A8998C] pt-1">
+          <p className="text-center text-xs pt-1" style={{ color: t.colors.semantic.textSubtle }}>
             Already have an account?{" "}
-            <Link href="/auth/login" className="font-semibold text-[#3E2F2A] hover:text-primary transition-colors">
+            <Link
+              href="/auth/login"
+              className="font-semibold transition-colors"
+              style={{ color: t.colors.semantic.text }}
+            >
               Sign in
             </Link>
           </p>
@@ -268,30 +317,52 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
       {step === "password" && (
         <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
           {errors.general && (
-            <div className="rounded-[14px] bg-[#F0D8D3] px-4 py-3 text-xs text-[#A04040] font-medium">
+            <div
+              className="px-4 py-3 text-xs font-medium"
+              style={{
+                background: t.colors.semantic.errorBg,
+                color: t.colors.semantic.error,
+                borderRadius: `${t.radius.md}px`,
+              }}
+            >
               {errors.general}
             </div>
           )}
 
-          <div className="rounded-[16px] bg-[#F0E8DC] px-4 py-3 flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-[#E8EFE7] flex items-center justify-center shrink-0">
-              <Check size={13} className="text-[#5A8A6A]" />
+          <div
+            className="px-4 py-3 flex items-center gap-2.5"
+            style={{ background: t.colors.component.input.bg, borderRadius: `${t.radius.lg}px` }}
+          >
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: t.colors.semantic.successBg }}
+            >
+              <Check size={13} style={{ color: t.colors.semantic.successStrong }} />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-[#3E2F2A] truncate">{name} · {salonName}</p>
-              <p className="text-[11px] text-[#A8998C] truncate">{email}</p>
+              <p className="text-xs font-semibold truncate" style={{ color: t.colors.semantic.text }}>
+                {name} · {salonName}
+              </p>
+              <p className="text-[11px] truncate" style={{ color: t.colors.semantic.textSubtle }}>{email}</p>
             </div>
             <button
               type="button"
               onClick={() => setStep("info")}
-              className="ml-auto text-[11px] font-semibold text-[#A8998C] hover:text-[#3E2F2A] transition-colors shrink-0 cursor-pointer"
+              className="ml-auto text-[11px] font-semibold transition-colors shrink-0 cursor-pointer"
+              style={{ color: t.colors.semantic.textSubtle }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = t.colors.semantic.text }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = t.colors.semantic.textSubtle }}
             >
               Edit
             </button>
           </div>
 
           <FieldWrapper error={errors.password}>
-            <label htmlFor="password" className="block text-xs font-semibold text-[#7A655A] uppercase tracking-wide">
+            <label
+              htmlFor="password"
+              className="block text-xs font-semibold uppercase tracking-wide"
+              style={{ color: t.colors.semantic.textMuted }}
+            >
               Create a password
             </label>
             <InputField
@@ -308,14 +379,19 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
                 <button
                   type="button"
                   onClick={() => setShowPassword((p) => !p)}
-                  className="text-[#A8998C] hover:text-[#3E2F2A] transition-colors cursor-pointer"
+                  className="transition-colors cursor-pointer"
+                  style={{ color: t.colors.semantic.textSubtle }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = t.colors.semantic.text }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = t.colors.semantic.textSubtle }}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               }
             />
-            <p className="text-[11px] text-[#B5A396] pl-1">Use at least 8 characters</p>
+            <p className="text-[11px] pl-1" style={{ color: t.colors.semantic.placeholder }}>
+              Use at least 8 characters
+            </p>
           </FieldWrapper>
 
           <div className="flex gap-2 pt-1">
@@ -323,28 +399,20 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
               type="button"
               onClick={() => setStep("info")}
               disabled={isLoading}
-              className={cn(
-                "flex items-center justify-center gap-1.5 py-3.5 px-4 rounded-full",
-                "bg-[#EDE4D8] text-[#7A655A] text-sm font-semibold",
-                "hover:bg-[#E0D5C6] transition-colors cursor-pointer",
-                "disabled:opacity-40"
-              )}
+              className="flex items-center justify-center gap-1.5 py-3.5 px-4 rounded-full text-sm font-semibold transition-colors cursor-pointer disabled:opacity-40"
+              style={{ background: t.colors.semantic.surface, color: t.colors.semantic.textMuted }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.surfaceHover }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.surface }}
             >
               <ArrowLeft size={15} />
             </button>
             <button
               type="submit"
               disabled={isLoading || !password}
-              className={cn(
-                "flex-1 flex items-center justify-center gap-2 py-3.5 px-6",
-                "rounded-full font-bold text-sm",
-                "bg-primary text-primary-foreground",
-                "shadow-[0_2px_8px_rgba(127,166,201,0.25)]",
-                "hover:opacity-90 hover:shadow-[0_4px_16px_rgba(127,166,201,0.35)]",
-                "transition-all duration-200 active:scale-[0.99]",
-                "disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              )}
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-full font-bold text-sm transition-all duration-200 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primary }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryHover }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primary }}
             >
               {isLoading ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -358,3 +426,4 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
     </div>
   )
 }
+

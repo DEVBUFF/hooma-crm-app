@@ -3,7 +3,7 @@
 import { signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 import { useAuth } from "@/components/auth/AuthProvider"
-import { cn } from "@/lib/utils"
+import { t } from "@/lib/tokens"
 import { ArrowRight, Sparkles, Users, CalendarDays } from "lucide-react"
 import Link from "next/link"
 
@@ -24,25 +24,34 @@ export default function AppHomePage() {
     window.location.href = "/"
   }
 
+  void handleLogout
+
   return (
     <div className="space-y-6 max-w-5xl">
-      {/* Welcome he rocard */}
+      {/* Welcome hero card */}
       <div
-        className={cn(
-          "relative overflow-hidden rounded-[28px] p-10",
-          "bg-card",
-          "shadow-[0_12px_40px_rgba(90,60,30,0.08)]"
-        )}
+        className="relative overflow-hidden p-10"
+        style={{
+          background: t.colors.component.card.bg,
+          borderRadius: `${t.radius["2xl"]}px`,
+          boxShadow: t.shadow.cardElevated,
+        }}
       >
         <div className="relative z-10 space-y-3">
-          <p className="text-sm font-medium text-[#A8998C] uppercase tracking-widest">
+          <p
+            className="text-sm font-medium uppercase tracking-widest"
+            style={{ color: t.colors.semantic.textSubtle }}
+          >
             {greeting}
           </p>
-          <h2 className="text-4xl font-bold text-[#3E2F2A] leading-tight">
+          <h2
+            className="text-4xl font-bold leading-tight"
+            style={{ color: t.colors.semantic.text }}
+          >
             Let&apos;s take care<br />of today. 🐾
           </h2>
-          <p className="text-[#7A655A] text-base max-w-md leading-relaxed">
-            You&apos;re all set, <span className="font-semibold text-[#3E2F2A]">{firstName}</span>.
+          <p className="text-base max-w-md leading-relaxed" style={{ color: t.colors.semantic.textMuted }}>
+            You&apos;re all set, <span className="font-semibold" style={{ color: t.colors.semantic.text }}>{firstName}</span>.
             Your schedule is ready — let&apos;s make it a wonderful day for every pet.
           </p>
         </div>
@@ -52,24 +61,24 @@ export default function AppHomePage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <QuickCard
           href="/app/services"
-          icon={<Sparkles size={20} strokeWidth={1.8} className="text-[#7FA6C9]" />}
+          icon={<Sparkles size={20} strokeWidth={1.8} style={{ color: t.colors.semantic.primary }} />}
           label="Services"
           description="Manage grooming & care"
-          accent="bg-[#FAEAE4]"
+          accentBg={t.colors.semantic.accentTint}
         />
         <QuickCard
           href="/app/customers"
-          icon={<Users size={20} strokeWidth={1.8} className="text-[#7FA6C9]" />}
+          icon={<Users size={20} strokeWidth={1.8} style={{ color: t.colors.semantic.primary }} />}
           label="Customers"
           description="Clients & their pets"
-          accent="bg-[#E4EEF6]"
+          accentBg={t.colors.semantic.infoBg}
         />
         <QuickCard
           href="/app/calendar"
-          icon={<CalendarDays size={20} strokeWidth={1.8} className="text-[#A8BBA3]" />}
+          icon={<CalendarDays size={20} strokeWidth={1.8} style={{ color: t.colors.semantic.successAccent }} />}
           label="Calendar"
           description="Today's appointments"
-          accent="bg-[#E8EFE7]"
+          accentBg={t.colors.semantic.successBg}
         />
       </div>
     </div>
@@ -81,36 +90,40 @@ function QuickCard({
   icon,
   label,
   description,
-  accent,
+  accentBg,
 }: {
   href: string
   icon: React.ReactNode
   label: string
   description: string
-  accent: string
+  accentBg: string
 }) {
   return (
     <Link
       href={href}
-      className={cn(
-        "group flex items-center gap-4 p-5 rounded-[22px]",
-        "bg-card",
-        "shadow-[0_12px_40px_rgba(90,60,30,0.08)]",
-        "hover:shadow-[0_12px_40px_rgba(90,60,30,0.1)]",
-        "transition-all duration-200 ease-out",
-        "hover:-translate-y-0.5"
-      )}
+      className="group flex items-center gap-4 p-5 transition-all duration-200 ease-out hover:-translate-y-0.5"
+      style={{
+        background: t.colors.component.card.bg,
+        borderRadius: `${t.radius.xl}px`,
+        boxShadow: t.shadow.cardElevated,
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.md }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.cardElevated }}
     >
-      <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center shrink-0", accent)}>
+      <div
+        className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+        style={{ background: accentBg }}
+      >
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-[#3E2F2A]">{label}</p>
-        <p className="text-xs text-[#A8998C] truncate">{description}</p>
+        <p className="text-sm font-semibold" style={{ color: t.colors.semantic.text }}>{label}</p>
+        <p className="text-xs truncate" style={{ color: t.colors.semantic.textSubtle }}>{description}</p>
       </div>
       <ArrowRight
         size={16}
-        className="text-[#C8B9AF] group-hover:text-[#7FA6C9] transition-colors duration-200"
+        className="transition-colors duration-200"
+        style={{ color: t.colors.semantic.divider }}
       />
     </Link>
   )
