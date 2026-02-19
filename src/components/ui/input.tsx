@@ -1,21 +1,148 @@
-import * as React from 'react'
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-import { cn } from '@/lib/utils'
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
-function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
-  return (
-    <input
-      type={type}
-      data-slot="input"
-      className={cn(
-        'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-        'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-        'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
-        className,
-      )}
-      {...props}
-    />
-  )
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  /** Renders a 17 px icon absolutely positioned on the left of the field */
+  leftIcon?: React.ReactNode;
+  /** Shows a red helper text below the field and activates the error border */
+  error?: string;
+  /** Muted helper/hint text shown below the field (hidden when error is set) */
+  helperText?: string;
+  /** Label rendered above the field. Pass an `id` to the input for a11y. */
+  label?: string;
 }
 
-export { Input }
+// ---------------------------------------------------------------------------
+// Input
+// ---------------------------------------------------------------------------
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  (
+    {
+      className,
+      type = "text",
+      leftIcon,
+      error,
+      helperText,
+      label,
+      id,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const hasError = Boolean(error);
+    const inputId = id;
+
+    return (
+      <div className="w-full space-y-1.5">
+        {/* Label */}
+        {label && (
+          <label
+            htmlFor={inputId}
+            className={cn(
+              "block text-xs font-semibold uppercase tracking-wide select-none",
+              disabled ? "opacity-50 cursor-not-allowed" : "text-muted-foreground"
+            )}
+          >
+            {label}
+          </label>
+        )}
+
+        {/* Input wrapper — hosts the icon + the native input */}
+        <div className="relative w-full">
+          {/* Left icon */}
+          {leftIcon && (
+            <span
+              aria-hidden="true"
+              className={cn(
+                "pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 flex items-center",
+                disabled ? "opacity-50" : "text-muted-foreground"
+              )}
+            >
+              {leftIcon}
+            </span>
+          )}
+
+          <input
+            ref={ref}
+            id={inputId}
+            type={type}
+            disabled={disabled}
+            aria-invalid={hasError || undefined}
+            aria-describedby={
+              hasError
+                ? `${inputId}-error`
+                : helperText
+                ? `${inputId}-hint`
+                : undefined
+            }
+            data-slot="input"
+            className={cn(
+              // Layout & spacing
+              "w-full min-w-0 py-3.5 text-sm font-medium",
+              leftIcon ? "pl-11 pr-5" : "px-5",
+              // Shape — matches radius.md (14 px) from the design tokens
+              "rounded-[14px]",
+              // Colours
+              "bg-[--color-input] text-foreground",
+              "placeholder:text-[color:var(--color-muted-foreground)]",
+              "selection:bg-primary/20 selection:text-foreground",
+              // Border — subtle by default
+              "border border-[rgba(229,218,203,0.60)]",
+              // Transitions
+              "transition-[background-color,border-color,box-shadow] duration-[180ms] ease-[cubic-bezier(0.2,0.0,0.0,1.0)]",
+              // Remove default browser outline — we supply our own ring
+              "outline-none",
+              // Focus: primary-tint ring, slightly brighter bg
+              "focus:bg-[--color-popover]",
+              "focus:border-[rgba(127,166,201,0.55)]",
+              "focus:shadow-[0_0_0_3px_rgba(127,166,201,0.15)]",
+              // Error state: red border + red ring on focus
+              hasError && [
+                "border-[rgba(196,96,90,0.60)]",
+                "focus:border-destructive/60",
+                "focus:shadow-[0_0_0_3px_rgba(196,96,90,0.12)]",
+              ],
+              // Disabled
+              "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+              // File input resets
+              "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
+              className
+            )}
+            {...props}
+          />
+        </div>
+
+        {/* Error message */}
+        {hasError && (
+          <p
+            id={`${inputId}-error`}
+            role="alert"
+            className="text-xs pl-1 text-destructive animate-in fade-in slide-in-from-top-1 duration-200"
+          >
+            {error}
+          </p>
+        )}
+
+        {/* Helper text (hidden when there's an error) */}
+        {!hasError && helperText && (
+          <p
+            id={`${inputId}-hint`}
+            className="text-xs pl-1 text-muted-foreground"
+          >
+            {helperText}
+          </p>
+        )}
+      </div>
+    );
+  }
+);
+Input.displayName = "Input";
+
+export { Input };
