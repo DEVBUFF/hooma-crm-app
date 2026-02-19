@@ -26,12 +26,12 @@ export default function AppHomePage() {
 
   return (
     <div className="space-y-6 max-w-5xl">
-      {/* Welcome hero card */}
+      {/* Welcome he rocard */}
       <div
         className={cn(
           "relative overflow-hidden rounded-[28px] p-10",
           "bg-card",
-          "shadow-[0_4px_32px_rgba(62,47,42,0.08)]"
+          "shadow-[0_12px_40px_rgba(90,60,30,0.08)]"
         )}
       >
         <div className="relative z-10 space-y-3">
@@ -95,8 +95,8 @@ function QuickCard({
       className={cn(
         "group flex items-center gap-4 p-5 rounded-[22px]",
         "bg-card",
-        "shadow-[0_2px_16px_rgba(62,47,42,0.06)]",
-        "hover:shadow-[0_4px_24px_rgba(62,47,42,0.1)]",
+        "shadow-[0_12px_40px_rgba(90,60,30,0.08)]",
+        "hover:shadow-[0_12px_40px_rgba(90,60,30,0.1)]",
         "transition-all duration-200 ease-out",
         "hover:-translate-y-0.5"
       )}
