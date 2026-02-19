@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { t } from "@/lib/tokens"
+import { Button } from "@/components/ui/button"
 
 function GoogleIcon() {
   return (
@@ -43,8 +43,6 @@ interface SocialButtonProps {
 }
 
 export function SocialButton({ provider, onClick }: SocialButtonProps) {
-  const [hovered, setHovered] = useState(false)
-
   const config = {
     google: {
       icon: <GoogleIcon />,
@@ -59,22 +57,15 @@ export function SocialButton({ provider, onClick }: SocialButtonProps) {
   const { icon, label } = config[provider]
 
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
+      fullWidth
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-full font-semibold text-sm tracking-wide transition-all duration-200 ease-out active:scale-[0.99] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-      style={{
-        background: hovered ? t.colors.component.input.bgFocus : t.colors.component.input.bg,
-        color: t.colors.semantic.text,
-        border: `1px solid ${t.colors.semantic.borderSubtle}`,
-        boxShadow: hovered ? t.shadow.sm : "0 1px 3px rgba(46,33,28,0.04)",
-        outline: "none",
-      }}
+      className="gap-3 py-4 h-auto font-semibold tracking-wide bg-[--color-input] hover:bg-[--color-popover] border-[rgba(229,218,203,0.60)] text-foreground rounded-full"
     >
       {icon}
       <span>{label}</span>
-    </button>
+    </Button>
   )
 }

@@ -9,6 +9,8 @@ import { useSalon } from "@/lib/useSalon";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/tokens";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, X, Pencil, Check } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type Staff = { id: string; name: string; isActive: boolean };
 type Service = { id: string; name: string; durationMinutes: number; price: number; isActive?: boolean };
@@ -55,11 +57,11 @@ function overlaps(aS: Date, aE: Date, bS: Date, bE: Date) { return aS < bE && aE
 
 type WorkHours = Record<string, { start: string; end: string } | null>;
 
-const STATUS_STYLES: Record<BookingStatus, React.CSSProperties> = {
-  confirmed: { background: t.colors.semantic.infoBg, color: t.colors.semantic.info },
-  completed: { background: t.colors.semantic.successBg, color: t.colors.semantic.success },
-  canceled: { background: t.colors.semantic.errorBg, color: t.colors.semantic.error },
-  no_show: { background: t.colors.semantic.surfaceMuted, color: t.colors.semantic.textMuted },
+const STATUS_STYLES: Record<BookingStatus, string> = {
+  confirmed: "bg-[#E4EEF6] text-[#4A7EA8]",
+  completed: "bg-[#E8EFE7] text-[#4A7A4A]",
+  canceled: "bg-[#F0D8D3] text-[#A04040]",
+  no_show: "bg-[#F5EFE6] text-[#A8998C]",
 };
 
 export default function CalendarPage() {
@@ -243,73 +245,50 @@ export default function CalendarPage() {
     <div className="max-w-5xl space-y-6">
       {/* Date nav bar */}
       <div className="flex items-center gap-3 flex-wrap">
-        <div
-          className="flex items-center gap-1 p-1"
-          style={{ background: t.colors.semantic.surface, borderRadius: `${t.radius.xl}px`, boxShadow: t.shadow.sm }}
-        >
+        <Card padding="sm" className="flex-row items-center gap-1 p-1">
           <button
             onClick={() => shiftDate(-1)}
-            className="w-8 h-8 flex items-center justify-center transition-colors cursor-pointer"
-            style={{ borderRadius: `${t.radius.md}px` }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = t.colors.semantic.surfaceHover)}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            className="w-8 h-8 rounded-[14px] flex items-center justify-center hover:bg-muted transition-colors cursor-pointer"
           >
-            <ChevronLeft size={16} style={{ color: t.colors.semantic.textMuted }} />
+            <ChevronLeft size={16} className="text-muted-foreground" />
           </button>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-            className="bg-transparent text-sm font-semibold outline-none px-2 cursor-pointer"
-            style={{ color: t.colors.semantic.text }} />
+            className="bg-transparent text-sm font-semibold text-foreground outline-none px-2 cursor-pointer" />
           <button
             onClick={() => shiftDate(1)}
-            className="w-8 h-8 flex items-center justify-center transition-colors cursor-pointer"
-            style={{ borderRadius: `${t.radius.md}px` }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = t.colors.semantic.surfaceHover)}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            className="w-8 h-8 rounded-[14px] flex items-center justify-center hover:bg-muted transition-colors cursor-pointer"
           >
-            <ChevronRight size={16} style={{ color: t.colors.semantic.textMuted }} />
+            <ChevronRight size={16} className="text-muted-foreground" />
           </button>
-        </div>
-        <span className="text-sm" style={{ color: t.colors.semantic.textMuted }}>{friendlyDate}</span>
+        </Card>
+        <span className="text-sm text-muted-foreground">{friendlyDate}</span>
         {isToday && (
-          <span
-            className="text-[11px] font-semibold px-2.5 py-0.5"
-            style={{ borderRadius: `${t.radius.full}px`, background: t.colors.component.badge.todayBg, color: t.colors.component.badge.todayFg }}
-          >Today</span>
+          <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[--color-secondary]/20 text-[color:var(--color-secondary)]">Today</span>
         )}
         <div className="flex-1" />
         {/* Staff selector */}
         {activeStaff.length > 0 && (
-          <div
-            className="flex items-center gap-2 px-4 py-2"
-            style={{ background: t.colors.semantic.surface, borderRadius: `${t.radius.xl}px`, boxShadow: t.shadow.sm }}
-          >
-            <span className="text-xs" style={{ color: t.colors.semantic.textSubtle }}>Staff</span>
+          <Card padding="sm" className="flex-row items-center gap-2 px-4 py-2">
+            <span className="text-xs text-muted-foreground">Staff</span>
             <select value={staffId} onChange={(e) => setStaffId(e.target.value)}
-              className="bg-transparent text-sm font-semibold outline-none cursor-pointer"
-              style={{ color: t.colors.semantic.text }}>
+              className="bg-transparent text-sm font-semibold text-foreground outline-none cursor-pointer">
               {activeStaff.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-          </div>
+          </Card>
         )}
       </div>
 
       {/* Closed day */}
       {!dayHours && (
-        <div
-          className="p-16 flex flex-col items-center text-center gap-4"
-          style={{ borderRadius: `${t.radius["2xl"]}px`, background: t.colors.semantic.surface, boxShadow: t.shadow.card }}
-        >
-          <div
-            className="w-16 h-16 flex items-center justify-center"
-            style={{ borderRadius: `${t.radius.lg}px`, background: t.colors.semantic.surfaceMuted }}
-          >
-            <CalendarDays size={28} strokeWidth={1.5} style={{ color: t.colors.semantic.primary }} />
+        <Card className="p-16 flex flex-col items-center text-center gap-4">
+          <div className="w-16 h-16 flex items-center justify-center rounded-[20px] bg-muted">
+            <CalendarDays size={28} strokeWidth={1.5} className="text-primary" />
           </div>
           <div>
-            <p className="text-lg font-semibold" style={{ color: t.colors.semantic.text }}>The salon is resting today.</p>
-            <p className="text-sm mt-1" style={{ color: t.colors.semantic.textSubtle }}>This day is marked as closed in your settings.</p>
+            <p className="text-lg font-semibold text-foreground">The salon is resting today.</p>
+            <p className="text-sm mt-1 text-muted-foreground">This day is marked as closed in your settings.</p>
           </div>
-        </div>
+        </Card>
       )}
 
       {!!dayHours && (
@@ -317,10 +296,10 @@ export default function CalendarPage() {
           {/* LEFT: Time slots */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-medium uppercase tracking-widest" style={{ color: t.colors.semantic.textSubtle }}>
+              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
                 Time slots · {dayHours.start}–{dayHours.end}
               </p>
-              <span className="text-[11px]" style={{ color: t.colors.semantic.placeholder }}>{slotDuration} min slots</span>
+              <span className="text-[11px] text-muted-foreground">{slotDuration} min slots</span>
             </div>
 
             <div className="space-y-2">
@@ -329,55 +308,41 @@ export default function CalendarPage() {
                 const isCreating = creatingAtHHMM === slot.hhmm;
                 return (
                   <div key={slot.hhmm}>
-                    <div
-                      className="flex items-center justify-between px-5 py-3 transition-all"
-                      style={{
-                        borderRadius: `${t.radius.md}px`,
-                        background: taken ? `${t.colors.semantic.surface}99` : t.colors.semantic.surface,
-                        boxShadow: taken ? "none" : t.shadow.sm,
-                        opacity: taken ? 0.6 : 1,
-                        outline: isCreating ? `2px solid ${t.colors.semantic.primaryTint}` : "none",
-                      }}
+                    <Card
+                      className={cn(
+                        "flex-row items-center justify-between px-5 py-3",
+                        taken && "opacity-60",
+                        isCreating && "ring-2 ring-primary/20"
+                      )}
                     >
                       <div className="flex items-center gap-2">
-                        <Clock size={13} style={{ color: taken ? t.colors.semantic.placeholder : t.colors.semantic.primary }} />
-                        <span className="text-sm font-semibold" style={{ color: t.colors.semantic.text }}>{slot.hhmm}</span>
-                        {taken && <span className="text-[11px] ml-1" style={{ color: t.colors.semantic.placeholder }}>Busy</span>}
+                        <Clock size={13} className={taken ? "text-muted-foreground/50" : "text-primary"} />
+                        <span className="text-sm font-semibold text-foreground">{slot.hhmm}</span>
+                        {taken && <span className="text-[11px] ml-1 text-muted-foreground">Busy</span>}
                       </div>
                       {!taken && !isCreating && (
-                        <button
+                        <Button
+                          variant="primary"
+                          size="sm"
                           onClick={() => setCreatingAtHHMM(slot.hhmm)}
-                          className="text-xs font-semibold px-3 py-1 cursor-pointer transition-colors"
-                          style={{
-                            borderRadius: `${t.radius.full}px`,
-                            background: t.colors.semantic.primary,
-                            color: "#fff",
-                            boxShadow: t.shadow.primaryLg,
-                          }}
-                          onMouseEnter={(e) => (e.currentTarget.style.background = t.colors.semantic.primaryHover)}
-                          onMouseLeave={(e) => (e.currentTarget.style.background = t.colors.semantic.primary)}
                         >
                           Book
-                        </button>
+                        </Button>
                       )}
                       {isCreating && (
                         <button
                           onClick={() => { setCreatingAtHHMM(null); resetCreateForm(); }}
-                          className="w-6 h-6 flex items-center justify-center cursor-pointer"
-                          style={{ borderRadius: `${t.radius.full}px`, background: t.colors.semantic.errorBg }}
+                          className="w-6 h-6 rounded-full bg-destructive/10 flex items-center justify-center cursor-pointer"
                         >
-                          <X size={11} style={{ color: t.colors.semantic.error }} />
+                          <X size={11} className="text-destructive" />
                         </button>
                       )}
-                    </div>
+                    </Card>
 
                     {/* Inline create form */}
                     {isCreating && (
-                      <div
-                        className="mt-2 ml-2 p-5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
-                        style={{ borderRadius: `${t.radius.xl}px`, background: t.colors.semantic.surface, boxShadow: t.shadow.md }}
-                      >
-                        <p className="text-sm font-semibold" style={{ color: t.colors.semantic.text }}>New booking at {creatingAtHHMM}</p>
+                      <Card className="mt-2 ml-2 p-5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <p className="text-sm font-semibold text-foreground">New booking at {creatingAtHHMM}</p>
                         <div className="space-y-2">
                           <select value={serviceId} onChange={(e) => setServiceId(e.target.value)}
                             className="w-full px-4 py-2.5 text-sm outline-none cursor-pointer appearance-none"
@@ -404,24 +369,14 @@ export default function CalendarPage() {
                             style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }} />
                         </div>
                         <div className="flex gap-2">
-                          <button disabled={saving || !serviceId} onClick={createBooking}
-                            className="flex items-center gap-1.5 px-5 py-2 text-xs font-semibold disabled:opacity-40 cursor-pointer transition-colors"
-                            style={{ borderRadius: `${t.radius.full}px`, background: t.colors.semantic.primary, color: "#fff" }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = t.colors.semantic.primaryHover)}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = t.colors.semantic.primary)}
-                          >
+                          <Button loading={saving} disabled={saving || !serviceId} onClick={createBooking} size="sm">
                             <Check size={12} />{saving ? "Saving…" : "Create booking"}
-                          </button>
-                          <button disabled={saving} onClick={() => { setCreatingAtHHMM(null); resetCreateForm(); }}
-                            className="px-5 py-2 text-xs font-medium cursor-pointer transition-colors"
-                            style={{ borderRadius: `${t.radius.full}px`, background: t.colors.semantic.surfaceMuted, color: t.colors.semantic.textMuted }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = t.colors.semantic.surface)}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = t.colors.semantic.surfaceMuted)}
-                          >
+                          </Button>
+                          <Button variant="ghost" size="sm" disabled={saving} onClick={() => { setCreatingAtHHMM(null); resetCreateForm(); }}>
                             Cancel
-                          </button>
+                          </Button>
                         </div>
-                      </div>
+                      </Card>
                     )}
                   </div>
                 );
@@ -431,15 +386,12 @@ export default function CalendarPage() {
 
           {/* RIGHT: Bookings */}
           <div className="space-y-3">
-            <p className="text-xs font-medium uppercase tracking-widest" style={{ color: t.colors.semantic.textSubtle }}>Appointments</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Appointments</p>
 
             {/* Edit panel */}
             {editing && (
-              <div
-                className="p-5 space-y-3 animate-in fade-in duration-200"
-                style={{ borderRadius: `${t.radius.xl}px`, background: t.colors.semantic.surface, boxShadow: t.shadow.md }}
-              >
-                <p className="text-sm font-semibold" style={{ color: t.colors.semantic.text }}>Edit booking</p>
+              <Card className="p-5 space-y-3 animate-in fade-in duration-200">
+                <p className="text-sm font-semibold text-foreground">Edit booking</p>
                 <div className="space-y-2">
                   <select value={editStaffId} onChange={(e) => setEditStaffId(e.target.value)}
                     className="w-full px-4 py-2.5 text-sm outline-none cursor-pointer appearance-none"
@@ -461,49 +413,30 @@ export default function CalendarPage() {
                     style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }} />
                 </div>
                 <div className="flex gap-2">
-                  <button disabled={editSaving} onClick={saveEdit}
-                    className="flex items-center gap-1.5 px-5 py-2 text-xs font-semibold cursor-pointer transition-colors disabled:opacity-40"
-                    style={{ borderRadius: `${t.radius.full}px`, background: t.colors.semantic.successAccent, color: "#fff" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = t.colors.semantic.successAccentHover)}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = t.colors.semantic.successAccent)}
-                  >
+                  <Button variant="secondary" loading={editSaving} disabled={editSaving} onClick={saveEdit} size="sm">
                     <Check size={12} />{editSaving ? "Saving…" : "Save changes"}
-                  </button>
-                  <button disabled={editSaving} onClick={() => setEditing(null)}
-                    className="px-5 py-2 text-xs font-medium cursor-pointer transition-colors"
-                    style={{ borderRadius: `${t.radius.full}px`, background: t.colors.semantic.surfaceMuted, color: t.colors.semantic.textMuted }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = t.colors.semantic.surface)}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = t.colors.semantic.surfaceMuted)}
-                  >
+                  </Button>
+                  <Button variant="ghost" size="sm" disabled={editSaving} onClick={() => setEditing(null)}>
                     Cancel
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
             )}
 
             {loading && (
-              <div
-                className="px-5 py-6 text-sm text-center animate-pulse"
-                style={{ borderRadius: `${t.radius.lg}px`, background: t.colors.semantic.surface, color: t.colors.semantic.textSubtle }}
-              >
+              <Card className="px-5 py-6 text-sm text-center text-muted-foreground animate-pulse">
                 Loading appointments…
-              </div>
+              </Card>
             )}
 
             {!loading && bookingsForSelected.length === 0 && (
-              <div
-                className="p-12 flex flex-col items-center text-center gap-3"
-                style={{ borderRadius: `${t.radius["2xl"]}px`, background: t.colors.semantic.surface, boxShadow: t.shadow.card }}
-              >
-                <div
-                  className="w-12 h-12 flex items-center justify-center"
-                  style={{ borderRadius: `${t.radius.md}px`, background: t.colors.semantic.surfaceMuted }}
-                >
-                  <CalendarDays size={22} strokeWidth={1.5} style={{ color: t.colors.semantic.primary }} />
+              <Card className="p-12 flex flex-col items-center text-center gap-3">
+                <div className="w-12 h-12 flex items-center justify-center rounded-[16px] bg-muted">
+                  <CalendarDays size={22} strokeWidth={1.5} className="text-primary" />
                 </div>
-                <p className="text-sm font-semibold" style={{ color: t.colors.semantic.text }}>A quiet day ahead.</p>
-                <p className="text-xs" style={{ color: t.colors.semantic.textSubtle }}>No appointments booked yet. Pick a time slot on the left to get started.</p>
-              </div>
+                <p className="text-sm font-semibold text-foreground">A quiet day ahead.</p>
+                <p className="text-xs text-muted-foreground">No appointments booked yet. Pick a time slot on the left to get started.</p>
+              </Card>
             )}
 
             <div className="space-y-3">
@@ -511,35 +444,27 @@ export default function CalendarPage() {
                 const start = hhmmFromDate(b.startAt.toDate());
                 const end = hhmmFromDate(b.endAt.toDate());
                 return (
-                  <div
-                    key={b.id}
-                    className="p-5 space-y-3"
-                    style={{ borderRadius: `${t.radius.lg}px`, background: t.colors.semantic.surface, boxShadow: t.shadow.sm }}
-                  >
+                  <Card key={b.id} className="p-5 space-y-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-0.5">
-                        <p className="text-sm font-semibold" style={{ color: t.colors.semantic.text }}>
+                        <p className="text-sm font-semibold text-foreground">
                           {start}–{end} · {b.serviceSnapshot?.name}
                         </p>
-                        <p className="text-xs" style={{ color: t.colors.semantic.textMuted }}>
+                        <p className="text-xs text-muted-foreground">
                           {b.customerSnapshot?.name}
                           {b.customerSnapshot?.pet?.name ? ` · ${b.customerSnapshot.pet.name}` : ""}
                           {" · "}{b.price} {b.currency}
                         </p>
-                        {b.notes && <p className="text-xs" style={{ color: t.colors.semantic.textSubtle }}>{b.notes}</p>}
+                        {b.notes && <p className="text-xs text-muted-foreground/70">{b.notes}</p>}
                       </div>
                       <span
-                        className="text-[10px] font-semibold px-2.5 py-1 capitalize whitespace-nowrap"
-                        style={{ borderRadius: t.radius.full, ...STATUS_STYLES[b.status] }}
+                        className={cn("text-[10px] font-semibold px-2.5 py-1 rounded-full capitalize whitespace-nowrap", STATUS_STYLES[b.status])}
                       >
                         {b.status.replace("_", " ")}
                       </span>
                     </div>
 
-                    <div
-                      className="flex flex-wrap gap-1.5 pt-1"
-                      style={{ borderTop: `1px solid ${t.colors.semantic.divider}80` }}
-                    >
+                    <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border/50">
                       {b.status === "confirmed" && (
                         <>
                           <ActionBtn onClick={() => { setEditing(b); setEditStaffId(b.staffId); setEditServiceId(b.serviceId); setEditStartHHMM(hhmmFromDate(b.startAt.toDate())); setEditNotes(b.notes ?? ""); }} icon={<Pencil size={11} />} label="Edit" color="blue" />
@@ -555,7 +480,7 @@ export default function CalendarPage() {
                         </>
                       )}
                     </div>
-                  </div>
+                  </Card>
                 );
               })}
             </div>
@@ -567,37 +492,16 @@ export default function CalendarPage() {
 }
 
 function ActionBtn({ onClick, label, icon, color }: { onClick: () => void; label: string; icon?: React.ReactNode; color: "blue" | "green" | "red" | "neutral" }) {
-  const [hovered, setHovered] = useState(false);
-  const base: Record<"blue" | "green" | "red" | "neutral", { normal: React.CSSProperties; hover: React.CSSProperties }> = {
-    blue: {
-      normal: { background: t.colors.semantic.infoBg, color: t.colors.semantic.info },
-      hover: { background: t.colors.semantic.infoHover, color: t.colors.semantic.info },
-    },
-    green: {
-      normal: { background: t.colors.semantic.successBg, color: t.colors.semantic.success },
-      hover: { background: t.colors.semantic.successAccent, color: t.colors.semantic.success },
-    },
-    red: {
-      normal: { background: t.colors.semantic.errorBg, color: t.colors.semantic.error },
-      hover: { background: t.colors.semantic.errorHover, color: t.colors.semantic.error },
-    },
-    neutral: {
-      normal: { background: t.colors.semantic.surfaceMuted, color: t.colors.semantic.textMuted },
-      hover: { background: t.colors.semantic.surface, color: t.colors.semantic.textMuted },
-    },
-  };
-  const style: React.CSSProperties = {
-    ...(hovered ? base[color].hover : base[color].normal),
-    borderRadius: `${t.radius.full}px`,
-    transition: "background 0.15s",
+  const colors = {
+    blue: "bg-[#E4EEF6] text-[#4A7EA8] hover:bg-[#D4E4F0]",
+    green: "bg-[#E8EFE7] text-[#4A7A4A] hover:bg-[#D8E8D4]",
+    red: "bg-[#F0D8D3] text-[#A04040] hover:bg-[#E8CCCC]",
+    neutral: "bg-[#F5EFE6] text-[#7A655A] hover:bg-[#EDE4D8]",
   };
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="flex items-center gap-1 text-[11px] font-semibold px-3 py-1.5 cursor-pointer"
-      style={style}
+      className={cn("flex items-center gap-1 text-[11px] font-semibold px-3 py-1.5 rounded-full transition-colors cursor-pointer", colors[color])}
     >
       {icon}{label}
     </button>

@@ -10,6 +10,8 @@ import { db } from "@/lib/firebase";
 import { useSalon } from "@/lib/useSalon";
 import { t } from "@/lib/tokens";
 import { UserRound, Plus, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type StaffRole = "admin" | "groomer";
 
@@ -101,61 +103,46 @@ export default function StaffPage() {
             The wonderful people behind every appointment.
           </p>
         </div>
-        <button
+        <Button
           onClick={() => setShowForm((v) => !v)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5"
-          style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
-          onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLgHover }}
-          onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLg }}
+          className="gap-2"
         >
           <Plus size={16} />
           Add member
-        </button>
+        </Button>
       </div>
 
       {/* Add form */}
       {showForm && (
-        <div
-          className="p-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
-          style={{ background: t.colors.semantic.surface, borderRadius: `${t.radius.xl}px`, boxShadow: t.shadow.lg }}
-        >
-          <h3 className="font-semibold" style={{ color: t.colors.semantic.text }}>Welcome a new team member</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)}
-              className="col-span-full px-4 py-3 text-sm outline-none" style={inputStyle} />
-            <input placeholder="Phone (optional)" value={phone} onChange={(e) => setPhone(e.target.value)}
-              className="px-4 py-3 text-sm outline-none" style={inputStyle} />
-            <select value={role} onChange={(e) => setRole(e.target.value as StaffRole)}
-              className="px-4 py-3 text-sm outline-none cursor-pointer appearance-none"
-              style={inputStyle}
-            >
-              <option value="groomer">Groomer</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          <div className="flex gap-3 pt-1">
-            <button onClick={addStaff} disabled={!canSubmit}
-              className="px-6 py-2.5 rounded-full text-sm font-semibold disabled:opacity-40 cursor-pointer transition-colors"
-              style={{ background: t.colors.semantic.primary, color: "#fff" }}
-            >
-              Add member
-            </button>
-            <button onClick={() => setShowForm(false)}
-              className="px-6 py-2.5 rounded-full text-sm font-medium cursor-pointer transition-colors"
-              style={{ background: t.colors.semantic.bg, color: t.colors.semantic.textMuted }}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
+        <Card className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+          <CardHeader>
+            <CardTitle>Welcome a new team member</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)}
+                className="col-span-full px-4 py-3 text-sm outline-none" style={inputStyle} />
+              <input placeholder="Phone (optional)" value={phone} onChange={(e) => setPhone(e.target.value)}
+                className="px-4 py-3 text-sm outline-none" style={inputStyle} />
+              <select value={role} onChange={(e) => setRole(e.target.value as StaffRole)}
+                className="px-4 py-3 text-sm outline-none cursor-pointer appearance-none"
+                style={inputStyle}
+              >
+                <option value="groomer">Groomer</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={addStaff} disabled={!canSubmit}>Add member</Button>
+              <Button variant="ghost" onClick={() => setShowForm(false)}>Cancel</Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Empty state */}
       {!loading && items.length === 0 && !showForm && (
-        <div
-          className="p-16 flex flex-col items-center text-center gap-4"
-          style={{ background: t.colors.semantic.surface, borderRadius: `${t.radius["2xl"]}px`, boxShadow: t.shadow.card }}
-        >
+        <Card className="p-16 flex flex-col items-center text-center gap-4">
           <div
             className="w-16 h-16 flex items-center justify-center"
             style={{ background: t.colors.semantic.successBg, borderRadius: `${t.radius.lg}px` }}
@@ -163,37 +150,27 @@ export default function StaffPage() {
             <UserRound size={28} strokeWidth={1.5} style={{ color: t.colors.semantic.successStrong }} />
           </div>
           <div>
-            <p className="text-lg font-semibold" style={{ color: t.colors.semantic.text }}>
+            <p className="text-lg font-semibold text-foreground">
               Start building your care team.
             </p>
-            <p className="text-sm mt-1 max-w-xs" style={{ color: t.colors.semantic.textSubtle }}>
+            <p className="text-sm mt-1 max-w-xs text-muted-foreground">
               Add groomers and admins who show up for pets every single day.
             </p>
           </div>
-          <button onClick={() => setShowForm(true)}
-            className="mt-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all cursor-pointer"
-            style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
-          >
+          <Button onClick={() => setShowForm(true)} className="mt-2">
             Add your first team member
-          </button>
-        </div>
+          </Button>
+        </Card>
       )}
 
       {/* Staff grid */}
       {!loading && items.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {items.map((s) => (
-            <div
+            <Card
               key={s.id}
-              className="group relative p-5 transition-all"
-              style={{
-                background: t.colors.semantic.surface,
-                borderRadius: `${t.radius.xl}px`,
-                boxShadow: t.shadow.sm,
-                opacity: s.isActive ? 1 : 0.6,
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.md }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.sm }}
+              interactive
+              className={`group relative p-5 transition-all ${!s.isActive ? "opacity-60" : ""}`}
             >
               <div className="flex items-start gap-3">
                 {/* Avatar */}
@@ -204,8 +181,8 @@ export default function StaffPage() {
                   {s.name.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm" style={{ color: t.colors.semantic.text }}>{s.name}</p>
-                  {s.phone && <p className="text-xs" style={{ color: t.colors.semantic.textSubtle }}>{s.phone}</p>}
+                  <p className="font-semibold text-sm text-foreground">{s.name}</p>
+                  {s.phone && <p className="text-xs text-muted-foreground">{s.phone}</p>}
                   <span
                     className="inline-block mt-1.5 text-[10px] font-semibold px-2.5 py-0.5 rounded-full capitalize"
                     style={roleStyle[s.role]}
@@ -239,7 +216,7 @@ export default function StaffPage() {
                   <Trash2 size={13} style={{ color: t.colors.semantic.error }} />
                 </button>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}

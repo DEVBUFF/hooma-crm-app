@@ -6,6 +6,7 @@ import { useAuth } from "@/components/auth/AuthProvider"
 import { t } from "@/lib/tokens"
 import { ArrowRight, Sparkles, Users, CalendarDays } from "lucide-react"
 import Link from "next/link"
+import { Card } from "@/components/ui/card"
 
 export default function AppHomePage() {
   const { user } = useAuth()
@@ -29,33 +30,23 @@ export default function AppHomePage() {
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Welcome hero card */}
-      <div
+      <Card
+        variant="elevated"
         className="relative overflow-hidden p-10"
-        style={{
-          background: t.colors.component.card.bg,
-          borderRadius: `${t.radius["2xl"]}px`,
-          boxShadow: t.shadow.cardElevated,
-        }}
       >
         <div className="relative z-10 space-y-3">
-          <p
-            className="text-sm font-medium uppercase tracking-widest"
-            style={{ color: t.colors.semantic.textSubtle }}
-          >
+          <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
             {greeting}
           </p>
-          <h2
-            className="text-4xl font-bold leading-tight"
-            style={{ color: t.colors.semantic.text }}
-          >
+          <h2 className="text-4xl font-bold leading-tight text-foreground">
             Let&apos;s take care<br />of today. 🐾
           </h2>
-          <p className="text-base max-w-md leading-relaxed" style={{ color: t.colors.semantic.textMuted }}>
-            You&apos;re all set, <span className="font-semibold" style={{ color: t.colors.semantic.text }}>{firstName}</span>.
+          <p className="text-base max-w-md leading-relaxed text-muted-foreground">
+            You&apos;re all set, <span className="font-semibold text-foreground">{firstName}</span>.
             Your schedule is ready — let&apos;s make it a wonderful day for every pet.
           </p>
         </div>
-      </div>
+      </Card>
 
       {/* Quick action cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -99,32 +90,26 @@ function QuickCard({
   accentBg: string
 }) {
   return (
-    <Link
-      href={href}
-      className="group flex items-center gap-4 p-5 transition-all duration-200 ease-out hover:-translate-y-0.5"
-      style={{
-        background: t.colors.component.card.bg,
-        borderRadius: `${t.radius.xl}px`,
-        boxShadow: t.shadow.cardElevated,
-      }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.md }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.cardElevated }}
-    >
-      <div
-        className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
-        style={{ background: accentBg }}
+    <Link href={href} className="group block">
+      <Card
+        interactive
+        className="flex-row items-center gap-4 p-5"
       >
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold" style={{ color: t.colors.semantic.text }}>{label}</p>
-        <p className="text-xs truncate" style={{ color: t.colors.semantic.textSubtle }}>{description}</p>
-      </div>
-      <ArrowRight
-        size={16}
-        className="transition-colors duration-200"
-        style={{ color: t.colors.semantic.divider }}
-      />
+        <div
+          className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+          style={{ background: accentBg }}
+        >
+          {icon}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground">{label}</p>
+          <p className="text-xs truncate text-muted-foreground">{description}</p>
+        </div>
+        <ArrowRight
+          size={16}
+          className="transition-colors duration-200 text-border shrink-0"
+        />
+      </Card>
     </Link>
   )
 }
