@@ -58,9 +58,13 @@ interface BookingCardProps {
   top: number
   /** Pixel height (already has 22 px minimum applied by caller). */
   height: number
+  /** Pixel offset from the left edge of the column (includes column padding). */
+  left: number
+  /** Pixel width of the card (computed by the lane layout). */
+  width: number
 }
 
-export function BookingCard({ booking, staff, top, height }: BookingCardProps) {
+export function BookingCard({ booking, staff, top, height, left, width }: BookingCardProps) {
   const [hovered, setHovered] = useState(false)
 
   // Subtract 2 px so adjacent bookings have a small visual gap; never go below 22 px.
@@ -78,8 +82,8 @@ export function BookingCard({ booking, staff, top, height }: BookingCardProps) {
       style={{
         position: "absolute",
         top,
-        left: 4,
-        right: 4,
+        left,
+        width,
         height: cardHeight,
         borderRadius: t.radius.lg,
         background: cardBg,

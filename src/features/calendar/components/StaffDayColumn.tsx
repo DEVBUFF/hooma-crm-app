@@ -1,44 +1,63 @@
 import { t } from "@/lib/tokens"
-import { minutesSinceDayStart, diffMinutes } from "@/features/calendar/lib/time"
+import { layoutBookings } from "@/features/calendar/lib/layout"
 import { BookingCard } from "@/features/calendar/components/BookingCard"
 import type { Booking, Staff } from "@/features/calendar/types"
 import {
   COLUMN_WIDTH,
   DAY_START_HOUR,
-  DAY_END_HOUR,
   PX_PER_MINUTE,
+  SLOT_MINUTES,
   SLOT_HEIGHT,
   SLOT_COUNT,
   TOTAL_HEIGHT,
 } from "@/features/calendar/lib/grid-config"
 
-const VISIBLE_MINUTES = (DAY_END_HOUR - DAY_START_HOUR) * 60
+// ---------------------------------------------------------------------------
+// Lane geometry constants
+// ---------------------------------------------------------------------------
+
+/** Maximum lanes rendered side-by-side. Cards in lanes ≥ this are clamped
+ *  to the last visible lane and overlap visually — keeps cards readable. */
+const MAX_VISIBLE_LANES = 3
+
+/** Horizontal inset from the column edge to the card area (each side). */
+const CARD_PADDING = 4 // px
+
+/** Gap between adjacent lanes inside the same overlap cluster. */
+const CARD_GAP = 3 // px
+
+/** Options passed to the layout engine — matches grid-config. */
+const LAYOUT_OPTS = {
+  dayStartHour:   DAY_START_HOUR,
+  dayStartMinute: 0,
+  pxPerMinute:    PX_PER_MINUTE,
+  slotMinutes:    SLOT_MINUTES,
+}
+
+// ---------------------------------------------------------------------------
+// Lane width helper
+// ---------------------------------------------------------------------------
 
 /**
- * Compute pixel position and height for a booking within the visible day range.
+ * Returns the { left, width } in pixels for a card inside a column, given its
+ * visual lane index and the total number of visual lanes.
  *
- * - top    = minutesSinceDayStart(startAt) * PX_PER_MINUTE  (clamped to 0)
- * - height = max(visibleDurationMinutes * PX_PER_MINUTE, 22)
- *
- * Returns null when the booking falls entirely outside 08:00–20:00.
+ * Cards are distributed evenly across the available column width (minus
+ * CARD_PADDING on each side), separated by CARD_GAP.
  */
-function getPosition(
-  booking: Booking,
-): { top: number; height: number } | null {
-  const startOffset = minutesSinceDayStart(booking.startAt, DAY_START_HOUR)
-  const endOffset   = minutesSinceDayStart(booking.endAt,   DAY_START_HOUR)
-
-  // Entirely before day start or after day end → skip
-  if (endOffset <= 0 || startOffset >= VISIBLE_MINUTES) return null
-
-  const clampedStart = Math.max(startOffset, 0)
-  const clampedEnd   = Math.min(endOffset, VISIBLE_MINUTES)
-
-  return {
-    top:    clampedStart * PX_PER_MINUTE,
-    height: Math.max((clampedEnd - clampedStart) * PX_PER_MINUTE, 22),
-  }
+function laneGeometry(
+  visLaneIndex: number,
+  visLaneCount: number,
+): { left: number; width: number } {
+  const available = COLUMN_WIDTH - 2 * CARD_PADDING
+  const laneWidth = (available - (visLaneCount - 1) * CARD_GAP) / visLaneCount
+  const left = CARD_PADDING + visLaneIndex * (laneWidth + CARD_GAP)
+  return { left, width: laneWidth }
 }
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 interface StaffDayColumnProps {
   staff: Staff
@@ -47,6 +66,8 @@ interface StaffDayColumnProps {
 }
 
 export function StaffDayColumn({ staff, bookings }: StaffDayColumnProps) {
+  const positioned = layoutBookings(bookings, LAYOUT_OPTS)
+
   return (
     <div
       style={{
@@ -74,8 +95,8 @@ export function StaffDayColumn({ staff, bookings }: StaffDayColumnProps) {
               top: i * SLOT_HEIGHT,
               height: 1,
               background: isHour
-                ? t.colors.semantic.divider      // stronger — hour boundary
-                : t.colors.semantic.borderSubtle, // subtle   — 15-min mark
+                ? t.colors.semantic.divider       // stronger — hour boundary
+                : t.colors.semantic.borderSubtle,  // subtle   — 15-min mark
               opacity: isHour ? 1 : 0.55,
               pointerEvents: "none",
             }}
@@ -83,17 +104,25 @@ export function StaffDayColumn({ staff, bookings }: StaffDayColumnProps) {
         )
       })}
 
-      {/* ── Booking cards ──────────────────────────────────────────── */}
-      {bookings.map((b) => {
-        const pos = getPosition(b)
-        if (!pos) return null
+      {/* ── Booking cards ──────────────────────────────────────────────
+          Clamp to MAX_VISIBLE_LANES visual lanes.
+          Cards in lanes ≥ MAX_VISIBLE_LANES share the last visual lane and
+          overlap slightly — acceptable for dense schedules on a scaffold.
+      ──────────────────────────────────────────────────────────────── */}
+      {positioned.map((pb) => {
+        const visLaneCount = Math.min(pb.laneCount, MAX_VISIBLE_LANES)
+        const visLaneIndex = Math.min(pb.laneIndex, MAX_VISIBLE_LANES - 1)
+        const { left, width } = laneGeometry(visLaneIndex, visLaneCount)
+
         return (
           <BookingCard
-            key={b.id}
-            booking={b}
+            key={pb.id}
+            booking={pb}
             staff={staff}
-            top={pos.top}
-            height={pos.height}
+            top={pb.top}
+            height={pb.height}
+            left={left}
+            width={width}
           />
         )
       })}
