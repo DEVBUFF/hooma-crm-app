@@ -7,7 +7,10 @@ import {
 import { db } from "@/lib/firebase";
 import { useSalon } from "@/lib/useSalon";
 import { cn } from "@/lib/utils";
+import { t } from "@/lib/tokens";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, X, Pencil, Check } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type Staff = { id: string; name: string; isActive: boolean };
 type Service = { id: string; name: string; durationMinutes: number; price: number; isActive?: boolean };
@@ -242,42 +245,50 @@ export default function CalendarPage() {
     <div className="max-w-5xl space-y-6">
       {/* Date nav bar */}
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-1 bg-[#EDE4D8] rounded-[18px] p-1 shadow-[0_2px_12px_rgba(62,47,42,0.07)]">
-          <button onClick={() => shiftDate(-1)} className="w-8 h-8 rounded-[14px] flex items-center justify-center hover:bg-[#DDD4C4] transition-colors cursor-pointer">
-            <ChevronLeft size={16} className="text-[#7A655A]" />
+        <Card padding="sm" className="flex-row items-center gap-1 p-1">
+          <button
+            onClick={() => shiftDate(-1)}
+            className="w-8 h-8 rounded-[14px] flex items-center justify-center hover:bg-muted transition-colors cursor-pointer"
+          >
+            <ChevronLeft size={16} className="text-muted-foreground" />
           </button>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-            className="bg-transparent text-sm font-semibold text-[#3E2F2A] outline-none px-2 cursor-pointer" />
-          <button onClick={() => shiftDate(1)} className="w-8 h-8 rounded-[14px] flex items-center justify-center hover:bg-[#DDD4C4] transition-colors cursor-pointer">
-            <ChevronRight size={16} className="text-[#7A655A]" />
+            className="bg-transparent text-sm font-semibold text-foreground outline-none px-2 cursor-pointer" />
+          <button
+            onClick={() => shiftDate(1)}
+            className="w-8 h-8 rounded-[14px] flex items-center justify-center hover:bg-muted transition-colors cursor-pointer"
+          >
+            <ChevronRight size={16} className="text-muted-foreground" />
           </button>
-        </div>
-        <span className="text-sm text-[#7A655A]">{friendlyDate}</span>
-        {isToday && <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#E8EFE7] text-[#5A8A6A]">Today</span>}
+        </Card>
+        <span className="text-sm text-muted-foreground">{friendlyDate}</span>
+        {isToday && (
+          <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[--color-secondary]/20 text-[color:var(--color-secondary)]">Today</span>
+        )}
         <div className="flex-1" />
         {/* Staff selector */}
         {activeStaff.length > 0 && (
-          <div className="flex items-center gap-2 bg-[#EDE4D8] rounded-[18px] px-4 py-2 shadow-[0_2px_12px_rgba(62,47,42,0.07)]">
-            <span className="text-xs text-[#A8998C]">Staff</span>
+          <Card padding="sm" className="flex-row items-center gap-2 px-4 py-2">
+            <span className="text-xs text-muted-foreground">Staff</span>
             <select value={staffId} onChange={(e) => setStaffId(e.target.value)}
-              className="bg-transparent text-sm font-semibold text-[#3E2F2A] outline-none cursor-pointer">
+              className="bg-transparent text-sm font-semibold text-foreground outline-none cursor-pointer">
               {activeStaff.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-          </div>
+          </Card>
         )}
       </div>
 
       {/* Closed day */}
       {!dayHours && (
-        <div className="rounded-[28px] bg-[#EDE4D8] shadow-[0_4px_24px_rgba(62,47,42,0.06)] p-16 flex flex-col items-center text-center gap-4">
-          <div className="w-16 h-16 rounded-[20px] bg-[#F5EFE6] flex items-center justify-center">
-            <CalendarDays size={28} strokeWidth={1.5} className="text-[#7FA6C9]" />
+        <Card className="p-16 flex flex-col items-center text-center gap-4">
+          <div className="w-16 h-16 flex items-center justify-center rounded-[20px] bg-muted">
+            <CalendarDays size={28} strokeWidth={1.5} className="text-primary" />
           </div>
           <div>
-            <p className="text-lg font-semibold text-[#3E2F2A]">The salon is resting today.</p>
-            <p className="text-sm text-[#A8998C] mt-1">This day is marked as closed in your settings.</p>
+            <p className="text-lg font-semibold text-foreground">The salon is resting today.</p>
+            <p className="text-sm mt-1 text-muted-foreground">This day is marked as closed in your settings.</p>
           </div>
-        </div>
+        </Card>
       )}
 
       {!!dayHours && (
@@ -285,78 +296,87 @@ export default function CalendarPage() {
           {/* LEFT: Time slots */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-medium text-[#A8998C] uppercase tracking-widest">
+              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
                 Time slots · {dayHours.start}–{dayHours.end}
               </p>
-              <span className="text-[11px] text-[#B5A396]">{slotDuration} min slots</span>
+              <span className="text-[11px] text-muted-foreground">{slotDuration} min slots</span>
             </div>
 
             <div className="space-y-2">
-              {timeSlots.map((t) => {
-                const taken = isSlotTaken(t.hhmm);
-                const isCreating = creatingAtHHMM === t.hhmm;
+              {timeSlots.map((slot) => {
+                const taken = isSlotTaken(slot.hhmm);
+                const isCreating = creatingAtHHMM === slot.hhmm;
                 return (
-                  <div key={t.hhmm}>
-                    <div className={cn(
-                      "flex items-center justify-between px-5 py-3 rounded-[16px] transition-all",
-                      taken ? "bg-[#EDE4D8]/60 opacity-60" : "bg-[#EDE4D8] shadow-[0_2px_10px_rgba(62,47,42,0.06)]",
-                      isCreating && "ring-2 ring-[#7FA6C9]/40"
-                    )}>
+                  <div key={slot.hhmm}>
+                    <Card
+                      className={cn(
+                        "flex-row items-center justify-between px-5 py-3",
+                        taken && "opacity-60",
+                        isCreating && "ring-2 ring-primary/20"
+                      )}
+                    >
                       <div className="flex items-center gap-2">
-                        <Clock size={13} className={taken ? "text-[#C8B9AF]" : "text-[#7FA6C9]"} />
-                        <span className="text-sm font-semibold text-[#3E2F2A]">{t.hhmm}</span>
-                        {taken && <span className="text-[11px] text-[#B5A396] ml-1">Busy</span>}
+                        <Clock size={13} className={taken ? "text-muted-foreground/50" : "text-primary"} />
+                        <span className="text-sm font-semibold text-foreground">{slot.hhmm}</span>
+                        {taken && <span className="text-[11px] ml-1 text-muted-foreground">Busy</span>}
                       </div>
                       {!taken && !isCreating && (
-                        <button onClick={() => setCreatingAtHHMM(t.hhmm)}
-                          className="text-xs font-semibold px-3 py-1 rounded-full bg-[#7FA6C9] text-white cursor-pointer hover:bg-[#6A92B8] transition-colors shadow-[0_1px_6px_rgba(127,166,201,0.2)]">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => setCreatingAtHHMM(slot.hhmm)}
+                        >
                           Book
-                        </button>
+                        </Button>
                       )}
                       {isCreating && (
-                        <button onClick={() => { setCreatingAtHHMM(null); resetCreateForm(); }}
-                          className="w-6 h-6 rounded-full bg-[#F0D8D3] flex items-center justify-center cursor-pointer">
-                          <X size={11} className="text-[#C4605A]" />
+                        <button
+                          onClick={() => { setCreatingAtHHMM(null); resetCreateForm(); }}
+                          className="w-6 h-6 rounded-full bg-destructive/10 flex items-center justify-center cursor-pointer"
+                        >
+                          <X size={11} className="text-destructive" />
                         </button>
                       )}
-                    </div>
+                    </Card>
 
                     {/* Inline create form */}
                     {isCreating && (
-                      <div className="mt-2 ml-2 rounded-[18px] bg-[#EDE4D8] shadow-[0_4px_20px_rgba(62,47,42,0.09)] p-5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                        <p className="text-sm font-semibold text-[#3E2F2A]">New booking at {creatingAtHHMM}</p>
+                      <Card className="mt-2 ml-2 p-5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <p className="text-sm font-semibold text-foreground">New booking at {creatingAtHHMM}</p>
                         <div className="space-y-2">
                           <select value={serviceId} onChange={(e) => setServiceId(e.target.value)}
-                            className="w-full rounded-[12px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none cursor-pointer appearance-none">
+                            className="w-full px-4 py-2.5 text-sm outline-none cursor-pointer appearance-none"
+                            style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }}>
                             <option value="">Select a service</option>
                             {services.map((s) => <option key={s.id} value={s.id}>{s.name} · {s.durationMinutes}m · {s.price} {currency}</option>)}
                           </select>
                           <select value={customerId} onChange={(e) => setCustomerId(e.target.value)}
-                            className="w-full rounded-[12px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none cursor-pointer appearance-none">
+                            className="w-full px-4 py-2.5 text-sm outline-none cursor-pointer appearance-none"
+                            style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }}>
                             <option value="">Walk-in (no customer)</option>
                             {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                           </select>
                           {customerId && (
                             <select value={petId} onChange={(e) => setPetId(e.target.value)}
-                              className="w-full rounded-[12px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none cursor-pointer appearance-none">
+                              className="w-full px-4 py-2.5 text-sm outline-none cursor-pointer appearance-none"
+                              style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }}>
                               <option value="">No pet selected</option>
                               {petsForCustomer.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                             </select>
                           )}
                           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes (optional)" rows={2}
-                            className="w-full rounded-[12px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] placeholder:text-[#B5A396] outline-none resize-none" />
+                            className="w-full px-4 py-2.5 text-sm outline-none resize-none"
+                            style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }} />
                         </div>
                         <div className="flex gap-2">
-                          <button disabled={saving || !serviceId} onClick={createBooking}
-                            className="flex items-center gap-1.5 px-5 py-2 rounded-full bg-[#7FA6C9] text-white text-xs font-semibold disabled:opacity-40 cursor-pointer hover:bg-[#6A92B8] transition-colors">
+                          <Button loading={saving} disabled={saving || !serviceId} onClick={createBooking} size="sm">
                             <Check size={12} />{saving ? "Saving…" : "Create booking"}
-                          </button>
-                          <button disabled={saving} onClick={() => { setCreatingAtHHMM(null); resetCreateForm(); }}
-                            className="px-5 py-2 rounded-full bg-[#F5EFE6] text-[#7A655A] text-xs font-medium cursor-pointer hover:bg-[#EDE4D8] transition-colors">
+                          </Button>
+                          <Button variant="ghost" size="sm" disabled={saving} onClick={() => { setCreatingAtHHMM(null); resetCreateForm(); }}>
                             Cancel
-                          </button>
+                          </Button>
                         </div>
-                      </div>
+                      </Card>
                     )}
                   </div>
                 );
@@ -366,55 +386,57 @@ export default function CalendarPage() {
 
           {/* RIGHT: Bookings */}
           <div className="space-y-3">
-            <p className="text-xs font-medium text-[#A8998C] uppercase tracking-widest">Appointments</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Appointments</p>
 
             {/* Edit panel */}
             {editing && (
-              <div className="rounded-[18px] bg-[#EDE4D8] shadow-[0_4px_20px_rgba(62,47,42,0.09)] p-5 space-y-3 animate-in fade-in duration-200">
-                <p className="text-sm font-semibold text-[#3E2F2A]">Edit booking</p>
+              <Card className="p-5 space-y-3 animate-in fade-in duration-200">
+                <p className="text-sm font-semibold text-foreground">Edit booking</p>
                 <div className="space-y-2">
                   <select value={editStaffId} onChange={(e) => setEditStaffId(e.target.value)}
-                    className="w-full rounded-[12px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none cursor-pointer appearance-none">
+                    className="w-full px-4 py-2.5 text-sm outline-none cursor-pointer appearance-none"
+                    style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }}>
                     {activeStaff.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                   <select value={editServiceId} onChange={(e) => setEditServiceId(e.target.value)}
-                    className="w-full rounded-[12px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none cursor-pointer appearance-none">
+                    className="w-full px-4 py-2.5 text-sm outline-none cursor-pointer appearance-none"
+                    style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }}>
                     {services.map((s) => <option key={s.id} value={s.id}>{s.name} · {s.durationMinutes}m</option>)}
                   </select>
                   <select value={editStartHHMM} onChange={(e) => setEditStartHHMM(e.target.value)}
-                    className="w-full rounded-[12px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none cursor-pointer appearance-none">
-                    {timeSlots.map((t) => <option key={t.hhmm} value={t.hhmm}>{t.hhmm}</option>)}
+                    className="w-full px-4 py-2.5 text-sm outline-none cursor-pointer appearance-none"
+                    style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }}>
+                    {timeSlots.map((slot) => <option key={slot.hhmm} value={slot.hhmm}>{slot.hhmm}</option>)}
                   </select>
                   <textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={2}
-                    className="w-full rounded-[12px] bg-[#F5EFE6] px-4 py-2.5 text-sm text-[#3E2F2A] outline-none resize-none" />
+                    className="w-full px-4 py-2.5 text-sm outline-none resize-none"
+                    style={{ borderRadius: `${t.radius.sm}px`, background: t.colors.component.input.bg, color: t.colors.component.input.text }} />
                 </div>
                 <div className="flex gap-2">
-                  <button disabled={editSaving} onClick={saveEdit}
-                    className="flex items-center gap-1.5 px-5 py-2 rounded-full bg-[#A8BBA3] text-white text-xs font-semibold cursor-pointer hover:bg-[#96A990] transition-colors disabled:opacity-40">
+                  <Button variant="secondary" loading={editSaving} disabled={editSaving} onClick={saveEdit} size="sm">
                     <Check size={12} />{editSaving ? "Saving…" : "Save changes"}
-                  </button>
-                  <button disabled={editSaving} onClick={() => setEditing(null)}
-                    className="px-5 py-2 rounded-full bg-[#F5EFE6] text-[#7A655A] text-xs font-medium cursor-pointer hover:bg-[#EDE4D8] transition-colors">
+                  </Button>
+                  <Button variant="ghost" size="sm" disabled={editSaving} onClick={() => setEditing(null)}>
                     Cancel
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
             )}
 
             {loading && (
-              <div className="rounded-[20px] bg-[#EDE4D8] px-5 py-6 text-sm text-[#A8998C] text-center animate-pulse">
+              <Card className="px-5 py-6 text-sm text-center text-muted-foreground animate-pulse">
                 Loading appointments…
-              </div>
+              </Card>
             )}
 
             {!loading && bookingsForSelected.length === 0 && (
-              <div className="rounded-[28px] bg-[#EDE4D8] shadow-[0_4px_24px_rgba(62,47,42,0.06)] p-12 flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-[16px] bg-[#F5EFE6] flex items-center justify-center">
-                  <CalendarDays size={22} strokeWidth={1.5} className="text-[#7FA6C9]" />
+              <Card className="p-12 flex flex-col items-center text-center gap-3">
+                <div className="w-12 h-12 flex items-center justify-center rounded-[16px] bg-muted">
+                  <CalendarDays size={22} strokeWidth={1.5} className="text-primary" />
                 </div>
-                <p className="text-sm font-semibold text-[#3E2F2A]">A quiet day ahead.</p>
-                <p className="text-xs text-[#A8998C]">No appointments booked yet. Pick a time slot on the left to get started.</p>
-              </div>
+                <p className="text-sm font-semibold text-foreground">A quiet day ahead.</p>
+                <p className="text-xs text-muted-foreground">No appointments booked yet. Pick a time slot on the left to get started.</p>
+              </Card>
             )}
 
             <div className="space-y-3">
@@ -422,25 +444,27 @@ export default function CalendarPage() {
                 const start = hhmmFromDate(b.startAt.toDate());
                 const end = hhmmFromDate(b.endAt.toDate());
                 return (
-                  <div key={b.id} className="rounded-[20px] bg-[#EDE4D8] shadow-[0_2px_12px_rgba(62,47,42,0.07)] p-5 space-y-3">
+                  <Card key={b.id} className="p-5 space-y-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-0.5">
-                        <p className="text-sm font-semibold text-[#3E2F2A]">
+                        <p className="text-sm font-semibold text-foreground">
                           {start}–{end} · {b.serviceSnapshot?.name}
                         </p>
-                        <p className="text-xs text-[#7A655A]">
+                        <p className="text-xs text-muted-foreground">
                           {b.customerSnapshot?.name}
                           {b.customerSnapshot?.pet?.name ? ` · ${b.customerSnapshot.pet.name}` : ""}
                           {" · "}{b.price} {b.currency}
                         </p>
-                        {b.notes && <p className="text-xs text-[#A8998C]">{b.notes}</p>}
+                        {b.notes && <p className="text-xs text-muted-foreground/70">{b.notes}</p>}
                       </div>
-                      <span className={cn("text-[10px] font-semibold px-2.5 py-1 rounded-full capitalize whitespace-nowrap", STATUS_STYLES[b.status])}>
+                      <span
+                        className={cn("text-[10px] font-semibold px-2.5 py-1 rounded-full capitalize whitespace-nowrap", STATUS_STYLES[b.status])}
+                      >
                         {b.status.replace("_", " ")}
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-1.5 pt-1 border-t border-[#DDD4C4]/50">
+                    <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border/50">
                       {b.status === "confirmed" && (
                         <>
                           <ActionBtn onClick={() => { setEditing(b); setEditStaffId(b.staffId); setEditServiceId(b.serviceId); setEditStartHHMM(hhmmFromDate(b.startAt.toDate())); setEditNotes(b.notes ?? ""); }} icon={<Pencil size={11} />} label="Edit" color="blue" />
@@ -456,7 +480,7 @@ export default function CalendarPage() {
                         </>
                       )}
                     </div>
-                  </div>
+                  </Card>
                 );
               })}
             </div>
@@ -475,8 +499,10 @@ function ActionBtn({ onClick, label, icon, color }: { onClick: () => void; label
     neutral: "bg-[#F5EFE6] text-[#7A655A] hover:bg-[#EDE4D8]",
   };
   return (
-    <button onClick={onClick}
-      className={cn("flex items-center gap-1 text-[11px] font-semibold px-3 py-1.5 rounded-full transition-colors cursor-pointer", colors[color])}>
+    <button
+      onClick={onClick}
+      className={cn("flex items-center gap-1 text-[11px] font-semibold px-3 py-1.5 rounded-full transition-colors cursor-pointer", colors[color])}
+    >
       {icon}{label}
     </button>
   );

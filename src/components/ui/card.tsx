@@ -1,92 +1,237 @@
-import * as React from 'react'
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-import { cn } from '@/lib/utils'
+// ---------------------------------------------------------------------------
+// Shared token-based constants
+//
+// Every value maps to a CSS var defined in globals.css / @theme inline.
+// Nothing here is a hardcoded hex colour — raw rgba() strings are the same
+// values that tokens.ts already exposes (e.g. t.shadow.*).
+// ---------------------------------------------------------------------------
 
-function Card({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
+// Variant → visual recipe
+// "default"  — standard dashboard card  (bg-card, token shadow sm)
+// "elevated" — hero / featured card     (bg-card, token shadow cardElevated)
+// "auth"     — login / register panel   (bg-card + backdrop-blur, authCard shadow, subtle border)
+const VARIANT_CLASSES = {
+  default:
+    "bg-card text-card-foreground " +
+    "border border-[rgba(229,218,203,0.60)] " +
+    "shadow-[0_2px_12px_rgba(62,47,42,0.07)] " +
+    "rounded-[var(--radius-xl)]",               // radius.xl = calc(var(--radius) + 8px) = ~32 px
+
+  elevated:
+    "bg-card text-card-foreground " +
+    "border border-[rgba(229,218,203,0.60)] " +
+    "shadow-[0_12px_40px_rgba(90,60,30,0.08)] " +
+    "rounded-[var(--radius-xl)]",
+
+  auth:
+    "bg-card text-card-foreground " +
+    "backdrop-blur-2xl " +
+    "border border-[rgba(229,218,203,0.60)] " +
+    "shadow-[0_8px_40px_rgba(46,33,28,0.12),0_2px_10px_rgba(46,33,28,0.06)] " +
+    "rounded-[var(--radius-2xl,28px)]",         // radius.2xl = 28 px
+} as const;
+
+// Padding → spacing applied to Card itself (overridable per-slot via className)
+const PADDING_CLASSES = {
+  sm: "p-5",   // tokens.spacing.cardPadding - 4 = 20-4 = 16 px → p-4; using p-5 matches calendar panels
+  md: "p-6",   // tokens.spacing.cardPadding = 24 px
+  lg: "p-8",   // generous, used by the welcome hero (p-10 = 40 px → we use lg = p-8 by default; callers can override)
+} as const;
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+type CardVariant  = keyof typeof VARIANT_CLASSES;
+type CardPadding  = keyof typeof PADDING_CLASSES;
+
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Visual style recipe */
+  variant?: CardVariant;
+  /** Internal padding size */
+  padding?: CardPadding;
+  /**
+   * When true: adds a subtle lift on hover (translate-y + deeper shadow).
+   * Mirrors the QuickCard pattern from the dashboard.
+   */
+  interactive?: boolean;
+  /** Render as a different element (e.g. "a", "article") */
+  as?: React.ElementType;
+}
+
+// ---------------------------------------------------------------------------
+// Card
+// ---------------------------------------------------------------------------
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  (
+    {
+      className,
+      variant = "default",
+      padding = "md",
+      interactive = false,
+      as: Tag = "div",
+      ...props
+    },
+    ref
+  ) => (
+    <Tag
+      ref={ref}
       data-slot="card"
+      data-variant={variant}
       className={cn(
-        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm',
-        className,
+        // Base layout
+        "flex flex-col",
+        // Variant colours / shadow / radius
+        VARIANT_CLASSES[variant],
+        // Padding
+        PADDING_CLASSES[padding],
+        // Interactive hover — matches QuickCard style: lift + deeper shadow
+        interactive && [
+          "cursor-pointer",
+          "transition-all duration-200 ease-out",
+          "hover:-translate-y-0.5",
+          "hover:shadow-[0_4px_20px_rgba(62,47,42,0.09)]",
+        ],
+        className
       )}
       {...props}
     />
   )
+);
+Card.displayName = "Card";
+
+// ---------------------------------------------------------------------------
+// CardHeader
+// ---------------------------------------------------------------------------
+
+export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Renders a horizontal rule below the header */
+  divided?: boolean;
 }
 
-function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
+  ({ className, divided = false, ...props }, ref) => (
     <div
+      ref={ref}
       data-slot="card-header"
       className={cn(
-        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
-        className,
+        "flex flex-col gap-1",
+        // When the card has padding the header inherits it; the negative margin
+        // trick lets a divided header bleed edge-to-edge without extra wrappers.
+        divided && "pb-4 mb-2 border-b border-border/60",
+        className
       )}
       {...props}
     />
   )
-}
+);
+CardHeader.displayName = "CardHeader";
 
-function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
+// ---------------------------------------------------------------------------
+// CardTitle
+// ---------------------------------------------------------------------------
+
+const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
+  ({ className, ...props }, ref) => (
+    <h3
+      ref={ref}
       data-slot="card-title"
-      className={cn('leading-none font-semibold', className)}
+      className={cn("text-base font-semibold leading-snug text-foreground", className)}
       {...props}
     />
   )
-}
+);
+CardTitle.displayName = "CardTitle";
 
-function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
+// ---------------------------------------------------------------------------
+// CardDescription
+// ---------------------------------------------------------------------------
+
+const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
+  ({ className, ...props }, ref) => (
+    <p
+      ref={ref}
       data-slot="card-description"
-      className={cn('text-muted-foreground text-sm', className)}
+      className={cn("text-sm text-muted-foreground leading-normal", className)}
       {...props}
     />
   )
+);
+CardDescription.displayName = "CardDescription";
+
+// ---------------------------------------------------------------------------
+// CardAction  (top-right slot, e.g. a button or badge)
+// ---------------------------------------------------------------------------
+
+const CardAction = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      data-slot="card-action"
+      className={cn("ml-auto shrink-0 self-start", className)}
+      {...props}
+    />
+  )
+);
+CardAction.displayName = "CardAction";
+
+// ---------------------------------------------------------------------------
+// CardContent
+// ---------------------------------------------------------------------------
+
+const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      data-slot="card-content"
+      className={cn("flex-1", className)}
+      {...props}
+    />
+  )
+);
+CardContent.displayName = "CardContent";
+
+// ---------------------------------------------------------------------------
+// CardFooter
+// ---------------------------------------------------------------------------
+
+export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Renders a horizontal rule above the footer */
+  divided?: boolean;
 }
 
-function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
+  ({ className, divided = false, ...props }, ref) => (
     <div
-      data-slot="card-action"
+      ref={ref}
+      data-slot="card-footer"
       className={cn(
-        'col-start-2 row-span-2 row-start-1 self-start justify-self-end',
-        className,
+        "flex items-center gap-2",
+        divided && "pt-4 mt-2 border-t border-border/60",
+        className
       )}
       {...props}
     />
   )
-}
+);
+CardFooter.displayName = "CardFooter";
 
-function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      data-slot="card-content"
-      className={cn('px-6', className)}
-      {...props}
-    />
-  )
-}
-
-function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      data-slot="card-footer"
-      className={cn('flex items-center px-6 [.border-t]:pt-6', className)}
-      {...props}
-    />
-  )
-}
+// ---------------------------------------------------------------------------
+// Exports
+// ---------------------------------------------------------------------------
 
 export {
   Card,
   CardHeader,
-  CardFooter,
   CardTitle,
-  CardAction,
   CardDescription,
+  CardAction,
   CardContent,
-}
+  CardFooter,
+};
+
+export type { CardVariant, CardPadding };

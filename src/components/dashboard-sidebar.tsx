@@ -11,6 +11,7 @@ import {
   LogOut,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { t } from "@/lib/tokens"
 import { signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 
@@ -33,19 +34,12 @@ export function DashboardSidebar() {
 
   return (
     <aside
-      className={cn(
-        "hidden md:flex flex-col",
-        "w-[220px] shrink-0",
-        "m-3 rounded-[28px]",
-        "bg-card",
-        "shadow-[0_12px_40px_rgba(90,60,30,0.08)]",
-        "py-6 px-3",
-        "gap-1"
-      )}
+      className="hidden md:flex flex-col w-[220px] shrink-0 m-3 rounded-[28px] py-6 px-3 gap-1"
+      style={{ background: t.colors.component.card.bg, boxShadow: t.shadow.sidebar }}
     >
-      {/* Logo — plain bold text */}
+      {/* Logo */}
       <div className="px-4 mb-6">
-        <span className="text-2xl font-bold tracking-tight text-[#2E211C]">
+        <span className="text-2xl font-bold tracking-tight" style={{ color: t.colors.semantic.textStrong }}>
           hooma
         </span>
       </div>
@@ -60,19 +54,16 @@ export function DashboardSidebar() {
             <Link
               key={href}
               href={href}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-[18px]",
-                "text-sm font-medium",
-                "transition-all duration-200 ease-out",
-                isActive
-                  ? "bg-[#DFE1E0] text-[#3E2F2A] shadow-[0_2px_12px_rgba(62,47,42,0.08)]"
-                  : "text-[#7A655A] hover:bg-[#E4D9CC]/[0.4] hover:text-[#3E2F2A]"
-              )}
+              className="flex items-center gap-3 px-4 py-3 rounded-[18px] text-sm font-medium transition-all duration-200 ease-out"
+              style={isActive
+                ? { background: t.colors.semantic.navActiveBg, color: t.colors.semantic.navActiveFg, boxShadow: t.shadow.sm }
+                : { color: t.colors.semantic.textMuted }
+              }
             >
               <Icon
                 size={18}
                 strokeWidth={1.6}
-                className={isActive ? "text-[#3E2F2A]" : "text-[#A8998C]"}
+                style={{ color: isActive ? t.colors.semantic.navActiveFg : t.colors.semantic.textSubtle }}
               />
               <span>{label}</span>
             </Link>
@@ -84,19 +75,15 @@ export function DashboardSidebar() {
       <div className="flex-1" />
 
       {/* Divider */}
-      <div className="mx-3 border-t border-[#DDD4C4] mb-2" />
+      <div className="mx-3 border-t mb-2" style={{ borderColor: t.colors.semantic.divider }} />
 
       {/* Sign out */}
       <button
         onClick={handleSignOut}
-        className={cn(
-          "flex items-center gap-3 px-4 py-3 rounded-[18px] w-full",
-          "text-sm font-medium text-[#7A655A]",
-          "hover:bg-[#E4D9CC] hover:text-[#3E2F2A]",
-          "transition-all duration-200 ease-out cursor-pointer"
-        )}
+        className="flex items-center gap-3 px-4 py-3 rounded-[18px] w-full text-sm font-medium transition-all duration-200 ease-out cursor-pointer"
+        style={{ color: t.colors.semantic.textMuted }}
       >
-        <LogOut size={18} strokeWidth={1.6} className="text-[#A8998C]" />
+        <LogOut size={18} strokeWidth={1.6} style={{ color: t.colors.semantic.textSubtle }} />
         <span>Sign out</span>
       </button>
     </aside>
