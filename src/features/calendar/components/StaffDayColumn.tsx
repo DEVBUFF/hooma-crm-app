@@ -1,4 +1,5 @@
 import { t } from "@/lib/tokens"
+import { minutesSinceDayStart, diffMinutes } from "@/features/calendar/lib/time"
 import { BookingCard } from "@/features/calendar/components/BookingCard"
 import type { Booking, Staff } from "@/features/calendar/types"
 import {
@@ -11,29 +12,31 @@ import {
   TOTAL_HEIGHT,
 } from "@/features/calendar/lib/grid-config"
 
-const DAY_START_MINUTES = DAY_START_HOUR * 60
-const DAY_END_MINUTES   = DAY_END_HOUR   * 60
+const VISIBLE_MINUTES = (DAY_END_HOUR - DAY_START_HOUR) * 60
 
 /**
- * Returns the pixel position and height for a booking within the day grid.
- * Returns null if the booking falls entirely outside the visible day range.
+ * Compute pixel position and height for a booking within the visible day range.
+ *
+ * - top    = minutesSinceDayStart(startAt) * PX_PER_MINUTE  (clamped to 0)
+ * - height = max(visibleDurationMinutes * PX_PER_MINUTE, 22)
+ *
+ * Returns null when the booking falls entirely outside 08:00–20:00.
  */
 function getPosition(
   booking: Booking,
 ): { top: number; height: number } | null {
-  const startMin =
-    booking.startAt.getHours() * 60 + booking.startAt.getMinutes()
-  const endMin =
-    booking.endAt.getHours() * 60 + booking.endAt.getMinutes()
+  const startOffset = minutesSinceDayStart(booking.startAt, DAY_START_HOUR)
+  const endOffset   = minutesSinceDayStart(booking.endAt,   DAY_START_HOUR)
 
-  if (endMin <= DAY_START_MINUTES || startMin >= DAY_END_MINUTES) return null
+  // Entirely before day start or after day end → skip
+  if (endOffset <= 0 || startOffset >= VISIBLE_MINUTES) return null
 
-  const clampedStart = Math.max(startMin, DAY_START_MINUTES)
-  const clampedEnd   = Math.min(endMin,   DAY_END_MINUTES)
+  const clampedStart = Math.max(startOffset, 0)
+  const clampedEnd   = Math.min(endOffset, VISIBLE_MINUTES)
 
   return {
-    top:    (clampedStart - DAY_START_MINUTES) * PX_PER_MINUTE,
-    height: (clampedEnd   - clampedStart)      * PX_PER_MINUTE,
+    top:    clampedStart * PX_PER_MINUTE,
+    height: Math.max((clampedEnd - clampedStart) * PX_PER_MINUTE, 22),
   }
 }
 
@@ -51,14 +54,13 @@ export function StaffDayColumn({ staff, bookings }: StaffDayColumnProps) {
         flexShrink: 0,
         position: "relative",
         height: TOTAL_HEIGHT,
-        // Left border separates staff columns; matches the header cell border
         borderLeft: `1px solid ${t.colors.semantic.borderSubtle}`,
       }}
     >
       {/* ── Background grid lines ──────────────────────────────────────
-          Render one line per 15-min slot (SLOT_COUNT + 1 includes the bottom
-          boundary at TOTAL_HEIGHT). Hour lines use the divider token (slightly
-          stronger); quarter-hour lines use borderSubtle at reduced opacity.
+          49 lines spanning 08:00 → 20:00.
+          Every 4th line (hour boundary) uses the stronger divider token;
+          intermediate 15-min lines use borderSubtle at reduced opacity.
       ──────────────────────────────────────────────────────────────── */}
       {Array.from({ length: SLOT_COUNT + 1 }, (_, i) => {
         const isHour = i % 4 === 0
@@ -72,8 +74,8 @@ export function StaffDayColumn({ staff, bookings }: StaffDayColumnProps) {
               top: i * SLOT_HEIGHT,
               height: 1,
               background: isHour
-                ? t.colors.semantic.divider       // ~stronger — hour boundary
-                : t.colors.semantic.borderSubtle,  // subtle  — 15-min mark
+                ? t.colors.semantic.divider      // stronger — hour boundary
+                : t.colors.semantic.borderSubtle, // subtle   — 15-min mark
               opacity: isHour ? 1 : 0.55,
               pointerEvents: "none",
             }}
