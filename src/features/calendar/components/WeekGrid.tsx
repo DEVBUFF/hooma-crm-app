@@ -6,9 +6,6 @@ import { StaffDayColumn } from "@/features/calendar/components/StaffDayColumn"
 import { TimeGutter } from "@/features/calendar/components/TimeGutter"
 import type { Booking, Staff } from "@/features/calendar/types"
 
-/** px per hour — change here to scale the entire grid. */
-const HOUR_HEIGHT = 60
-
 interface WeekGridProps {
   staff: Staff[]
   bookings: Booking[]
@@ -16,26 +13,41 @@ interface WeekGridProps {
   weekEnd: Date
 }
 
+/**
+ * Layout strategy
+ * ───────────────
+ * The outer div is the single scroll container (overflow: auto — both axes).
+ *
+ * Sticky top  → StaffHeaderRow (owns its own position: sticky; top: 0)
+ *               Its internal corner cell is also position: sticky; left: 0,
+ *               so it pins to the top-left corner when scrolling either axis.
+ *
+ * Sticky left → TimeGutter (position: sticky; left: 0 within the body row)
+ *               Stays visible while scrolling horizontally through staff cols.
+ *
+ * All widths are explicit (GUTTER_WIDTH + n × COLUMN_WIDTH) so the container
+ * can grow a scrollbar when staff columns exceed the viewport.
+ */
 export function WeekGrid({ staff, bookings, weekStart, weekEnd }: WeekGridProps) {
   return (
     <div
-      className="overflow-auto"
       style={{
-        background: t.colors.semantic.panel,
-        borderRadius: t.radius.xl,
+        overflow: "auto",
+        maxHeight: "calc(100vh - 160px)",
+        borderRadius: t.radius["2xl"],
         boxShadow: t.shadow.card,
         border: `1px solid ${t.colors.semantic.borderSubtle}`,
-        maxHeight: "calc(100vh - 160px)",
+        background: t.colors.semantic.panel,
+        // Needed so the child sticky elements have a well-defined scroll root
+        position: "relative",
       }}
     >
-      {/* Sticky staff-name header */}
-      <div style={{ position: "sticky", top: 0, zIndex: t.zIndex.sticky }}>
-        <StaffHeaderRow staff={staff} />
-      </div>
+      {/* ── Sticky header: staff names ─────────────────────────────── */}
+      <StaffHeaderRow staff={staff} />
 
-      {/* Scrollable body: time gutter + one column per staff member */}
-      <div className="flex">
-        <TimeGutter hourHeight={HOUR_HEIGHT} />
+      {/* ── Body: time gutter + staff columns ──────────────────────── */}
+      <div style={{ display: "flex" }}>
+        <TimeGutter />
 
         {staff.map((s) => (
           <StaffDayColumn
@@ -47,7 +59,6 @@ export function WeekGrid({ staff, bookings, weekStart, weekEnd }: WeekGridProps)
                 b.startAt >= weekStart &&
                 b.startAt <= weekEnd,
             )}
-            hourHeight={HOUR_HEIGHT}
           />
         ))}
       </div>
