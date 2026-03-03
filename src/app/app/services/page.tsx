@@ -110,7 +110,7 @@ export default function ServicesPage() {
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5"
           style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
           onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLgHover }}
           onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLg }}
@@ -175,14 +175,14 @@ export default function ServicesPage() {
             <button
               onClick={addService}
               disabled={!name.trim()}
-              className="px-6 py-2.5 rounded-full text-sm font-semibold disabled:opacity-40 cursor-pointer transition-colors"
+              className="px-6 py-2.5 rounded-lg text-sm font-semibold disabled:opacity-40 cursor-pointer transition-colors"
               style={{ background: t.colors.semantic.primary, color: "#fff" }}
             >
               Add service
             </button>
             <button
               onClick={() => setShowForm(false)}
-              className="px-6 py-2.5 rounded-full text-sm font-medium cursor-pointer transition-colors"
+              className="px-6 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-colors"
               style={{ background: t.colors.semantic.bg, color: t.colors.semantic.textMuted }}
             >
               Cancel
@@ -213,7 +213,7 @@ export default function ServicesPage() {
           </div>
           <button
             onClick={() => setShowForm(true)}
-            className="mt-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all cursor-pointer"
+            className="mt-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer"
             style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
           >
             Add your first service
@@ -243,7 +243,7 @@ export default function ServicesPage() {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => saveEdit(service.id)}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold cursor-pointer transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
                     style={{ background: t.colors.semantic.successAccent, color: "#fff" }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.successAccentHover }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.successAccent }}
@@ -251,7 +251,7 @@ export default function ServicesPage() {
                     <Check size={13} /> Save
                   </button>
                   <button onClick={() => setEditingId(null)}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium cursor-pointer transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium cursor-pointer transition-colors"
                     style={{ background: t.colors.semantic.bg, color: t.colors.semantic.textMuted }}
                   >
                     <X size={13} /> Cancel
@@ -267,7 +267,7 @@ export default function ServicesPage() {
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.sm }}
               >
                 <div
-                  className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                   style={{ background: t.colors.semantic.accentTint }}
                 >
                   <Sparkles size={16} strokeWidth={1.8} style={{ color: t.colors.semantic.primary }} />
@@ -284,7 +284,7 @@ export default function ServicesPage() {
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button onClick={() => startEdit(service)}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
                     style={{ background: t.colors.semantic.bg }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.surfaceHover }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}
@@ -292,7 +292,7 @@ export default function ServicesPage() {
                     <Pencil size={13} style={{ color: t.colors.semantic.textMuted }} />
                   </button>
                   <button onClick={() => removeService(service.id)}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
                     style={{ background: t.colors.semantic.bg }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.errorBg }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}

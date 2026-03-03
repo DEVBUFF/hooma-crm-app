@@ -292,7 +292,7 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
           <button
             type="submit"
             disabled={!name || !salonName || !email}
-            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 mt-2 rounded-full font-bold text-sm transition-all duration-200 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 mt-2 rounded-lg font-bold text-sm transition-all duration-200 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primary }}
             onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryHover }}
             onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primary }}
@@ -399,7 +399,7 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
               type="button"
               onClick={() => setStep("info")}
               disabled={isLoading}
-              className="flex items-center justify-center gap-1.5 py-3.5 px-4 rounded-full text-sm font-semibold transition-colors cursor-pointer disabled:opacity-40"
+              className="flex items-center justify-center gap-1.5 py-3.5 px-4 rounded-lg text-sm font-semibold transition-colors cursor-pointer disabled:opacity-40"
               style={{ background: t.colors.semantic.surface, color: t.colors.semantic.textMuted }}
               onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.surfaceHover }}
               onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.surface }}
@@ -409,7 +409,7 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
             <button
               type="submit"
               disabled={isLoading || !password}
-              className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-full font-bold text-sm transition-all duration-200 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-lg font-bold text-sm transition-all duration-200 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primary }}
               onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryHover }}
               onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primary }}

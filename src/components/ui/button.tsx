@@ -16,7 +16,7 @@ const buttonVariants = cva(
   [
     "inline-flex items-center justify-center gap-2",
     "whitespace-nowrap font-semibold text-sm leading-none",
-    "rounded-full",                             // soft-pill look from the login screen
+    "rounded-lg",                               // Apple-style: subtle rounded, not pill
     "transition-all duration-[180ms] ease-[cubic-bezier(0.2,0.0,0.0,1.0)]",
     "active:scale-[0.98]",
     "select-none shrink-0",
@@ -33,12 +33,12 @@ const buttonVariants = cva(
       // visual style
       // ------------------------------------------------------------------
       variant: {
-        /** Calm-blue filled — primary CTA (matches login Continue / Sign in) */
+        /** Blue filled — primary CTA (Apple style) */
         primary:
-          "bg-primary text-primary-foreground shadow-[0_2px_8px_rgba(127,166,201,0.25)] " +
-          "hover:bg-[color-mix(in_srgb,var(--color-primary)_85%,black)] hover:shadow-[0_4px_16px_rgba(127,166,201,0.35)]",
+          "bg-primary text-primary-foreground shadow-[0_1px_4px_rgba(0,113,227,0.20)] " +
+          "hover:bg-[color-mix(in_srgb,var(--color-primary)_85%,black)] hover:shadow-[0_2px_8px_rgba(0,113,227,0.30)]",
 
-        /** Sage-green filled — secondary CTA */
+        /** Green filled — secondary CTA */
         secondary:
           "bg-secondary text-secondary-foreground " +
           "hover:bg-[color-mix(in_srgb,var(--color-secondary)_85%,black)]",
@@ -53,10 +53,10 @@ const buttonVariants = cva(
           "border border-border bg-transparent text-foreground " +
           "hover:bg-muted hover:border-[color-mix(in_srgb,var(--color-border)_70%,black)]",
 
-        /** Terra / coral accent — matches the calendar "Book" button */
+        /** Accent orange — matches the calendar "Book" button */
         accent:
-          "bg-[var(--terra)] text-white shadow-[0_1px_6px_rgba(201,123,99,0.2)] " +
-          "hover:bg-[color-mix(in_srgb,var(--terra)_85%,black)] hover:shadow-[0_2px_10px_rgba(201,123,99,0.3)]",
+          "bg-[var(--terra)] text-white shadow-[0_1px_4px_rgba(255,107,61,0.20)] " +
+          "hover:bg-[color-mix(in_srgb,var(--terra)_85%,black)] hover:shadow-[0_2px_8px_rgba(255,107,61,0.30)]",
 
         /** Destructive */
         destructive:
@@ -69,9 +69,11 @@ const buttonVariants = cva(
       // size
       // ------------------------------------------------------------------
       size: {
-        sm:  "h-8  px-4  text-[11px] gap-1.5",
-        md:  "h-10 px-5  text-sm",
-        lg:  "h-12 px-7  text-base",
+        sm:      "h-8  px-4  text-[11px] gap-1.5",
+        default: "h-10 px-5  text-sm",
+        md:      "h-10 px-5  text-sm",
+        lg:      "h-12 px-7  text-base",
+        icon:    "h-9  w-9  p-0",
       },
 
       // ------------------------------------------------------------------

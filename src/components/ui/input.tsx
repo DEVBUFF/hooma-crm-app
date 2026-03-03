@@ -87,27 +87,27 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               // Layout & spacing
               "w-full min-w-0 py-3.5 text-sm font-medium",
               leftIcon ? "pl-11 pr-5" : "px-5",
-              // Shape — matches radius.md (14 px) from the design tokens
-              "rounded-[14px]",
+              // Shape — Apple-style subtle rounding
+              "rounded-lg",
               // Colours
               "bg-[--color-input] text-foreground",
               "placeholder:text-[color:var(--color-muted-foreground)]",
               "selection:bg-primary/20 selection:text-foreground",
               // Border — subtle by default
-              "border border-[rgba(229,218,203,0.60)]",
+              "border border-border/60",
               // Transitions
               "transition-[background-color,border-color,box-shadow] duration-[180ms] ease-[cubic-bezier(0.2,0.0,0.0,1.0)]",
               // Remove default browser outline — we supply our own ring
               "outline-none",
-              // Focus: primary-tint ring, slightly brighter bg
+              // Focus: primary ring, clean white bg
               "focus:bg-[--color-popover]",
-              "focus:border-[rgba(127,166,201,0.55)]",
-              "focus:shadow-[0_0_0_3px_rgba(127,166,201,0.15)]",
+              "focus:border-[rgba(0,113,227,0.50)]",
+              "focus:shadow-[0_0_0_3px_rgba(0,113,227,0.12)]",
               // Error state: red border + red ring on focus
               hasError && [
-                "border-[rgba(196,96,90,0.60)]",
+                "border-destructive/60",
                 "focus:border-destructive/60",
-                "focus:shadow-[0_0_0_3px_rgba(196,96,90,0.12)]",
+                "focus:shadow-[0_0_0_3px_rgba(255,59,48,0.12)]",
               ],
               // Disabled
               "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",

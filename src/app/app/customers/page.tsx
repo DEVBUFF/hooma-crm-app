@@ -194,13 +194,13 @@ export default function CustomersPage() {
               <div className="flex items-center gap-1.5">
                 <Link
                   href={`/app/customers/${c.id}`}
-                  className="w-8 h-8 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all bg-[--color-muted] hover:bg-[--color-input]"
+                  className="w-8 h-8 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all bg-[--color-muted] hover:bg-[--color-input]"
                 >
                   <ChevronRight size={14} className="text-muted-foreground" />
                 </Link>
                 <button
                   onClick={() => removeCustomer(c.id)}
-                  className="w-8 h-8 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all bg-[--color-muted] hover:bg-destructive/10"
+                  className="w-8 h-8 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all bg-[--color-muted] hover:bg-destructive/10"
                 >
                   <Trash2 size={13} className="text-destructive" />
                 </button>

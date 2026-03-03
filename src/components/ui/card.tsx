@@ -10,28 +10,28 @@ import { cn } from "@/lib/utils";
 // ---------------------------------------------------------------------------
 
 // Variant → visual recipe
-// "default"  — standard dashboard card  (bg-card, token shadow sm)
-// "elevated" — hero / featured card     (bg-card, token shadow cardElevated)
-// "auth"     — login / register panel   (bg-card + backdrop-blur, authCard shadow, subtle border)
+// "default"  — standard dashboard card  (bg-card, minimal shadow)
+// "elevated" — hero / featured card     (bg-card, deeper shadow)
+// "auth"     — login / register panel   (bg-card + backdrop-blur, auth shadow, subtle border)
 const VARIANT_CLASSES = {
   default:
     "bg-card text-card-foreground " +
-    "border border-[rgba(229,218,203,0.60)] " +
-    "shadow-[0_2px_12px_rgba(62,47,42,0.07)] " +
-    "rounded-[var(--radius-xl)]",               // radius.xl = calc(var(--radius) + 8px) = ~32 px
+    "border border-border/40 " +
+    "shadow-[0_0_0_1px_rgba(0,0,0,0.04)] " +
+    "rounded-xl",
 
   elevated:
     "bg-card text-card-foreground " +
-    "border border-[rgba(229,218,203,0.60)] " +
-    "shadow-[0_12px_40px_rgba(90,60,30,0.08)] " +
-    "rounded-[var(--radius-xl)]",
+    "border border-border/40 " +
+    "shadow-[0_4px_24px_rgba(0,0,0,0.08)] " +
+    "rounded-xl",
 
   auth:
     "bg-card text-card-foreground " +
     "backdrop-blur-2xl " +
-    "border border-[rgba(229,218,203,0.60)] " +
-    "shadow-[0_8px_40px_rgba(46,33,28,0.12),0_2px_10px_rgba(46,33,28,0.06)] " +
-    "rounded-[var(--radius-2xl,28px)]",         // radius.2xl = 28 px
+    "border border-border/40 " +
+    "shadow-[0_4px_24px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] " +
+    "rounded-xl",
 } as const;
 
 // Padding → spacing applied to Card itself (overridable per-slot via className)
@@ -94,7 +94,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           "cursor-pointer",
           "transition-all duration-200 ease-out",
           "hover:-translate-y-0.5",
-          "hover:shadow-[0_4px_20px_rgba(62,47,42,0.09)]",
+          "hover:shadow-[0_2px_12px_rgba(0,0,0,0.08)]",
         ],
         className
       )}

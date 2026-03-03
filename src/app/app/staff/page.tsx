@@ -184,7 +184,7 @@ export default function StaffPage() {
                   <p className="font-semibold text-sm text-foreground">{s.name}</p>
                   {s.phone && <p className="text-xs text-muted-foreground">{s.phone}</p>}
                   <span
-                    className="inline-block mt-1.5 text-[10px] font-semibold px-2.5 py-0.5 rounded-full capitalize"
+                    className="inline-block mt-1.5 text-[10px] font-semibold px-2.5 py-0.5 rounded-md capitalize"
                     style={roleStyle[s.role]}
                   >
                     {s.role}
@@ -198,7 +198,7 @@ export default function StaffPage() {
                 style={{ borderColor: `${t.colors.semantic.divider}99` }}
               >
                 <button onClick={() => toggleActive(s)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-medium cursor-pointer transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors"
                   style={{ background: t.colors.semantic.bg, color: t.colors.semantic.textMuted }}
                 >
                   {s.isActive
@@ -208,7 +208,7 @@ export default function StaffPage() {
                   {s.isActive ? "Active" : "Inactive"}
                 </button>
                 <button onClick={() => removeStaff(s.id)}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
                   style={{ background: t.colors.semantic.bg }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.errorBg }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}

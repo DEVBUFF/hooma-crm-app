@@ -62,7 +62,7 @@ export function SocialButton({ provider, onClick }: SocialButtonProps) {
       variant="outline"
       fullWidth
       onClick={onClick}
-      className="gap-3 py-4 h-auto font-semibold tracking-wide bg-[--color-input] hover:bg-[--color-popover] border-[rgba(229,218,203,0.60)] text-foreground rounded-full"
+      className="gap-3 py-4 h-auto font-semibold tracking-wide bg-[--color-input] hover:bg-[--color-muted] border-border/60 text-foreground rounded-lg"
     >
       {icon}
       <span>{label}</span>

@@ -34,8 +34,8 @@ export function DashboardSidebar() {
 
   return (
     <aside
-      className="hidden md:flex flex-col w-[220px] shrink-0 m-3 rounded-[28px] py-6 px-3 gap-1"
-      style={{ background: t.colors.component.card.bg, boxShadow: t.shadow.sidebar }}
+      className="hidden md:flex flex-col w-[220px] shrink-0 py-6 px-3 gap-1 border-r"
+      style={{ background: t.colors.component.card.bg, borderColor: t.colors.semantic.borderSubtle }}
     >
       {/* Logo */}
       <div className="px-4 mb-6">
@@ -54,7 +54,7 @@ export function DashboardSidebar() {
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-3 px-4 py-3 rounded-[18px] text-sm font-medium transition-all duration-200 ease-out"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-out"
               style={isActive
                 ? { background: t.colors.semantic.navActiveBg, color: t.colors.semantic.navActiveFg, boxShadow: t.shadow.sm }
                 : { color: t.colors.semantic.textMuted }
@@ -80,7 +80,7 @@ export function DashboardSidebar() {
       {/* Sign out */}
       <button
         onClick={handleSignOut}
-        className="flex items-center gap-3 px-4 py-3 rounded-[18px] w-full text-sm font-medium transition-all duration-200 ease-out cursor-pointer"
+        className="flex items-center gap-3 px-4 py-3 rounded-lg w-full text-sm font-medium transition-all duration-200 ease-out cursor-pointer"
         style={{ color: t.colors.semantic.textMuted }}
       >
         <LogOut size={18} strokeWidth={1.6} style={{ color: t.colors.semantic.textSubtle }} />

@@ -31,8 +31,8 @@ export function DashboardTopbar() {
 
   return (
     <header
-      className="flex items-center justify-between px-6 py-4 rounded-[28px] m-3 mb-0"
-      style={{ background: t.colors.component.card.bg, boxShadow: t.shadow.topbar }}
+      className="flex items-center justify-between px-6 py-4 border-b"
+      style={{ background: t.colors.component.card.bg, borderColor: t.colors.semantic.borderSubtle }}
     >
       <h1 className="text-xl font-semibold tracking-tight" style={{ color: t.colors.semantic.text }}>
         {title}

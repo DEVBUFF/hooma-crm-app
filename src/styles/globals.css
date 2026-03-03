@@ -5,56 +5,56 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Hooma brand palette */
-  --background: #F3E8DA;
+  /* Apple-inspired palette */
+  --background: #f5f5f7;
   --background-image:
     radial-gradient(
       circle at 50% -15%,
-      rgba(255, 255, 255, 0.35) 0%,
-      rgba(255, 255, 255, 0.15) 25%,
-      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.50) 0%,
+      rgba(255, 255, 255, 0.25) 25%,
+      rgba(255, 255, 255, 0.08) 40%,
       rgba(255, 255, 255, 0) 70%
     );
-  --foreground: #3E2F2A;
-  --card: #E5DACA;
-  --card-foreground: #3E2F2A;
-  --popover: #EDE4D8;
-  --popover-foreground: #3E2F2A;
-  --primary: #7FA6C9;
-  --primary-foreground: #FFFFFF;
-  --secondary: #A8BBA3;
-  --secondary-foreground: #3E2F2A;
-  --muted: #E8DFD0;
-  --muted-foreground: #7A655A;
-  --accent: #7FA6C9;
-  --accent-foreground: #3E2F2A;
-  --destructive: #C4605A;
-  --destructive-foreground: #FFFFFF;
-  --border: #DDD4C4;
-  --input: #EDE4D8;
-  --ring: #7FA6C9;
-  --chart-1: #A8BBA3;
-  --chart-2: #7FA6C9;
-  --chart-3: #E6A58F;
-  --chart-4: #C97B63;
-  --chart-5: #E8DDD0;
-  --radius: 1.5rem;
-  --sidebar: #F5EEE2;
-  --sidebar-foreground: #3E2F2A;
-  --sidebar-primary: #7FA6C9;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #DDD0BF;
-  --sidebar-accent-foreground: #3E2F2A;
-  --sidebar-border: #DDD4C4;
-  --sidebar-ring: #7FA6C9;
+  --foreground: #1d1d1f;
+  --card: #ffffff;
+  --card-foreground: #1d1d1f;
+  --popover: #ffffff;
+  --popover-foreground: #1d1d1f;
+  --primary: #0071e3;
+  --primary-foreground: #ffffff;
+  --secondary: #34c759;
+  --secondary-foreground: #ffffff;
+  --muted: #f5f5f7;
+  --muted-foreground: #86868b;
+  --accent: #0071e3;
+  --accent-foreground: #ffffff;
+  --destructive: #ff3b30;
+  --destructive-foreground: #ffffff;
+  --border: #d2d2d7;
+  --input: #ffffff;
+  --ring: #0071e3;
+  --chart-1: #34c759;
+  --chart-2: #0071e3;
+  --chart-3: #ff9500;
+  --chart-4: #ff3b30;
+  --chart-5: #af52de;
+  --radius: 0.5rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1d1d1f;
+  --sidebar-primary: #0071e3;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8e8ed;
+  --sidebar-accent-foreground: #1d1d1f;
+  --sidebar-border: #d2d2d7;
+  --sidebar-ring: #0071e3;
 
-  --box-shadow: 0 12px 40px rgba(90, 60, 30, 0.08);
+  --box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 
-  /* Hooma semantic extras */
-  --sage: #A8BBA3;
-  --calm-blue: #7FA6C9;
-  --dusty-peach: #E6A58F;
-  --terra: #C97B63;}
+  /* Semantic extras */
+  --sage: #34c759;
+  --calm-blue: #0071e3;
+  --dusty-peach: #ff9500;
+  --terra: #ff6b3d;}
 
 @theme inline {
   --font-sans: '-apple-system', 'SF Pro Rounded', system-ui, sans-serif;
@@ -107,16 +107,6 @@
   }
 }
 
-/* Subtle grain texture overlay for warm SaaS feel */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.022;
-  mix-blend-mode: multiply;
-}
+
 
 

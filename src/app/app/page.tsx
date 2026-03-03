@@ -96,7 +96,7 @@ function QuickCard({
         className="flex-row items-center gap-4 p-5"
       >
         <div
-          className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
           style={{ background: accentBg }}
         >
           {icon}

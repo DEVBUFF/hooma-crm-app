@@ -21,27 +21,26 @@ export function BackgroundShapes() {
       const w = window.innerWidth
       const h = window.innerHeight
 
-      // Fill base
-      ctx.fillStyle = "#F5EFE6"
+      // Fill base — clean Apple-style light gray
+      ctx.fillStyle = "#f5f5f7"
       ctx.fillRect(0, 0, w, h)
 
       // Blob configs: [x%, y%, radiusMultiplier, color]
       const blobs: [number, number, number, string][] = [
-        // Blue blobs - dominant
-        [0.15, 0.2, 0.38, "rgba(127, 166, 201, 0.55)"],
-        [0.75, 0.15, 0.32, "rgba(127, 166, 201, 0.45)"],
-        [0.5, 0.7, 0.42, "rgba(127, 166, 201, 0.5)"],
-        [0.85, 0.65, 0.28, "rgba(127, 166, 201, 0.4)"],
-        [0.3, 0.85, 0.3, "rgba(127, 166, 201, 0.35)"],
-        // Sage green
-        [0.6, 0.35, 0.3, "rgba(168, 187, 163, 0.45)"],
-        [0.1, 0.6, 0.26, "rgba(168, 187, 163, 0.4)"],
-        // Peach / warm
-        [0.4, 0.15, 0.24, "rgba(230, 165, 143, 0.35)"],
-        [0.8, 0.45, 0.22, "rgba(201, 123, 99, 0.3)"],
-        // Lavender
-        [0.25, 0.5, 0.26, "rgba(201, 183, 217, 0.35)"],
-        [0.65, 0.85, 0.2, "rgba(201, 183, 217, 0.3)"],
+        // Subtle blue blobs
+        [0.15, 0.2, 0.40, "rgba(0, 113, 227, 0.04)"],
+        [0.75, 0.15, 0.35, "rgba(0, 113, 227, 0.03)"],
+        [0.5, 0.7, 0.45, "rgba(0, 122, 255, 0.04)"],
+        [0.85, 0.65, 0.30, "rgba(0, 113, 227, 0.03)"],
+        // Subtle purple
+        [0.3, 0.85, 0.32, "rgba(175, 82, 222, 0.03)"],
+        [0.25, 0.5, 0.28, "rgba(175, 82, 222, 0.02)"],
+        // Subtle green
+        [0.6, 0.35, 0.32, "rgba(52, 199, 89, 0.03)"],
+        [0.1, 0.6, 0.28, "rgba(52, 199, 89, 0.02)"],
+        // Warm white highlights
+        [0.4, 0.15, 0.26, "rgba(255, 255, 255, 0.50)"],
+        [0.8, 0.45, 0.24, "rgba(255, 255, 255, 0.40)"],
       ]
 
       const baseRadius = Math.min(w, h) * 0.5
@@ -53,7 +52,7 @@ export function BackgroundShapes() {
 
         const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, r)
         gradient.addColorStop(0, color)
-        gradient.addColorStop(1, "rgba(245, 239, 230, 0)")
+        gradient.addColorStop(1, "rgba(245, 245, 247, 0)")
 
         ctx.fillStyle = gradient
         ctx.beginPath()
