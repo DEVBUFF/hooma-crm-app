@@ -3,7 +3,7 @@ import { DashboardTopbar } from "@/components/dashboard-topbar"
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen bg-background bg-background-image overflow-hidden">
+    <div className="flex h-screen bg-background-image overflow-hidden" style={{ backgroundColor: "#F0EEE5" }}>
       {/* Left sidebar */}
       <DashboardSidebar />
 

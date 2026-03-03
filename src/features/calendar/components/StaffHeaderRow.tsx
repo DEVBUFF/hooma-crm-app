@@ -1,5 +1,5 @@
 import { t } from "@/lib/tokens"
-import { GUTTER_WIDTH, COLUMN_WIDTH } from "@/features/calendar/lib/grid-config"
+import { GUTTER_WIDTH } from "@/features/calendar/lib/grid-config"
 import type { Staff } from "@/features/calendar/types"
 
 interface StaffHeaderRowProps {
@@ -19,21 +19,21 @@ interface StaffHeaderRowProps {
  * over the grid content that scrolls behind the header.
  */
 export function StaffHeaderRow({ staff }: StaffHeaderRowProps) {
-  // Semi-transparent variant of card.bg for the frosted-glass effect.
-  // "e0" hex suffix = ~88 % opacity so backdrop-filter blur shows through.
-  const headerBg = t.colors.component.card.bg + "e0"
-
   return (
     <div
       style={{
         position: "sticky",
         top: 0,
-        zIndex: t.zIndex.sticky, // 10 — above TimeGutter (5) and body content (0)
+        // z-index 12: above TimeGutter (9), now-line (8), ghost (7), body (0)
+        zIndex: t.zIndex.sticky + 2,
         display: "flex",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
-        background: headerBg,
+        // Solid background prevents grid content from showing through on scroll
+        background: t.colors.semantic.panel,
         borderBottom: `1px solid ${t.colors.semantic.border}`,
+        // Force GPU compositing so the sticky row never becomes translucent
+        isolation: "isolate",
+        transform: "translateZ(0)",
+        willChange: "transform",
       }}
     >
       {/* Corner cell: pins to the top-left when scrolling both axes */}
@@ -43,11 +43,9 @@ export function StaffHeaderRow({ staff }: StaffHeaderRowProps) {
           flexShrink: 0,
           position: "sticky",
           left: 0,
-          // Solid background so scrolled grid content doesn't show through
-          background: t.colors.component.card.bg,
+          background: t.colors.semantic.panel,
           borderRight: `1px solid ${t.colors.semantic.border}`,
-          // Raise above sibling staff cells so it covers them when scrolling right
-          zIndex: 1,
+          zIndex: 2,
         }}
       />
 
@@ -56,13 +54,13 @@ export function StaffHeaderRow({ staff }: StaffHeaderRowProps) {
         <div
           key={s.id}
           style={{
-            width: COLUMN_WIDTH,
-            flexShrink: 0,
+            flex: 1,
+            minWidth: 0,
             display: "flex",
             alignItems: "center",
             gap: 8,
             padding: "10px 14px",
-            borderLeft: `1px solid ${t.colors.semantic.borderSubtle}`,
+            borderLeft: `1px solid ${t.colors.semantic.divider}`,
           }}
         >
           {/* Staff color dot */}

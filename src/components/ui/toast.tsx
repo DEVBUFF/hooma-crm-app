@@ -26,7 +26,7 @@ interface VariantConfig {
 const VARIANTS: Record<ToastVariant, VariantConfig> = {
   success: {
     wrapperClass:
-      'bg-[#F5EEE4] border-[rgba(168,187,163,0.45)] text-[#3E2F2A]',
+      'bg-card border-[rgba(168,187,163,0.45)] text-[#3E2F2A]',
     accentClass: 'bg-[#A8BBA3]',
     icon: (
       <CheckCircle2
@@ -39,7 +39,7 @@ const VARIANTS: Record<ToastVariant, VariantConfig> = {
   },
   error: {
     wrapperClass:
-      'bg-[#F5EEE4] border-[rgba(196,96,90,0.35)] text-[#3E2F2A]',
+      'bg-card border-[rgba(196,96,90,0.35)] text-[#3E2F2A]',
     accentClass: 'bg-[#C4605A]',
     icon: (
       <XCircle
@@ -52,7 +52,7 @@ const VARIANTS: Record<ToastVariant, VariantConfig> = {
   },
   info: {
     wrapperClass:
-      'bg-[#F5EEE4] border-[rgba(127,166,201,0.40)] text-[#3E2F2A]',
+      'bg-card border-[rgba(127,166,201,0.40)] text-[#3E2F2A]',
     accentClass: 'bg-[#7FA6C9]',
     icon: (
       <Info

@@ -1,25 +1,121 @@
 "use client"
 
-import { useEffect, useRef, useState, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { t } from "@/lib/tokens"
 import { StaffHeaderRow } from "@/features/calendar/components/StaffHeaderRow"
 import { StaffDayColumn } from "@/features/calendar/components/StaffDayColumn"
 import { TimeGutter } from "@/features/calendar/components/TimeGutter"
-import type { Booking, Staff } from "@/features/calendar/types"
+import {
+  snapMinutes,
+  minutesSinceDayStart,
+  diffMinutes,
+  clampDragPreserveDuration,
+} from "@/features/calendar/lib/time"
+import { useToast } from "@/components/ui/use-toast"
+import type { Booking, BookingStatus, Staff } from "@/features/calendar/types"
 import {
   DAY_START_HOUR,
-  PX_PER_MINUTE,
+  DAY_END_HOUR,
+  SLOT_MINUTES,
+  GUTTER_WIDTH,
   minutesToPx,
 } from "@/features/calendar/lib/grid-config"
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+interface GhostState {
+  bookingId:   string
+  staffId:     string
+  startAt:     Date
+  endAt:       Date
+  hasConflict: boolean
+}
+
+interface DragState {
+  mode:          "drag" | "resize-bottom"
+  bookingId:     string
+  staffId:       string
+  startAt:       Date
+  endAt:         Date
+  pointerStartX: number
+  pointerStartY: number
+}
+
+// ---------------------------------------------------------------------------
+// Module-level helpers
+// ---------------------------------------------------------------------------
+
+/** Returns true when the candidate slot overlaps any existing booking for
+ *  the same staff member, excluding the booking being moved. */
+function hasConflict(
+  bookings: Booking[],
+  excludeId: string,
+  staffId:   string,
+  startAt:   Date,
+  endAt:     Date,
+): boolean {
+  return bookings.some(
+    (b) =>
+      b.id !== excludeId &&
+      b.staffId === staffId &&
+      b.startAt < endAt &&
+      b.endAt   > startAt,
+  )
+}
+
+/**
+ * Edge-triggered auto-scroll driven by rAF.
+ * Scrolls when the pointer is within EDGE_PX of any container boundary.
+ * Stops automatically when dragRef becomes null.
+ */
+const EDGE_PX   = 48
+const MAX_SPEED = 18
+
+function scheduleAutoScroll(
+  rafRef:     React.MutableRefObject<number | null>,
+  scrollRef:  React.MutableRefObject<HTMLDivElement | null>,
+  dragRef:    React.MutableRefObject<DragState | null>,
+  pointerRef: React.MutableRefObject<{ x: number; y: number }>,
+): void {
+  if (rafRef.current !== null) return
+
+  function frame() {
+    const el = scrollRef.current
+    if (!el || dragRef.current === null) {
+      rafRef.current = null
+      return
+    }
+
+    const rect = el.getBoundingClientRect()
+    const { x: px, y: py } = pointerRef.current
+
+    const topDist  = py - rect.top
+    const botDist  = rect.bottom - py
+    let dy = 0
+    if (topDist < EDGE_PX && topDist >= 0) dy = -MAX_SPEED * (1 - topDist / EDGE_PX)
+    if (botDist < EDGE_PX && botDist >= 0) dy =  MAX_SPEED * (1 - botDist / EDGE_PX)
+
+    const leftDist  = px - rect.left
+    const rightDist = rect.right - px
+    let dx = 0
+    if (leftDist  < EDGE_PX && leftDist  >= 0) dx = -MAX_SPEED * (1 - leftDist  / EDGE_PX)
+    if (rightDist < EDGE_PX && rightDist >= 0) dx =  MAX_SPEED * (1 - rightDist / EDGE_PX)
+
+    if (dy !== 0) el.scrollTop  = Math.max(0, Math.min(el.scrollTop  + dy, el.scrollHeight - el.clientHeight))
+    if (dx !== 0) el.scrollLeft = Math.max(0, Math.min(el.scrollLeft + dx, el.scrollWidth  - el.clientWidth))
+
+    rafRef.current = requestAnimationFrame(frame)
+  }
+
+  rafRef.current = requestAnimationFrame(frame)
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Derives a CSS box-shadow glow string from a hex token color.
- * Avoids hardcoding rgba values independently of the token.
- */
 function hexGlow(hex: string, alpha = 0.35, spread = 6): string {
   const r = parseInt(hex.slice(1, 3), 16)
   const g = parseInt(hex.slice(3, 5), 16)
@@ -28,76 +124,440 @@ function hexGlow(hex: string, alpha = 0.35, spread = 6): string {
 }
 
 // ---------------------------------------------------------------------------
-// Component
+// Props
 // ---------------------------------------------------------------------------
 
 interface WeekGridProps {
-  staff: Staff[]
-  bookings: Booking[]
-  weekStart: Date
-  weekEnd: Date
+  staff:      Staff[]
+  bookings:   Booking[]
+  weekStart:  Date
+  weekEnd:    Date
+  pxPerMinute: number
+  onColumnClick:   (staff: Staff, startAt: Date) => void
+  onUpdateBooking: (id: string, updates: { staffId: string; startAt: Date; endAt: Date }) => void
+  onStatusChange:  (id: string, status: BookingStatus) => void
 }
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 /**
  * Layout strategy
  * ───────────────
- * The outer div (scrollRef) is the single scroll container (overflow: auto).
+ * One `overflow: auto` container scrolls both axes.
  *
- * Sticky top  → StaffHeaderRow (position: sticky; top: 0; z-index: 10)
- *               Corner cell inside it is also sticky left: 0.
+ * Sticky top  → StaffHeaderRow   (z-index: 12)
+ * Sticky left → TimeGutter       (z-index: 9)
+ * Now line    → z-index 8 (inside staff-columns wrapper)
+ * Ghost       → z-index 7 (inside StaffDayColumn)
  *
- * Sticky left → TimeGutter (position: sticky; left: 0; z-index: 5)
+ * Drag / resize use document-level pointer + keydown listeners.
+ * All mutable values consumed in those closures live in refs.
  *
- * Now line    → Absolutely positioned inside the staff-columns wrapper
- *               (position: relative) so it spans all staff columns but not
- *               the TimeGutter. z-index: 8 — above grid lines and cards,
- *               below the sticky header.
- *
- * Auto-scroll → On mount and on week change, scrollTop is set to
- *               (now − 60 min) if today is in the visible week, else 0.
+ * Snap & jitter
+ * ─────────────
+ * Movement is snapped to the nearest absolute 15-min boundary so bookings
+ * always land on :00/:15/:30/:45. Ghost state is only updated when the
+ * snapped position or target column actually changes (lastSnappedRef key).
  */
-export function WeekGrid({ staff, bookings, weekStart, weekEnd }: WeekGridProps) {
-  const scrollRef = useRef<HTMLDivElement>(null)
+export function WeekGrid({
+  staff,
+  bookings,
+  weekStart,
+  weekEnd,
+  pxPerMinute,
+  onColumnClick,
+  onUpdateBooking,
+  onStatusChange,
+}: WeekGridProps) {
+  const scrollRef  = useRef<HTMLDivElement>(null)
+  const { toast }  = useToast()
 
-  // Initialise synchronously so the line is present on the first paint.
-  const [nowPx, setNowPx] = useState<number | null>(() => {
-    const now = new Date()
-    return minutesToPx(now.getHours(), now.getMinutes())
-  })
+  // ── Stable refs ──────────────────────────────────────────────────────────
+  const pxPerMinuteRef     = useRef(pxPerMinute)
+  const staffRef           = useRef(staff)
+  const bookingsRef        = useRef(bookings)
+  const onUpdateBookingRef = useRef(onUpdateBooking)
+  const toastRef           = useRef(toast)
 
-  // True when today falls inside the currently displayed week.
+  useEffect(() => { pxPerMinuteRef.current     = pxPerMinute },    [pxPerMinute])
+  useEffect(() => { staffRef.current           = staff },           [staff])
+  useEffect(() => { bookingsRef.current        = bookings },        [bookings])
+  useEffect(() => { onUpdateBookingRef.current = onUpdateBooking }, [onUpdateBooking])
+  useEffect(() => { toastRef.current           = toast },           [toast])
+
+  // ── Drag / resize state ──────────────────────────────────────────────────
+  const dragRef        = useRef<DragState | null>(null)
+  const ghostRef       = useRef<GhostState | null>(null)
+  const pointerRef     = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const rafRef         = useRef<number | null>(null)
+  /** Serialised key of the last snapped position; prevents ghost re-renders
+   *  when the pointer moves within the same 15-min bucket. */
+  const lastSnappedRef = useRef<string | null>(null)
+  const [ghost, setGhost] = useState<GhostState | null>(null)
+
+  // ── Hover time indicator ───────────────────────────────────────────────
+  // Stores the snapped slot-start in minutes (always a multiple of SLOT_MINUTES).
+  const [hoverSlotMin, setHoverSlotMin] = useState<number | null>(null)
+  const [hoverStaffId, setHoverStaffId] = useState<string | null>(null)
+  const columnsRef = useRef<HTMLDivElement>(null)
+
+  const handleColumnsMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      // Don't show hover indicator while dragging
+      if (dragRef.current) return
+
+      // Don't show hover indicator when cursor is over a booking card
+      const target = e.target as HTMLElement
+      if (target.closest("[data-booking-card]")) {
+        setHoverSlotMin(null)
+        setHoverStaffId(null)
+        return
+      }
+
+      const colEl = columnsRef.current
+      const scrollEl = scrollRef.current
+      if (!colEl || !scrollEl) return
+      const rect = colEl.getBoundingClientRect()
+      const y = e.clientY - rect.top
+      const rawMin = y / pxPerMinuteRef.current
+      const totalMin = (DAY_END_HOUR - DAY_START_HOUR) * 60
+      if (rawMin < 0 || rawMin > totalMin) {
+        setHoverSlotMin(null)
+        setHoverStaffId(null)
+        return
+      }
+
+      // Snap to the 15-minute slot that contains the cursor
+      const snapped = Math.floor(rawMin / SLOT_MINUTES) * SLOT_MINUTES
+
+      // Determine which staff column the cursor is in
+      const staffArr = staffRef.current
+      const x = e.clientX - rect.left
+      const colW = rect.width / staffArr.length
+      const colIdx = Math.max(0, Math.min(Math.floor(x / colW), staffArr.length - 1))
+      const sid = staffArr[colIdx]?.id ?? null
+
+      setHoverSlotMin(snapped)
+      setHoverStaffId(sid)
+    },
+    [],
+  )
+
+  const handleColumnsMouseLeave = useCallback(() => {
+    setHoverSlotMin(null)
+    setHoverStaffId(null)
+  }, [])
+
+  // Clear hover indicator when dragging starts
+  useEffect(() => {
+    if (ghost) {
+      setHoverSlotMin(null)
+      setHoverStaffId(null)
+    }
+  }, [ghost])
+
+  // ── Now line ─────────────────────────────────────────────────────────────
+  const [nowPx, setNowPx] = useState<number | null>(() =>
+    minutesToPx(new Date().getHours(), new Date().getMinutes(), pxPerMinute),
+  )
+
   const showNowLine = useMemo(() => {
     const now = new Date()
     return now >= weekStart && now <= weekEnd
   }, [weekStart, weekEnd])
 
-  // Tick every minute to keep the now line in sync.
   useEffect(() => {
-    function tick() {
+    const now = new Date()
+    setNowPx(minutesToPx(now.getHours(), now.getMinutes(), pxPerMinute))
+  }, [pxPerMinute])
+
+  useEffect(() => {
+    const tick = () => {
       const now = new Date()
-      setNowPx(minutesToPx(now.getHours(), now.getMinutes()))
+      setNowPx(minutesToPx(now.getHours(), now.getMinutes(), pxPerMinuteRef.current))
     }
     const id = setInterval(tick, 60_000)
     return () => clearInterval(id)
   }, [])
 
-  // Auto-scroll: fires on mount and whenever the viewed week changes.
+  // ── Default day for click-to-create ─────────────────────────────────────
+  const defaultDay = useMemo(() => {
+    const now = new Date()
+    if (now >= weekStart && now <= weekEnd) {
+      const d = new Date(now)
+      d.setHours(0, 0, 0, 0)
+      return d
+    }
+    return new Date(weekStart)
+  }, [weekStart, weekEnd])
+
+  // ── Auto-scroll on week/zoom change ──────────────────────────────────────
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
-
-    let targetPx = 0
     const now = new Date()
-
+    let targetPx = 0
     if (now >= weekStart && now <= weekEnd) {
-      // Scroll so the now line sits ~60 minutes from the top of the viewport.
-      const minutesSinceDayStart =
-        (now.getHours() - DAY_START_HOUR) * 60 + now.getMinutes()
-      targetPx = Math.max(0, (minutesSinceDayStart - 60) * PX_PER_MINUTE)
+      const minSinceStart = (now.getHours() - DAY_START_HOUR) * 60 + now.getMinutes()
+      targetPx = Math.max(0, (minSinceStart - 60) * pxPerMinute)
     }
-
     el.scrollTop = targetPx
-  }, [weekStart]) // weekStart is memoised in useWeekRange — stable reference
+  }, [weekStart, pxPerMinute])
+
+  // ── Drag ─────────────────────────────────────────────────────────────────
+  const startDrag = useCallback(
+    (e: React.PointerEvent, booking: Booking, bookingStaff: Staff) => {
+      e.preventDefault()
+
+      const durationMin = diffMinutes(booking.startAt, booking.endAt)
+
+      dragRef.current = {
+        mode:          "drag",
+        bookingId:     booking.id,
+        staffId:       bookingStaff.id,
+        startAt:       booking.startAt,
+        endAt:         booking.endAt,
+        pointerStartX: e.clientX,
+        pointerStartY: e.clientY,
+      }
+      lastSnappedRef.current = null
+
+      const init: GhostState = {
+        bookingId:   booking.id,
+        staffId:     bookingStaff.id,
+        startAt:     booking.startAt,
+        endAt:       booking.endAt,
+        hasConflict: false,
+      }
+      ghostRef.current = init
+      setGhost(init)
+
+      // ── Shared cleanup: tears down all listeners, optionally commits ──
+      function cleanup(commit: boolean) {
+        document.removeEventListener("pointermove",   move)
+        document.removeEventListener("pointerup",     up)
+        document.removeEventListener("pointercancel", cancel)
+        document.removeEventListener("keydown",       keydown)
+
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current)
+          rafRef.current = null
+        }
+
+        if (commit) {
+          const g = ghostRef.current
+          if (g) {
+            if (g.hasConflict) {
+              toastRef.current({
+                variant:     "destructive",
+                title:       "Time slot conflict",
+                description: "That slot overlaps an existing booking.",
+              })
+            } else {
+              onUpdateBookingRef.current(g.bookingId, {
+                staffId: g.staffId,
+                startAt: g.startAt,
+                endAt:   g.endAt,
+              })
+            }
+          }
+        }
+
+        dragRef.current        = null
+        ghostRef.current       = null
+        lastSnappedRef.current = null
+        setGhost(null)
+      }
+
+      function move(ev: PointerEvent) {
+        const ds       = dragRef.current
+        const scrollEl = scrollRef.current
+        if (!ds || !scrollEl) return
+
+        pointerRef.current = { x: ev.clientX, y: ev.clientY }
+
+        const ppm      = pxPerMinuteRef.current
+        const staffArr = staffRef.current
+
+        // ── Horizontal: which staff column? ──────────────────────────────
+        const rect   = scrollEl.getBoundingClientRect()
+        const columnsW = scrollEl.scrollWidth - GUTTER_WIDTH
+        const colW     = columnsW / staffArr.length
+        const x      = ev.clientX - rect.left + scrollEl.scrollLeft - GUTTER_WIDTH
+        const colIdx = Math.max(0, Math.min(Math.floor(x / colW), staffArr.length - 1))
+        const newStaffId = staffArr[colIdx]?.id ?? ds.staffId
+
+        // ── Vertical: snap to absolute 15-min boundary ───────────────────
+        const originStart     = minutesSinceDayStart(ds.startAt, DAY_START_HOUR)
+        const rawNewStartMin  = originStart + (ev.clientY - ds.pointerStartY) / ppm
+        const snappedStartMin = snapMinutes(rawNewStartMin, SLOT_MINUTES)
+
+        // Skip re-render when nothing changed (jitter prevention)
+        const key = `${snappedStartMin}:${newStaffId}`
+        if (lastSnappedRef.current === key) return
+        lastSnappedRef.current = key
+
+        // Build raw start date from snapped minutes; clamp preserves duration
+        const rawStart = new Date(ds.startAt)
+        rawStart.setHours(
+          DAY_START_HOUR + Math.floor(snappedStartMin / 60),
+          ((snappedStartMin % 60) + 60) % 60, // handle negative modulo
+          0, 0,
+        )
+        const { startAt: newStartAt, endAt: newEndAt } = clampDragPreserveDuration(
+          rawStart,
+          durationMin,
+          DAY_START_HOUR,
+          DAY_END_HOUR,
+        )
+
+        const conflict = hasConflict(bookingsRef.current, ds.bookingId, newStaffId, newStartAt, newEndAt)
+
+        const next: GhostState = {
+          bookingId:   ds.bookingId,
+          staffId:     newStaffId,
+          startAt:     newStartAt,
+          endAt:       newEndAt,
+          hasConflict: conflict,
+        }
+        ghostRef.current = next
+        setGhost(next)
+
+        scheduleAutoScroll(rafRef, scrollRef, dragRef, pointerRef)
+      }
+
+      function up()     { cleanup(true)  }
+      function cancel() { cleanup(false) }
+      function keydown(ev: KeyboardEvent) { if (ev.key === "Escape") cleanup(false) }
+
+      document.addEventListener("pointermove",   move)
+      document.addEventListener("pointerup",     up)
+      document.addEventListener("pointercancel", cancel)
+      document.addEventListener("keydown",       keydown)
+    },
+    [],
+  )
+
+  // ── Resize ───────────────────────────────────────────────────────────────
+  const startResize = useCallback(
+    (e: React.PointerEvent, booking: Booking, bookingStaff: Staff) => {
+      e.preventDefault()
+
+      const DAY_TOTAL_MIN = (DAY_END_HOUR - DAY_START_HOUR) * 60
+
+      dragRef.current = {
+        mode:          "resize-bottom",
+        bookingId:     booking.id,
+        staffId:       bookingStaff.id,
+        startAt:       booking.startAt,
+        endAt:         booking.endAt,
+        pointerStartX: e.clientX,
+        pointerStartY: e.clientY,
+      }
+      lastSnappedRef.current = null
+
+      const init: GhostState = {
+        bookingId:   booking.id,
+        staffId:     bookingStaff.id,
+        startAt:     booking.startAt,
+        endAt:       booking.endAt,
+        hasConflict: false,
+      }
+      ghostRef.current = init
+      setGhost(init)
+
+      function cleanup(commit: boolean) {
+        document.removeEventListener("pointermove",   move)
+        document.removeEventListener("pointerup",     up)
+        document.removeEventListener("pointercancel", cancel)
+        document.removeEventListener("keydown",       keydown)
+
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current)
+          rafRef.current = null
+        }
+
+        if (commit) {
+          const g = ghostRef.current
+          if (g) {
+            if (g.hasConflict) {
+              toastRef.current({
+                variant:     "destructive",
+                title:       "Time slot conflict",
+                description: "That slot overlaps an existing booking.",
+              })
+            } else {
+              onUpdateBookingRef.current(g.bookingId, {
+                staffId: g.staffId,
+                startAt: g.startAt,
+                endAt:   g.endAt,
+              })
+            }
+          }
+        }
+
+        dragRef.current        = null
+        ghostRef.current       = null
+        lastSnappedRef.current = null
+        setGhost(null)
+      }
+
+      function move(ev: PointerEvent) {
+        const ds = dragRef.current
+        if (!ds) return
+
+        pointerRef.current = { x: ev.clientX, y: ev.clientY }
+
+        const ppm            = pxPerMinuteRef.current
+        const originStartMin = minutesSinceDayStart(ds.startAt, DAY_START_HOUR)
+        const originEndMin   = minutesSinceDayStart(ds.endAt,   DAY_START_HOUR)
+        const rawNewEndMin   = originEndMin + (ev.clientY - ds.pointerStartY) / ppm
+        const snappedEndMin  = snapMinutes(rawNewEndMin, SLOT_MINUTES)
+        const clampedEndMin  = Math.max(
+          originStartMin + SLOT_MINUTES,
+          Math.min(snappedEndMin, DAY_TOTAL_MIN),
+        )
+
+        // Jitter check
+        const key = String(clampedEndMin)
+        if (lastSnappedRef.current === key) return
+        lastSnappedRef.current = key
+
+        const newEndAt = new Date(ds.startAt)
+        newEndAt.setHours(
+          DAY_START_HOUR + Math.floor(clampedEndMin / 60),
+          clampedEndMin % 60,
+          0, 0,
+        )
+
+        const conflict = hasConflict(bookingsRef.current, ds.bookingId, ds.staffId, ds.startAt, newEndAt)
+
+        const next: GhostState = {
+          bookingId:   ds.bookingId,
+          staffId:     ds.staffId,
+          startAt:     ds.startAt,
+          endAt:       newEndAt,
+          hasConflict: conflict,
+        }
+        ghostRef.current = next
+        setGhost(next)
+
+        scheduleAutoScroll(rafRef, scrollRef, dragRef, pointerRef)
+      }
+
+      function up()     { cleanup(true)  }
+      function cancel() { cleanup(false) }
+      function keydown(ev: KeyboardEvent) { if (ev.key === "Escape") cleanup(false) }
+
+      document.addEventListener("pointermove",   move)
+      document.addEventListener("pointerup",     up)
+      document.addEventListener("pointercancel", cancel)
+      document.addEventListener("keydown",       keydown)
+    },
+    [],
+  )
 
   const nowGlow = hexGlow(t.colors.semantic.accent)
 
@@ -105,84 +565,100 @@ export function WeekGrid({ staff, bookings, weekStart, weekEnd }: WeekGridProps)
     <div
       ref={scrollRef}
       style={{
-        overflow: "auto",
+        overflow:  "auto",
+        width:     "100%",
+        minWidth:  0,
         maxHeight: "calc(100vh - 160px)",
         borderRadius: t.radius["2xl"],
-        boxShadow: t.shadow.card,
-        border: `1px solid ${t.colors.semantic.borderSubtle}`,
-        background: t.colors.semantic.panel,
+        boxShadow:    t.shadow.card,
+        border:   `1px solid ${t.colors.semantic.borderSubtle}`,
+        background:   t.colors.semantic.panel,
         position: "relative",
       }}
     >
-      {/* ── Sticky header: staff names ─────────────────────────────── */}
+      {/* ── Sticky header ──────────────────────────────────────────── */}
       <StaffHeaderRow staff={staff} />
 
-      {/* ── Body: time gutter + staff columns ──────────────────────── */}
+      {/* ── Body ───────────────────────────────────────────────────── */}
       <div style={{ display: "flex" }}>
-        <TimeGutter />
+        <TimeGutter pxPerMinute={pxPerMinute} />
 
-        {/* Staff columns + now-line overlay
-            position: relative makes this the containing block for the now
-            line, so it spans exactly the staff-column area. */}
-        <div style={{ position: "relative", display: "flex" }}>
+        <div
+          ref={columnsRef}
+          onMouseMove={handleColumnsMouseMove}
+          onMouseLeave={handleColumnsMouseLeave}
+          style={{ position: "relative", display: "flex", flex: 1, minWidth: 0 }}
+        >
 
-          {/* ── Now line ─────────────────────────────────────────────
-              Rendered as two elements inside a zero-height wrapper:
-                1. A filled circle at the left edge of the line.
-                2. The horizontal accent line with a soft glow.
-              The circle uses left: -5 so it slightly overlaps the
-              TimeGutter border, matching the common calendar pattern.
-              pointerEvents: none ensures it never blocks card clicks.
-          ────────────────────────────────────────────────────────── */}
+          {/* ── Now line ─────────────────────────────────────────────── */}
           {showNowLine && nowPx !== null && (
             <div
               aria-hidden="true"
               style={{
-                position: "absolute",
-                top: nowPx,
-                left: 0,
-                right: 0,
-                zIndex: 8,
+                position:      "absolute",
+                top:           nowPx,
+                left:          0,
+                right:         0,
+                zIndex:        8,
                 pointerEvents: "none",
               }}
             >
-              {/* Circle */}
               <div
                 style={{
-                  position: "absolute",
-                  left: -5,
-                  top: -4,
-                  width: 9,
-                  height: 9,
+                  position:     "absolute",
+                  left:         -5,
+                  top:          -4,
+                  width:        9,
+                  height:       9,
                   borderRadius: t.radius.full,
-                  background: t.colors.semantic.accent,
-                  boxShadow: nowGlow,
+                  background:   t.colors.semantic.accent,
+                  boxShadow:    nowGlow,
                 }}
               />
-              {/* Line */}
               <div
                 style={{
-                  height: 2,
+                  height:     2,
                   background: t.colors.semantic.accent,
-                  boxShadow: nowGlow,
+                  boxShadow:  nowGlow,
                 }}
               />
             </div>
           )}
 
-          {/* Staff day columns */}
-          {staff.map((s) => (
-            <StaffDayColumn
-              key={s.id}
-              staff={s}
-              bookings={bookings.filter(
-                (b) =>
-                  b.staffId === s.id &&
-                  b.startAt >= weekStart &&
-                  b.startAt <= weekEnd,
-              )}
-            />
-          ))}
+          {/* ── Staff columns ─────────────────────────────────────── */}
+          {staff.map((s) => {
+            const isGhostTarget = ghost?.staffId === s.id
+            const isHovered = hoverStaffId === s.id
+            return (
+              <StaffDayColumn
+                key={s.id}
+                staff={s}
+                bookings={bookings.filter(
+                  (b) =>
+                    b.staffId === s.id &&
+                    b.startAt >= weekStart &&
+                    b.startAt <= weekEnd,
+                )}
+                defaultDay={defaultDay}
+                onColumnClick={onColumnClick}
+                pxPerMinute={pxPerMinute}
+                hoverSlotMin={isHovered ? hoverSlotMin : null}
+                ghost={
+                  isGhostTarget
+                    ? {
+                        startAt:     ghost!.startAt,
+                        endAt:       ghost!.endAt,
+                        hasConflict: ghost!.hasConflict,
+                      }
+                    : null
+                }
+                draggedBookingId={ghost?.bookingId ?? null}
+                onDragStart={(e, booking) => startDrag(e, booking, s)}
+                onResizeStart={(e, booking) => startResize(e, booking, s)}
+                onStatusChange={onStatusChange}
+              />
+            )
+          })}
         </div>
       </div>
     </div>

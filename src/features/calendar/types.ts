@@ -14,5 +14,7 @@ export interface Booking {
   endAt: Date
   customerNameSnapshot: string
   serviceNameSnapshot: string
+  /** Optional price snapshot for display, e.g. "GEL 25". */
+  priceSnapshot?: string
   status: BookingStatus
 }

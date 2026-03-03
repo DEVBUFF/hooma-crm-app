@@ -1,15 +1,16 @@
 import { t } from "@/lib/tokens"
 import { layoutBookings } from "@/features/calendar/lib/layout"
 import { BookingCard } from "@/features/calendar/components/BookingCard"
-import type { Booking, Staff } from "@/features/calendar/types"
+import { BookingGhost } from "@/features/calendar/components/BookingGhost"
+import { snapMinutes } from "@/features/calendar/lib/time"
+import type { Booking, BookingStatus, Staff } from "@/features/calendar/types"
 import {
-  COLUMN_WIDTH,
   DAY_START_HOUR,
-  PX_PER_MINUTE,
+  DAY_END_HOUR,
   SLOT_MINUTES,
-  SLOT_HEIGHT,
   SLOT_COUNT,
-  TOTAL_HEIGHT,
+  slotHeightPx,
+  totalHeightPx,
 } from "@/features/calendar/lib/grid-config"
 
 // ---------------------------------------------------------------------------
@@ -17,7 +18,7 @@ import {
 // ---------------------------------------------------------------------------
 
 /** Maximum lanes rendered side-by-side. Cards in lanes ≥ this are clamped
- *  to the last visible lane and overlap visually — keeps cards readable. */
+ *  to the last visible lane and overlap visually. */
 const MAX_VISIBLE_LANES = 3
 
 /** Horizontal inset from the column edge to the card area (each side). */
@@ -26,62 +27,154 @@ const CARD_PADDING = 4 // px
 /** Gap between adjacent lanes inside the same overlap cluster. */
 const CARD_GAP = 3 // px
 
-/** Options passed to the layout engine — matches grid-config. */
-const LAYOUT_OPTS = {
-  dayStartHour:   DAY_START_HOUR,
-  dayStartMinute: 0,
-  pxPerMinute:    PX_PER_MINUTE,
-  slotMinutes:    SLOT_MINUTES,
+/** Total visible minutes in the day (08:00 → 20:00). */
+const DAY_TOTAL_MIN = (DAY_END_HOUR - DAY_START_HOUR) * 60
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Format minutes-since-day-start into "H:MM am/pm". */
+function formatSlotTime(totalMinutes: number): string {
+  const absMin = Math.max(0, totalMinutes)
+  const h = DAY_START_HOUR + Math.floor(absMin / 60)
+  const m = Math.round(absMin % 60)
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h
+  const ampm = h < 12 ? "am" : "pm"
+  const mm = String(m).padStart(2, "0")
+  return `${h12}:${mm} ${ampm}`
 }
 
 // ---------------------------------------------------------------------------
-// Lane width helper
+// Lane geometry — returns percentage-based left & width so cards stretch
+// with the column.  CARD_PADDING & CARD_GAP are expressed in px and
+// converted to % relative to the column using a CSS calc() string.
 // ---------------------------------------------------------------------------
 
-/**
- * Returns the { left, width } in pixels for a card inside a column, given its
- * visual lane index and the total number of visual lanes.
- *
- * Cards are distributed evenly across the available column width (minus
- * CARD_PADDING on each side), separated by CARD_GAP.
- */
 function laneGeometry(
   visLaneIndex: number,
   visLaneCount: number,
-): { left: number; width: number } {
-  const available = COLUMN_WIDTH - 2 * CARD_PADDING
-  const laneWidth = (available - (visLaneCount - 1) * CARD_GAP) / visLaneCount
-  const left = CARD_PADDING + visLaneIndex * (laneWidth + CARD_GAP)
-  return { left, width: laneWidth }
+): { leftCss: string; widthCss: string } {
+  // Total px consumed by padding + gaps
+  const fixedPx    = 2 * CARD_PADDING + (visLaneCount - 1) * CARD_GAP
+  // Each lane's width in CSS
+  const laneWidthCss = `calc((100% - ${fixedPx}px) / ${visLaneCount})`
+  // Left offset: padding + n × (laneWidth + gap)
+  const leftOffsetPx = CARD_PADDING + visLaneIndex * CARD_GAP
+  const leftParts    = visLaneIndex > 0
+    ? `calc(${leftOffsetPx}px + ${visLaneIndex} * (100% - ${fixedPx}px) / ${visLaneCount})`
+    : `${CARD_PADDING}px`
+
+  return {
+    leftCss:  leftParts,
+    widthCss: laneWidthCss,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
+
+interface GhostData {
+  startAt: Date
+  endAt: Date
+  hasConflict: boolean
+}
+
+interface StaffDayColumnProps {
+  staff: Staff
+  /** Bookings already filtered to this staff member and the current week. */
+  bookings: Booking[]
+  /** Default day for click-to-create (today if visible, else weekStart). */
+  defaultDay: Date
+  /** Called when the user clicks empty space to open the create booking modal. */
+  onColumnClick: (staff: Staff, startAt: Date) => void
+  /** Live pxPerMinute from zoom. Controls all vertical pixel calculations. */
+  pxPerMinute: number
+  /** Snapped slot-start in minutes (multiple of 15). null = not hovering this column. */
+  hoverSlotMin?: number | null
+  /**
+   * Non-null when this column is the current drag/resize ghost target.
+   * The ghost renders at the given time span (full column width).
+   */
+  ghost: GhostData | null
+  /**
+   * The booking currently being dragged/resized (its original card is hidden
+   * in the target column, or rendered faded in any other column).
+   */
+  draggedBookingId: string | null
+  /** Called on pointerdown on a card body to initiate a drag. */
+  onDragStart: (e: React.PointerEvent, booking: Booking) => void
+  /** Called on pointerdown on a card's bottom resize handle. */
+  onResizeStart: (e: React.PointerEvent, booking: Booking) => void
+  /** Called when the user selects a quick-action status from the kebab dropdown. */
+  onStatusChange: (id: string, status: BookingStatus) => void
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-interface StaffDayColumnProps {
-  staff: Staff
-  /** Bookings already filtered to this staff member and the current week. */
-  bookings: Booking[]
-}
+export function StaffDayColumn({
+  staff,
+  bookings,
+  defaultDay,
+  onColumnClick,
+  pxPerMinute,
+  hoverSlotMin = null,
+  ghost,
+  draggedBookingId,
+  onDragStart,
+  onResizeStart,
+  onStatusChange,
+}: StaffDayColumnProps) {
+  const sh = slotHeightPx(pxPerMinute)
+  const th = totalHeightPx(pxPerMinute)
 
-export function StaffDayColumn({ staff, bookings }: StaffDayColumnProps) {
-  const positioned = layoutBookings(bookings, LAYOUT_OPTS)
+  const layoutOpts = {
+    dayStartHour:   DAY_START_HOUR,
+    dayStartMinute: 0,
+    pxPerMinute,
+    slotMinutes:    SLOT_MINUTES,
+  }
+  const positioned = layoutBookings(bookings, layoutOpts)
+
+  /**
+   * Convert click Y into a snapped start time and open the create-booking
+   * modal via the parent callback. Cards call e.stopPropagation() so this
+   * handler is only reached for clicks on the empty grid background.
+   */
+  function handleClick(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const rawMin    = (e.clientY - rect.top) / pxPerMinute
+    const snappedMin = snapMinutes(rawMin, SLOT_MINUTES)
+    const clampedMin = Math.max(0, Math.min(snappedMin, DAY_TOTAL_MIN))
+
+    const startAt = new Date(defaultDay)
+    startAt.setHours(
+      DAY_START_HOUR + Math.floor(clampedMin / 60),
+      clampedMin % 60,
+      0,
+      0,
+    )
+    onColumnClick(staff, startAt)
+  }
 
   return (
     <div
+      onClick={handleClick}
       style={{
-        width: COLUMN_WIDTH,
-        flexShrink: 0,
+        flex: 1,
+        minWidth: 0,
         position: "relative",
-        height: TOTAL_HEIGHT,
-        borderLeft: `1px solid ${t.colors.semantic.borderSubtle}`,
+        height: th,
+        borderLeft: `1px solid ${t.colors.semantic.divider}`,
+        cursor: "cell",
       }}
     >
       {/* ── Background grid lines ──────────────────────────────────────
-          49 lines spanning 08:00 → 20:00.
-          Every 4th line (hour boundary) uses the stronger divider token;
-          intermediate 15-min lines use borderSubtle at reduced opacity.
+          Hour boundaries use a strong visible line;
+          15-min marks use a lighter but still visible line.
       ──────────────────────────────────────────────────────────────── */}
       {Array.from({ length: SLOT_COUNT + 1 }, (_, i) => {
         const isHour = i % 4 === 0
@@ -90,14 +183,14 @@ export function StaffDayColumn({ staff, bookings }: StaffDayColumnProps) {
             key={i}
             style={{
               position: "absolute",
-              left: 0,
-              right: 0,
-              top: i * SLOT_HEIGHT,
+              left:   0,
+              right:  0,
+              top:    i * sh,
               height: 1,
               background: isHour
-                ? t.colors.semantic.divider       // stronger — hour boundary
-                : t.colors.semantic.borderSubtle,  // subtle   — 15-min mark
-              opacity: isHour ? 1 : 0.55,
+                ? t.colors.semantic.textSubtle
+                : t.colors.semantic.divider,
+              opacity:     isHour ? 0.4 : 0.7,
               pointerEvents: "none",
             }}
           />
@@ -105,14 +198,17 @@ export function StaffDayColumn({ staff, bookings }: StaffDayColumnProps) {
       })}
 
       {/* ── Booking cards ──────────────────────────────────────────────
-          Clamp to MAX_VISIBLE_LANES visual lanes.
-          Cards in lanes ≥ MAX_VISIBLE_LANES share the last visual lane and
-          overlap slightly — acceptable for dense schedules on a scaffold.
+          • If a booking is being dragged AND ghost is in this column →
+            hide the original (the ghost replaces it visually).
+          • If a booking is being dragged AND ghost is elsewhere →
+            show it faded so the user can see the origin.
       ──────────────────────────────────────────────────────────────── */}
       {positioned.map((pb) => {
+        if (pb.id === draggedBookingId && ghost !== null) return null
+
         const visLaneCount = Math.min(pb.laneCount, MAX_VISIBLE_LANES)
         const visLaneIndex = Math.min(pb.laneIndex, MAX_VISIBLE_LANES - 1)
-        const { left, width } = laneGeometry(visLaneIndex, visLaneCount)
+        const { leftCss, widthCss } = laneGeometry(visLaneIndex, visLaneCount)
 
         return (
           <BookingCard
@@ -121,11 +217,60 @@ export function StaffDayColumn({ staff, bookings }: StaffDayColumnProps) {
             staff={staff}
             top={pb.top}
             height={pb.height}
-            left={left}
-            width={width}
+            left={leftCss}
+            width={widthCss}
+            isDragging={pb.id === draggedBookingId}
+            onDragStart={(e) => onDragStart(e, pb)}
+            onResizeStart={(e) => onResizeStart(e, pb)}
+            onStatusChange={(status) => onStatusChange(pb.id, status)}
           />
         )
       })}
+
+      {/* ── Hover 15-min slot highlight ──────────────────────────── */}
+      {hoverSlotMin !== null && (
+        <div
+          aria-hidden="true"
+          style={{
+            position:      "absolute",
+            top:           hoverSlotMin * pxPerMinute,
+            left:          0,
+            right:         0,
+            height:        sh,
+            zIndex:        6,
+            pointerEvents: "none",
+            background:    `color-mix(in srgb, ${t.colors.semantic.accent} 10%, transparent)`,
+            borderRadius:  t.radius.sm,
+            display:       "flex",
+            alignItems:    "center",
+            paddingLeft:   6,
+          }}
+        >
+          <span
+            style={{
+              fontSize:    11,
+              fontWeight:  t.typography.fontWeight.semibold,
+              color:       t.colors.semantic.accent,
+              lineHeight:  1,
+              userSelect:  "none",
+              whiteSpace:  "nowrap",
+            }}
+          >
+            {formatSlotTime(hoverSlotMin)}
+          </span>
+        </div>
+      )}
+
+      {/* ── Ghost preview (drag / resize target) ───────────────────── */}
+      {ghost && (
+        <BookingGhost
+          staff={staff}
+          startAt={ghost.startAt}
+          endAt={ghost.endAt}
+          pxPerMinute={pxPerMinute}
+          hasConflict={ghost.hasConflict}
+        />
+      )}
     </div>
   )
 }

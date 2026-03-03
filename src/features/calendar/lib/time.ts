@@ -60,6 +60,19 @@ export function diffMinutes(a: Date, b: Date): number {
 }
 
 /**
+ * Format a duration in minutes into a human-readable string.
+ * e.g. 70 → "1h 10min", 30 → "30min", 120 → "2h"
+ */
+export function formatDuration(totalMinutes: number): string {
+  const mins = Math.abs(Math.round(totalMinutes))
+  const h = Math.floor(mins / 60)
+  const m = mins % 60
+  if (h === 0) return `${m}min`
+  if (m === 0) return `${h}h`
+  return `${h}h ${m}min`
+}
+
+/**
  * Minutes elapsed since the given day-start hour:minute on the same
  * calendar day as `date`.
  * e.g. minutesSinceDayStart(new Date("2026-02-20T09:30"), 8, 0) → 90
@@ -89,4 +102,66 @@ export function formatTime(date: Date): string {
  */
 export function snapMinutes(value: number, step: number): number {
   return Math.round(value / step) * step
+}
+
+// ---------------------------------------------------------------------------
+// Formatting helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns a "YYYY-MM-DD" string for the given local date.
+ * Used to group bookings by calendar day.
+ */
+export function getDayKey(date: Date): string {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, "0")
+  const d = String(date.getDate()).padStart(2, "0")
+  return `${y}-${m}-${d}`
+}
+
+/**
+ * "Thu, Feb 20" — used as the toolbar label in day mode.
+ */
+export function formatDayLabel(date: Date): string {
+  return date.toLocaleDateString("en-US", {
+    weekday: "short",
+    month:   "short",
+    day:     "numeric",
+  })
+}
+
+/**
+ * "Mon 17" — used as the per-day group header in week mode.
+ */
+export function formatDayGroupLabel(date: Date): string {
+  const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
+  return `${weekday} ${date.getDate()}`
+}
+
+/** Returns a new Date shifted by `minutes` milliseconds. */
+export function addMinutes(date: Date, minutes: number): Date {
+  return new Date(date.getTime() + minutes * 60_000)
+}
+
+/**
+ * Clamp a dragged booking's start time so the full duration fits inside
+ * the visible day range [dayStartHour, dayEndHour].
+ * Returns the adjusted { startAt, endAt } pair.
+ */
+export function clampDragPreserveDuration(
+  rawStartAt: Date,
+  durationMin: number,
+  dayStartHour: number,
+  dayEndHour: number,
+): { startAt: Date; endAt: Date } {
+  const dayTotalMin = (dayEndHour - dayStartHour) * 60
+  let startMin = minutesSinceDayStart(rawStartAt, dayStartHour)
+  startMin = Math.max(0, Math.min(startMin, dayTotalMin - durationMin))
+  const clamped = new Date(rawStartAt)
+  clamped.setHours(
+    dayStartHour + Math.floor(startMin / 60),
+    startMin % 60,
+    0, 0,
+  )
+  return { startAt: clamped, endAt: addMinutes(clamped, durationMin) }
 }

@@ -91,7 +91,7 @@ function Modal({
           "relative w-full flex flex-col",
           // Shape — radius.2xl (28 px) for big surfaces, matching auth card / calendar close-day panel
           "rounded-[28px]",
-          // Colours — bg-card maps to --color-card (#F5EEE4)
+          // Colours — bg-card maps to --color-card (#E5DACA)
           "bg-card text-foreground",
           // Border — same subtle line used across all Hooma panels
           "border border-[rgba(229,218,203,0.60)]",
