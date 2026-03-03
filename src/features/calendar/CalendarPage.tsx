@@ -163,7 +163,7 @@ export function CalendarPage() {
 
   return (
     <div
-      className="flex flex-col min-h-full w-full min-w-0"
+      className="flex flex-col h-full w-full min-w-0"
       style={{ background: t.colors.semantic.bg }}
     >
       <CalendarToolbar
