@@ -1,29 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { t } from "@/lib/tokens"
 import { formatTime } from "@/features/calendar/lib/time"
 import { DAY_END_HOUR } from "@/features/calendar/lib/grid-config"
-import type { Booking, Staff } from "@/features/calendar/types"
-
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
-const DURATION_OPTIONS = [30, 45, 60, 90, 120] as const
-type Duration = (typeof DURATION_OPTIONS)[number]
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function formatDateLabel(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  })
-}
+import type {
+  Booking,
+  Staff,
+  CalendarCustomer,
+  CalendarService,
+} from "@/features/calendar/types"
 
 // ---------------------------------------------------------------------------
 // Shared styles
@@ -44,33 +30,52 @@ const BASE_INPUT: React.CSSProperties = {
                background  ${t.motion.duration.fast} ${t.motion.easing.standard}`,
 }
 
+const LABEL_STYLE: React.CSSProperties = {
+  fontSize: t.typography.fontSize.xs,
+  fontWeight: t.typography.fontWeight.medium,
+  color: t.colors.semantic.textMuted,
+  textTransform: "uppercase",
+  letterSpacing: t.typography.letterSpacing.label,
+}
+
 // ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function Field({
-  label,
-  children,
-}: {
-  label: string
-  children: React.ReactNode
-}) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-      <label
-        style={{
-          fontSize: t.typography.fontSize.xs,
-          fontWeight: t.typography.fontWeight.medium,
-          color: t.colors.semantic.textMuted,
-          textTransform: "uppercase",
-          letterSpacing: t.typography.letterSpacing.label,
-        }}
-      >
-        {label}
-      </label>
+      <label style={LABEL_STYLE}>{label}</label>
       {children}
     </div>
   )
+}
+
+function SelectChevron() {
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        right: 11,
+        top: "50%",
+        transform: "translateY(-50%)",
+        pointerEvents: "none",
+        fontSize: 10,
+        color: t.colors.semantic.textMuted,
+      }}
+    >
+      ▾
+    </span>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function formatDateLabel(date: Date): string {
+  return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
 }
 
 // ---------------------------------------------------------------------------
@@ -79,8 +84,10 @@ function Field({
 
 interface CreateBookingModalProps {
   staff: Staff
-  /** Snapped, clamped start time for the new booking. */
   startAt: Date
+  customers: CalendarCustomer[]
+  services: CalendarService[]
+  currency?: string
   onClose: () => void
   onCreate: (booking: Omit<Booking, "id">) => void
 }
@@ -88,56 +95,79 @@ interface CreateBookingModalProps {
 export function CreateBookingModal({
   staff,
   startAt,
+  customers,
+  services,
+  currency = "GEL",
   onClose,
   onCreate,
 }: CreateBookingModalProps) {
-  const [customerName, setCustomerName] = useState("")
-  const [serviceName, setServiceName] = useState("")
-  const [duration, setDuration] = useState<Duration>(60)
+  // ── Form state ──────────────────────────────────────────────────────────
+  const [customerId, setCustomerId] = useState("")
+  const [petId, setPetId]           = useState("")
+  const [serviceId, setServiceId]   = useState("")
   const [focusedField, setFocusedField] = useState<string | null>(null)
 
-  // Close on Escape.
+  // ── Derived ─────────────────────────────────────────────────────────────
+  const selectedCustomer = useMemo(
+    () => customers.find((c) => c.id === customerId) ?? null,
+    [customers, customerId],
+  )
+  const selectedService = useMemo(
+    () => services.find((s) => s.id === serviceId) ?? null,
+    [services, serviceId],
+  )
+  const pets = selectedCustomer?.pets ?? []
+
+  // Reset pet when customer changes
+  useEffect(() => { setPetId("") }, [customerId])
+
+  // Compute endAt from service duration, clamped to DAY_END_HOUR
+  const durationMin = selectedService?.durationMinutes ?? 60
+  const endAt = useMemo(() => {
+    const raw = new Date(startAt.getTime() + durationMin * 60_000)
+    const ceiling = new Date(startAt)
+    ceiling.setHours(DAY_END_HOUR, 0, 0, 0)
+    return raw > ceiling ? ceiling : raw
+  }, [startAt, durationMin])
+
+  const canCreate = customerId.length > 0 && serviceId.length > 0
+
+  // Close on Escape
   useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose()
-    }
+    function onKeyDown(e: KeyboardEvent) { if (e.key === "Escape") onClose() }
     document.addEventListener("keydown", onKeyDown)
     return () => document.removeEventListener("keydown", onKeyDown)
   }, [onClose])
 
-  // Compute endAt, clamped to DAY_END_HOUR.
-  const endAt = (() => {
-    const raw = new Date(startAt.getTime() + duration * 60_000)
-    const ceiling = new Date(startAt)
-    ceiling.setHours(DAY_END_HOUR, 0, 0, 0)
-    return raw > ceiling ? ceiling : raw
-  })()
-
-  const canCreate = customerName.trim().length > 0 && serviceName.trim().length > 0
-
   function handleCreate() {
-    if (!canCreate) return
+    if (!canCreate || !selectedCustomer || !selectedService) return
+    const selectedPet = pets.find((p) => p.id === petId)
     onCreate({
       staffId: staff.id,
       startAt,
       endAt,
-      customerNameSnapshot: customerName.trim(),
-      serviceNameSnapshot: serviceName.trim(),
+      customerId,
+      serviceId,
+      petId: selectedPet?.id,
+      customerNameSnapshot: selectedCustomer.name,
+      serviceNameSnapshot: selectedService.name,
+      petNameSnapshot: selectedPet?.name,
+      priceSnapshot: `${currency} ${selectedService.price}`,
       status: "confirmed",
     })
   }
 
-  function inputStyle(field: string): React.CSSProperties {
+  function selectFocusStyle(field: string): React.CSSProperties {
     const focused = focusedField === field
     return {
       ...BASE_INPUT,
-      borderColor: focused
-        ? t.colors.component.input.borderFocus
-        : t.colors.component.input.border,
-      background: focused
-        ? t.colors.component.input.bgFocus
-        : t.colors.component.input.bg,
-      boxShadow: focused ? t.shadow.inner : "none",
+      cursor: "pointer",
+      appearance: "none" as const,
+      WebkitAppearance: "none" as const,
+      paddingRight: 32,
+      borderColor: focused ? t.colors.component.input.borderFocus : t.colors.component.input.border,
+      background:  focused ? t.colors.component.input.bgFocus     : t.colors.component.input.bg,
+      boxShadow:   focused ? t.shadow.inner : "none",
     }
   }
 
@@ -210,7 +240,6 @@ export function CreateBookingModal({
                 gap: 6,
               }}
             >
-              {/* Staff colour dot */}
               <span
                 aria-hidden="true"
                 style={{
@@ -251,39 +280,74 @@ export function CreateBookingModal({
         </div>
 
         {/* ── Divider ────────────────────────────────────────────────────── */}
-        <div
-          style={{ height: 1, background: t.colors.semantic.borderSubtle }}
-        />
+        <div style={{ height: 1, background: t.colors.semantic.borderSubtle }} />
 
         {/* ── Form fields ────────────────────────────────────────────────── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {/* Customer name */}
-          <Field label="Customer name">
-            <input
-              type="text"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleCreate() }}
-              onFocus={() => setFocusedField("customer")}
-              onBlur={() => setFocusedField(null)}
-              placeholder="e.g. Emma Wilson"
-              autoFocus
-              style={inputStyle("customer")}
-            />
+          {/* Customer dropdown */}
+          <Field label="Customer">
+            <div style={{ position: "relative" }}>
+              <select
+                value={customerId}
+                onChange={(e) => setCustomerId(e.target.value)}
+                onFocus={() => setFocusedField("customer")}
+                onBlur={() => setFocusedField(null)}
+                autoFocus
+                style={selectFocusStyle("customer")}
+              >
+                <option value="" disabled>Select customer…</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}{c.phone ? ` · ${c.phone}` : ""}
+                  </option>
+                ))}
+              </select>
+              <SelectChevron />
+            </div>
           </Field>
 
-          {/* Service name */}
+          {/* Pet dropdown (only when customer has pets) */}
+          {selectedCustomer && pets.length > 0 && (
+            <Field label="Pet">
+              <div style={{ position: "relative" }}>
+                <select
+                  value={petId}
+                  onChange={(e) => setPetId(e.target.value)}
+                  onFocus={() => setFocusedField("pet")}
+                  onBlur={() => setFocusedField(null)}
+                  style={selectFocusStyle("pet")}
+                >
+                  <option value="">No pet selected</option>
+                  {pets.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}{p.breed ? ` (${p.breed})` : ""}
+                    </option>
+                  ))}
+                </select>
+                <SelectChevron />
+              </div>
+            </Field>
+          )}
+
+          {/* Service dropdown */}
           <Field label="Service">
-            <input
-              type="text"
-              value={serviceName}
-              onChange={(e) => setServiceName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleCreate() }}
-              onFocus={() => setFocusedField("service")}
-              onBlur={() => setFocusedField(null)}
-              placeholder="e.g. Haircut"
-              style={inputStyle("service")}
-            />
+            <div style={{ position: "relative" }}>
+              <select
+                value={serviceId}
+                onChange={(e) => setServiceId(e.target.value)}
+                onFocus={() => setFocusedField("service")}
+                onBlur={() => setFocusedField(null)}
+                style={selectFocusStyle("service")}
+              >
+                <option value="" disabled>Select service…</option>
+                {services.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} · {s.durationMinutes} min · {currency} {s.price}
+                  </option>
+                ))}
+              </select>
+              <SelectChevron />
+            </div>
           </Field>
 
           {/* Start time — readonly */}
@@ -300,47 +364,21 @@ export function CreateBookingModal({
             </div>
           </Field>
 
-          {/* Duration */}
-          <Field label="Duration">
-            <div style={{ position: "relative" }}>
-              <select
-                value={duration}
-                onChange={(e) =>
-                  setDuration(Number(e.target.value) as Duration)
-                }
-                onFocus={() => setFocusedField("duration")}
-                onBlur={() => setFocusedField(null)}
-                style={{
-                  ...inputStyle("duration"),
-                  cursor: "pointer",
-                  appearance: "none",
-                  WebkitAppearance: "none",
-                  paddingRight: 32,
-                }}
-              >
-                {DURATION_OPTIONS.map((d) => (
-                  <option key={d} value={d}>
-                    {d} min
-                  </option>
-                ))}
-              </select>
-              {/* Chevron */}
-              <span
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  right: 11,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  pointerEvents: "none",
-                  fontSize: 10,
-                  color: t.colors.semantic.textMuted,
-                }}
-              >
-                ▾
-              </span>
+          {/* Duration + Price summary (auto-filled from service) */}
+          {selectedService && (
+            <div style={{ display: "flex", gap: 10 }}>
+              <Field label="Duration">
+                <div style={{ ...BASE_INPUT, color: t.colors.semantic.textMuted, cursor: "default", userSelect: "none" }}>
+                  {selectedService.durationMinutes} min
+                </div>
+              </Field>
+              <Field label="Price">
+                <div style={{ ...BASE_INPUT, color: t.colors.semantic.textMuted, cursor: "default", userSelect: "none" }}>
+                  {currency} {selectedService.price}
+                </div>
+              </Field>
             </div>
-          </Field>
+          )}
         </div>
 
         {/* ── Actions ────────────────────────────────────────────────────── */}

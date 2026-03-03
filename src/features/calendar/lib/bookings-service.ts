@@ -19,8 +19,12 @@ export interface BookingDoc {
   staffId:              string
   startAt:              Timestamp
   endAt:                Timestamp
+  customerId?:          string
+  serviceId?:           string
+  petId?:               string
   customerNameSnapshot: string
   serviceNameSnapshot:  string
+  petNameSnapshot?:     string
   priceSnapshot?:       string
   status:               BookingStatus
   createdAt?:           Timestamp
@@ -51,8 +55,12 @@ export function docToBooking(
     staffId:              data.staffId as string,
     startAt:              (data.startAt as Timestamp).toDate(),
     endAt:                (data.endAt as Timestamp).toDate(),
+    customerId:           (data.customerId as string | undefined) ?? undefined,
+    serviceId:            (data.serviceId as string | undefined) ?? undefined,
+    petId:                (data.petId as string | undefined) ?? undefined,
     customerNameSnapshot: data.customerNameSnapshot as string,
     serviceNameSnapshot:  data.serviceNameSnapshot as string,
+    petNameSnapshot:      (data.petNameSnapshot as string | undefined) ?? undefined,
     priceSnapshot:        (data.priceSnapshot as string | undefined) ?? undefined,
     status:               data.status as BookingStatus,
   }
@@ -71,15 +79,16 @@ export async function createBooking(
     staffId:              booking.staffId,
     startAt:              Timestamp.fromDate(booking.startAt),
     endAt:                Timestamp.fromDate(booking.endAt),
+    customerId:           booking.customerId ?? null,
+    serviceId:            booking.serviceId ?? null,
+    petId:                booking.petId ?? null,
     customerNameSnapshot: booking.customerNameSnapshot,
     serviceNameSnapshot:  booking.serviceNameSnapshot,
+    petNameSnapshot:      booking.petNameSnapshot ?? null,
     priceSnapshot:        booking.priceSnapshot ?? null,
     status:               booking.status,
     createdAt:            serverTimestamp(),
     updatedAt:            serverTimestamp(),
-  } satisfies Omit<BookingDoc, "createdAt" | "updatedAt"> & {
-    createdAt: ReturnType<typeof serverTimestamp>
-    updatedAt: ReturnType<typeof serverTimestamp>
   })
   return ref.id
 }
@@ -95,8 +104,12 @@ export async function updateBooking(
   if (updates.staffId !== undefined)              payload.staffId = updates.staffId
   if (updates.startAt !== undefined)              payload.startAt = Timestamp.fromDate(updates.startAt)
   if (updates.endAt !== undefined)                payload.endAt   = Timestamp.fromDate(updates.endAt)
+  if (updates.customerId !== undefined)           payload.customerId           = updates.customerId ?? null
+  if (updates.serviceId !== undefined)            payload.serviceId            = updates.serviceId ?? null
+  if (updates.petId !== undefined)                payload.petId                = updates.petId ?? null
   if (updates.customerNameSnapshot !== undefined) payload.customerNameSnapshot = updates.customerNameSnapshot
   if (updates.serviceNameSnapshot !== undefined)  payload.serviceNameSnapshot  = updates.serviceNameSnapshot
+  if (updates.petNameSnapshot !== undefined)      payload.petNameSnapshot      = updates.petNameSnapshot ?? null
   if (updates.priceSnapshot !== undefined)        payload.priceSnapshot        = updates.priceSnapshot
   if (updates.status !== undefined)               payload.status               = updates.status
 

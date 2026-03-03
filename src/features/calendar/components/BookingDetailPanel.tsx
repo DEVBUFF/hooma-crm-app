@@ -1,10 +1,16 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { t } from "@/lib/tokens"
 import { formatTime, formatDuration, diffMinutes } from "@/features/calendar/lib/time"
-import type { Booking, BookingStatus, Staff } from "@/features/calendar/types"
+import type {
+  Booking,
+  BookingStatus,
+  Staff,
+  CalendarCustomer,
+  CalendarService,
+} from "@/features/calendar/types"
 
 // ---------------------------------------------------------------------------
 // Status config
@@ -75,6 +81,33 @@ const LABEL_STYLE: React.CSSProperties = {
   letterSpacing: t.typography.letterSpacing.label,
 }
 
+const SELECT_STYLE: React.CSSProperties = {
+  ...INPUT_STYLE,
+  cursor:           "pointer",
+  appearance:       "none",
+  WebkitAppearance: "none",
+  paddingRight:     32,
+}
+
+function SelectChevron() {
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        position:      "absolute",
+        right:         11,
+        top:           "50%",
+        transform:     "translateY(-50%)",
+        pointerEvents: "none",
+        fontSize:      10,
+        color:         t.colors.semantic.textMuted,
+      }}
+    >
+      ▾
+    </span>
+  )
+}
+
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
@@ -82,6 +115,9 @@ const LABEL_STYLE: React.CSSProperties = {
 interface BookingDetailPanelProps {
   booking: Booking
   staff: Staff[]
+  customers: CalendarCustomer[]
+  services: CalendarService[]
+  currency?: string
   onClose:  () => void
   onSave:   (updated: Booking) => void
   onDelete: (id: string) => void
@@ -94,14 +130,17 @@ interface BookingDetailPanelProps {
 export function BookingDetailPanel({
   booking,
   staff,
+  customers,
+  services,
+  currency = "GEL",
   onClose,
   onSave,
   onDelete,
 }: BookingDetailPanelProps) {
   // ── Local editable state ──────────────────────────────────────────────
-  const [customerName, setCustomerName]   = useState(booking.customerNameSnapshot)
-  const [serviceName, setServiceName]     = useState(booking.serviceNameSnapshot)
-  const [price, setPrice]                 = useState(booking.priceSnapshot ?? "")
+  const [customerId, setCustomerId]       = useState(booking.customerId ?? "")
+  const [petId, setPetId]                 = useState(booking.petId ?? "")
+  const [serviceId, setServiceId]         = useState(booking.serviceId ?? "")
   const [status, setStatus]               = useState<BookingStatus>(booking.status)
   const [staffId, setStaffId]             = useState(booking.staffId)
   const [startDate, setStartDate]         = useState(formatDateForInput(booking.startAt))
@@ -110,9 +149,9 @@ export function BookingDetailPanel({
 
   // Sync when a different booking is selected
   useEffect(() => {
-    setCustomerName(booking.customerNameSnapshot)
-    setServiceName(booking.serviceNameSnapshot)
-    setPrice(booking.priceSnapshot ?? "")
+    setCustomerId(booking.customerId ?? "")
+    setPetId(booking.petId ?? "")
+    setServiceId(booking.serviceId ?? "")
     setStatus(booking.status)
     setStaffId(booking.staffId)
     setStartDate(formatDateForInput(booking.startAt))
@@ -121,6 +160,23 @@ export function BookingDetailPanel({
   }, [booking])
 
   // ── Derived ───────────────────────────────────────────────────────────
+  const selectedCustomer = useMemo(
+    () => customers.find((c) => c.id === customerId) ?? null,
+    [customers, customerId],
+  )
+  const selectedService = useMemo(
+    () => services.find((s) => s.id === serviceId) ?? null,
+    [services, serviceId],
+  )
+  const pets = selectedCustomer?.pets ?? []
+
+  // Reset pet when customer changes (unless it's the initial sync)
+  const isInitialMount = useRef(true)
+  useEffect(() => {
+    if (isInitialMount.current) { isInitialMount.current = false; return }
+    setPetId("")
+  }, [customerId])
+
   const currentStaff = staff.find((s) => s.id === staffId) ?? staff[0]
   const statusCfg    = STATUS_OPTIONS.find((o) => o.value === status)!
 
@@ -129,9 +185,9 @@ export function BookingDetailPanel({
 
   // ── Dirty check ───────────────────────────────────────────────────────
   const isDirty =
-    customerName  !== booking.customerNameSnapshot ||
-    serviceName   !== booking.serviceNameSnapshot ||
-    price         !== (booking.priceSnapshot ?? "") ||
+    customerId    !== (booking.customerId ?? "") ||
+    petId         !== (booking.petId ?? "") ||
+    serviceId     !== (booking.serviceId ?? "") ||
     status        !== booking.status ||
     staffId       !== booking.staffId ||
     startDate     !== formatDateForInput(booking.startAt) ||
@@ -147,17 +203,25 @@ export function BookingDetailPanel({
     const newStart = new Date(y, mo - 1, d, sh, sm, 0, 0)
     const newEnd   = new Date(y, mo - 1, d, eh, em, 0, 0)
 
+    const customer = customers.find((c) => c.id === customerId)
+    const service  = services.find((s) => s.id === serviceId)
+    const pet      = pets.find((p) => p.id === petId)
+
     onSave({
       ...booking,
-      customerNameSnapshot: customerName.trim(),
-      serviceNameSnapshot:  serviceName.trim(),
-      priceSnapshot:        price.trim() || undefined,
+      customerId:           customerId || undefined,
+      serviceId:            serviceId || undefined,
+      petId:                pet?.id,
+      customerNameSnapshot: customer?.name ?? booking.customerNameSnapshot,
+      serviceNameSnapshot:  service?.name ?? booking.serviceNameSnapshot,
+      petNameSnapshot:      pet?.name,
+      priceSnapshot:        service ? `${currency} ${service.price}` : booking.priceSnapshot,
       status,
       staffId,
       startAt: newStart,
       endAt:   newEnd,
     })
-  }, [booking, customerName, serviceName, price, status, staffId, startDate, startTime, endTime, onSave])
+  }, [booking, customerId, serviceId, petId, pets, customers, services, currency, status, staffId, startDate, startTime, endTime, onSave])
 
   // ── Close on Escape ───────────────────────────────────────────────────
   useEffect(() => {
@@ -344,41 +408,77 @@ export function BookingDetailPanel({
             gap:           16,
           }}
         >
-          {/* Customer name */}
+          {/* Customer dropdown */}
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
             <label style={LABEL_STYLE}>Customer</label>
-            <input
-              type="text"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              style={INPUT_STYLE}
-              placeholder="Customer name"
-            />
+            <div style={{ position: "relative" }}>
+              <select
+                value={customerId}
+                onChange={(e) => setCustomerId(e.target.value)}
+                style={SELECT_STYLE}
+              >
+                <option value="">Select customer…</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}{c.phone ? ` · ${c.phone}` : ""}
+                  </option>
+                ))}
+              </select>
+              <SelectChevron />
+            </div>
           </div>
 
-          {/* Service name */}
+          {/* Pet dropdown (only when customer has pets) */}
+          {selectedCustomer && pets.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              <label style={LABEL_STYLE}>Pet</label>
+              <div style={{ position: "relative" }}>
+                <select
+                  value={petId}
+                  onChange={(e) => setPetId(e.target.value)}
+                  style={SELECT_STYLE}
+                >
+                  <option value="">No pet selected</option>
+                  {pets.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}{p.breed ? ` (${p.breed})` : ""}
+                    </option>
+                  ))}
+                </select>
+                <SelectChevron />
+              </div>
+            </div>
+          )}
+
+          {/* Service dropdown */}
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
             <label style={LABEL_STYLE}>Service</label>
-            <input
-              type="text"
-              value={serviceName}
-              onChange={(e) => setServiceName(e.target.value)}
-              style={INPUT_STYLE}
-              placeholder="Service name"
-            />
+            <div style={{ position: "relative" }}>
+              <select
+                value={serviceId}
+                onChange={(e) => setServiceId(e.target.value)}
+                style={SELECT_STYLE}
+              >
+                <option value="">Select service…</option>
+                {services.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} · {s.durationMinutes} min · {currency} {s.price}
+                  </option>
+                ))}
+              </select>
+              <SelectChevron />
+            </div>
           </div>
 
-          {/* Price */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-            <label style={LABEL_STYLE}>Price</label>
-            <input
-              type="text"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              style={INPUT_STYLE}
-              placeholder="e.g. GEL 25"
-            />
-          </div>
+          {/* Price (auto-filled, read-only) */}
+          {selectedService && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              <label style={LABEL_STYLE}>Price</label>
+              <div style={{ ...INPUT_STYLE, color: t.colors.semantic.textMuted, cursor: "default", userSelect: "none" }}>
+                {currency} {selectedService.price}
+              </div>
+            </div>
+          )}
 
           {/* Staff */}
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
@@ -387,13 +487,7 @@ export function BookingDetailPanel({
               <select
                 value={staffId}
                 onChange={(e) => setStaffId(e.target.value)}
-                style={{
-                  ...INPUT_STYLE,
-                  cursor:          "pointer",
-                  appearance:      "none",
-                  WebkitAppearance: "none",
-                  paddingRight:    32,
-                }}
+                style={SELECT_STYLE}
               >
                 {staff.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -401,20 +495,7 @@ export function BookingDetailPanel({
                   </option>
                 ))}
               </select>
-              <span
-                aria-hidden="true"
-                style={{
-                  position:      "absolute",
-                  right:         11,
-                  top:           "50%",
-                  transform:     "translateY(-50%)",
-                  pointerEvents: "none",
-                  fontSize:      10,
-                  color:         t.colors.semantic.textMuted,
-                }}
-              >
-                ▾
-              </span>
+              <SelectChevron />
             </div>
           </div>
 
@@ -450,7 +531,6 @@ export function BookingDetailPanel({
 
           {/* Date + Start time + End time */}
           <div style={{ display: "flex", gap: 10 }}>
-            {/* Date */}
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
               <label style={LABEL_STYLE}>Date</label>
               <input
@@ -460,8 +540,6 @@ export function BookingDetailPanel({
                 style={{ ...INPUT_STYLE, cursor: "pointer" }}
               />
             </div>
-
-            {/* Start */}
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
               <label style={LABEL_STYLE}>Start</label>
               <input
@@ -471,8 +549,6 @@ export function BookingDetailPanel({
                 style={{ ...INPUT_STYLE, cursor: "pointer" }}
               />
             </div>
-
-            {/* End */}
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
               <label style={LABEL_STYLE}>End</label>
               <input

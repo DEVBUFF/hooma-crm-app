@@ -9,6 +9,8 @@ import {
 import { useWeekRange } from "@/features/calendar/hooks/useWeekRange"
 import { useBookings } from "@/features/calendar/hooks/useBookings"
 import { useCalendarStaff } from "@/features/calendar/hooks/useCalendarStaff"
+import { useCalendarCustomers } from "@/features/calendar/hooks/useCalendarCustomers"
+import { useCalendarServices } from "@/features/calendar/hooks/useCalendarServices"
 import { useSalon } from "@/lib/useSalon"
 import { CalendarToolbar } from "@/features/calendar/components/CalendarToolbar"
 import { WeekGrid } from "@/features/calendar/components/WeekGrid"
@@ -68,6 +70,9 @@ export function CalendarPage() {
   const salonId                                    = salon?.id ?? null
   const { bookings, loading: bookingsLoading, add, update, remove } = useBookings(salonId)
   const { staff, loading: staffLoading }           = useCalendarStaff(salonId)
+  const { customers }                              = useCalendarCustomers(salonId)
+  const { services }                               = useCalendarServices(salonId)
+  const currency                                   = salon?.settings?.currency ?? "GEL"
 
   // ── Create-booking modal ───────────────────────────────────────────────────
   const [pendingSlot, setPendingSlot] = useState<PendingSlot | null>(null)
@@ -233,6 +238,9 @@ export function CalendarPage() {
         <CreateBookingModal
           staff={pendingSlot.staff}
           startAt={pendingSlot.startAt}
+          customers={customers}
+          services={services}
+          currency={currency}
           onClose={() => setPendingSlot(null)}
           onCreate={handleCreate}
         />
@@ -243,6 +251,9 @@ export function CalendarPage() {
         <BookingDetailPanel
           booking={selectedBooking}
           staff={staff}
+          customers={customers}
+          services={services}
+          currency={currency}
           onClose={() => setSelectedBookingId(null)}
           onSave={handleSaveBooking}
           onDelete={handleDeleteBooking}
