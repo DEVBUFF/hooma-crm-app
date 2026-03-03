@@ -10,28 +10,30 @@ import { cn } from "@/lib/utils";
 // ---------------------------------------------------------------------------
 
 // Variant → visual recipe
-// "default"  — standard dashboard card  (bg-card, minimal shadow)
+// "default"  — standard dashboard card  (bg-card, hairline shadow ring)
 // "elevated" — hero / featured card     (bg-card, deeper shadow)
-// "auth"     — login / register panel   (bg-card + backdrop-blur, auth shadow, subtle border)
+// "auth"     — login / register panel   (bg-card + backdrop-blur, auth shadow)
+// "flat"     — no shadow, just bg       (for inline sections / list items)
 const VARIANT_CLASSES = {
   default:
     "bg-card text-card-foreground " +
-    "border border-border/40 " +
-    "shadow-[0_0_0_1px_rgba(0,0,0,0.04)] " +
-    "rounded-xl",
+    "shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_1px_3px_rgba(0,0,0,0.04)] " +
+    "rounded-2xl",
 
   elevated:
     "bg-card text-card-foreground " +
-    "border border-border/40 " +
-    "shadow-[0_4px_24px_rgba(0,0,0,0.08)] " +
-    "rounded-xl",
+    "shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_20px_rgba(0,0,0,0.06)] " +
+    "rounded-2xl",
 
   auth:
     "bg-card text-card-foreground " +
     "backdrop-blur-2xl " +
-    "border border-border/40 " +
-    "shadow-[0_4px_24px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] " +
-    "rounded-xl",
+    "shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_20px_rgba(0,0,0,0.08)] " +
+    "rounded-2xl",
+
+  flat:
+    "bg-card text-card-foreground " +
+    "rounded-2xl",
 } as const;
 
 // Padding → spacing applied to Card itself (overridable per-slot via className)
@@ -93,8 +95,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         interactive && [
           "cursor-pointer",
           "transition-all duration-200 ease-out",
-          "hover:-translate-y-0.5",
-          "hover:shadow-[0_2px_12px_rgba(0,0,0,0.08)]",
+          "hover:-translate-y-px",
+          "hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_16px_rgba(0,0,0,0.08)]",
         ],
         className
       )}

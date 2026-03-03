@@ -165,26 +165,26 @@ export default function StaffPage() {
 
       {/* Staff grid */}
       {!loading && items.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {items.map((s) => (
             <Card
               key={s.id}
-              interactive
-              className={`group relative p-5 transition-all ${!s.isActive ? "opacity-60" : ""}`}
+              className={`group relative p-0 overflow-hidden transition-all ${!s.isActive ? "opacity-50" : ""}`}
             >
-              <div className="flex items-start gap-3">
+              {/* Top content */}
+              <div className="flex items-start gap-4 p-5 pb-4">
                 {/* Avatar */}
                 <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+                  className="w-11 h-11 rounded-2xl flex items-center justify-center text-xs font-bold shrink-0"
                   style={{ background: t.colors.semantic.primaryTint, color: t.colors.semantic.primary }}
                 >
                   {s.name.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm text-foreground">{s.name}</p>
-                  {s.phone && <p className="text-xs text-muted-foreground">{s.phone}</p>}
+                  {s.phone && <p className="text-xs text-muted-foreground mt-0.5">{s.phone}</p>}
                   <span
-                    className="inline-block mt-1.5 text-[10px] font-semibold px-2.5 py-0.5 rounded-md capitalize"
+                    className="inline-block mt-2 text-[10px] font-semibold px-2.5 py-0.5 rounded-md capitalize"
                     style={roleStyle[s.role]}
                   >
                     {s.role}
@@ -192,28 +192,24 @@ export default function StaffPage() {
                 </div>
               </div>
 
-              {/* Actions */}
+              {/* Actions — separated by a subtle divider */}
               <div
-                className="flex gap-2 mt-4 pt-3 border-t"
-                style={{ borderColor: `${t.colors.semantic.divider}99` }}
+                className="flex gap-px bg-border/30"
               >
                 <button onClick={() => toggleActive(s)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors"
-                  style={{ background: t.colors.semantic.bg, color: t.colors.semantic.textMuted }}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-medium cursor-pointer transition-colors bg-card hover:bg-muted"
+                  style={{ color: t.colors.semantic.textMuted }}
                 >
                   {s.isActive
-                    ? <ToggleRight size={13} style={{ color: t.colors.semantic.successAccent }} />
-                    : <ToggleLeft size={13} />
+                    ? <ToggleRight size={14} style={{ color: t.colors.semantic.successAccent }} />
+                    : <ToggleLeft size={14} />
                   }
                   {s.isActive ? "Active" : "Inactive"}
                 </button>
                 <button onClick={() => removeStaff(s.id)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
-                  style={{ background: t.colors.semantic.bg }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.errorBg }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}
+                  className="w-12 flex items-center justify-center cursor-pointer transition-colors bg-card hover:bg-destructive/5"
                 >
-                  <Trash2 size={13} style={{ color: t.colors.semantic.error }} />
+                  <Trash2 size={14} style={{ color: t.colors.semantic.error }} />
                 </button>
               </div>
             </Card>

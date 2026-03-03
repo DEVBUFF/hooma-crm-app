@@ -153,16 +153,15 @@ export default function CustomersPage() {
 
       {/* Customer list */}
       {!loading && items.length > 0 && (
-        <div className="space-y-2">
+        <Card variant="flat" padding="sm" className="p-0 overflow-hidden divide-y divide-border/30">
           {items.map((c) => (
-            <Card
+            <div
               key={c.id}
-              interactive
-              className="group flex-row items-center gap-4 px-5 py-4"
+              className="group flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
             >
               {/* Avatar */}
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+                className="w-10 h-10 rounded-2xl flex items-center justify-center text-xs font-bold shrink-0"
                 style={{ background: t.colors.semantic.primaryTint, color: t.colors.semantic.primary }}
               >
                 {c.name.slice(0, 2).toUpperCase()}
@@ -191,23 +190,23 @@ export default function CustomersPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-1.5">
-                <Link
-                  href={`/app/customers/${c.id}`}
-                  className="w-8 h-8 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all bg-[--color-muted] hover:bg-[--color-input]"
-                >
-                  <ChevronRight size={14} className="text-muted-foreground" />
-                </Link>
+              <div className="flex items-center gap-1">
                 <button
                   onClick={() => removeCustomer(c.id)}
-                  className="w-8 h-8 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all bg-[--color-muted] hover:bg-destructive/10"
+                  className="w-8 h-8 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all hover:bg-destructive/8"
                 >
-                  <Trash2 size={13} className="text-destructive" />
+                  <Trash2 size={13} className="text-destructive/60" />
                 </button>
+                <Link
+                  href={`/app/customers/${c.id}`}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-muted-foreground/40 group-hover:text-muted-foreground"
+                >
+                  <ChevronRight size={15} />
+                </Link>
               </div>
-            </Card>
+            </div>
           ))}
-        </div>
+        </Card>
       )}
     </div>
   );
