@@ -109,6 +109,8 @@ interface StaffDayColumnProps {
   onResizeStart: (e: React.PointerEvent, booking: Booking) => void
   /** Called when the user selects a quick-action status from the kebab dropdown. */
   onStatusChange: (id: string, status: BookingStatus) => void
+  /** Called when the user clicks (taps) a booking card. */
+  onBookingClick?: (booking: Booking) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -127,6 +129,7 @@ export function StaffDayColumn({
   onDragStart,
   onResizeStart,
   onStatusChange,
+  onBookingClick,
 }: StaffDayColumnProps) {
   const sh = slotHeightPx(pxPerMinute)
   const th = totalHeightPx(pxPerMinute)
@@ -223,6 +226,7 @@ export function StaffDayColumn({
             onDragStart={(e) => onDragStart(e, pb)}
             onResizeStart={(e) => onResizeStart(e, pb)}
             onStatusChange={(status) => onStatusChange(pb.id, status)}
+            onBookingClick={onBookingClick}
           />
         )
       })}

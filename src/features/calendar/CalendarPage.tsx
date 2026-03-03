@@ -4,14 +4,17 @@ import { useCallback, useMemo, useState } from "react"
 import { t } from "@/lib/tokens"
 import {
   addDays,
-  startOfWeekMonday,
   formatDayLabel,
 } from "@/features/calendar/lib/time"
 import { useWeekRange } from "@/features/calendar/hooks/useWeekRange"
+import { useBookings } from "@/features/calendar/hooks/useBookings"
+import { useCalendarStaff } from "@/features/calendar/hooks/useCalendarStaff"
+import { useSalon } from "@/lib/useSalon"
 import { CalendarToolbar } from "@/features/calendar/components/CalendarToolbar"
 import { WeekGrid } from "@/features/calendar/components/WeekGrid"
 import { WeekViewGrid } from "@/features/calendar/components/WeekViewGrid"
 import { CreateBookingModal } from "@/features/calendar/components/CreateBookingModal"
+import { BookingDetailPanel } from "@/features/calendar/components/BookingDetailPanel"
 import { BASE_PX_PER_MINUTE } from "@/features/calendar/lib/grid-config"
 import type { Booking, BookingStatus, Staff } from "@/features/calendar/types"
 
@@ -21,81 +24,6 @@ import type { Booking, BookingStatus, Staff } from "@/features/calendar/types"
 
 const ZOOM_LEVELS = [0.75, 1, 1.25, 1.5] as const
 type ZoomLevel = (typeof ZOOM_LEVELS)[number]
-
-// ---------------------------------------------------------------------------
-// Mock data — replace with Firestore queries when ready
-// ---------------------------------------------------------------------------
-
-const MOCK_STAFF: Staff[] = [
-  { id: "s1", name: "Alice", color: t.colors.base.blue500 },
-  { id: "s2", name: "Bob",   color: t.colors.base.coral500 },
-  { id: "s3", name: "Carol", color: t.colors.base.green600 },
-  { id: "s4", name: "Dave",  color: t.colors.base.blue600 },
-]
-
-/**
- * Build 6 bookings anchored to the current week so they are always visible on
- * first load. Dates are computed once inside useState lazy initialiser.
- */
-function buildMockBookings(): Booking[] {
-  const ws = startOfWeekMonday(new Date())
-
-  function wd(dayOff: number, h: number, m: number): Date {
-    const d = new Date(ws)
-    d.setDate(d.getDate() + dayOff)
-    d.setHours(h, m, 0, 0)
-    return d
-  }
-
-  return [
-    // Monday
-    {
-      id: "b1", staffId: "s1",
-      startAt: wd(0, 9, 0),  endAt: wd(0, 10, 0),
-      customerNameSnapshot: "Emma Wilson",  serviceNameSnapshot: "Haircut",
-      priceSnapshot: "GEL 25",
-      status: "confirmed",
-    },
-    {
-      id: "b2", staffId: "s2",
-      startAt: wd(0, 11, 0), endAt: wd(0, 11, 30),
-      customerNameSnapshot: "Jake Chen",   serviceNameSnapshot: "Beard Trim",
-      priceSnapshot: "GEL 15",
-      status: "confirmed",
-    },
-    // Wednesday
-    {
-      id: "b3", staffId: "s1",
-      startAt: wd(2, 14, 0), endAt: wd(2, 15, 0),
-      customerNameSnapshot: "Sophie Martin", serviceNameSnapshot: "Hair Color",
-      priceSnapshot: "GEL 60",
-      status: "completed",
-    },
-    {
-      id: "b4", staffId: "s3",
-      startAt: wd(2, 10, 0), endAt: wd(2, 11, 0),
-      customerNameSnapshot: "Liam Brown",  serviceNameSnapshot: "Deep Massage",
-      priceSnapshot: "GEL 45",
-      status: "confirmed",
-    },
-    // Thursday
-    {
-      id: "b5", staffId: "s2",
-      startAt: wd(3, 13, 0), endAt: wd(3, 14, 0),
-      customerNameSnapshot: "Olivia Davis", serviceNameSnapshot: "Highlights",
-      priceSnapshot: "GEL 80",
-      status: "confirmed",
-    },
-    // Friday
-    {
-      id: "b6", staffId: "s4",
-      startAt: wd(4, 15, 0), endAt: wd(4, 16, 0),
-      customerNameSnapshot: "Noah Taylor", serviceNameSnapshot: "Cut & Style",
-      priceSnapshot: "GEL 35",
-      status: "confirmed",
-    },
-  ]
-}
 
 // ---------------------------------------------------------------------------
 // Page
@@ -135,42 +63,80 @@ export function CalendarPage() {
   const onNext  = view === "week" ? goNextWeek  : goNextDay
   const onToday = view === "week" ? goThisWeek  : goTodayDay
 
-  // ── Bookings (local state) ─────────────────────────────────────────────────
-  const [bookings, setBookings] = useState<Booking[]>(() => buildMockBookings())
+  // ── Salon + Firestore data ──────────────────────────────────────────────
+  const { salon }                                  = useSalon()
+  const salonId                                    = salon?.id ?? null
+  const { bookings, loading: bookingsLoading, add, update, remove } = useBookings(salonId)
+  const { staff, loading: staffLoading }           = useCalendarStaff(salonId)
 
   // ── Create-booking modal ───────────────────────────────────────────────────
   const [pendingSlot, setPendingSlot] = useState<PendingSlot | null>(null)
 
-  const handleColumnClick = useCallback((staff: Staff, startAt: Date) => {
-    setPendingSlot({ staff, startAt })
+  const handleColumnClick = useCallback((s: Staff, startAt: Date) => {
+    setPendingSlot({ staff: s, startAt })
   }, [])
 
-  function handleCreate(data: Omit<Booking, "id">) {
-    setBookings((prev) => [...prev, { ...data, id: `b${Date.now()}` }])
-    setPendingSlot(null)
-  }
+  const handleCreate = useCallback(
+    async (data: Omit<Booking, "id">) => {
+      await add(data)
+      setPendingSlot(null)
+    },
+    [add],
+  )
 
   // ── Status change (quick actions from BookingCard dropdown) ───────────────
   const handleStatusChange = useCallback(
-    (id: string, status: BookingStatus) => {
-      setBookings((prev) =>
-        prev.map((b) => (b.id === id ? { ...b, status } : b)),
-      )
+    async (id: string, status: BookingStatus) => {
+      await update(id, { status })
     },
-    [],
+    [update],
   )
 
   // ── Drag / resize commit ───────────────────────────────────────────────────
   const handleUpdateBooking = useCallback(
-    (
+    async (
       id:      string,
       updates: { staffId: string; startAt: Date; endAt: Date },
     ) => {
-      setBookings((prev) =>
-        prev.map((b) => (b.id === id ? { ...b, ...updates } : b)),
-      )
+      await update(id, updates)
     },
-    [],
+    [update],
+  )
+
+  // ── Booking detail panel (click to open) ──────────────────────────────────
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null)
+
+  const selectedBooking = useMemo(
+    () => bookings.find((b) => b.id === selectedBookingId) ?? null,
+    [bookings, selectedBookingId],
+  )
+
+  const handleBookingClick = useCallback((booking: Booking) => {
+    setSelectedBookingId(booking.id)
+  }, [])
+
+  const handleSaveBooking = useCallback(
+    async (updated: Booking) => {
+      await update(updated.id, {
+        staffId:              updated.staffId,
+        startAt:              updated.startAt,
+        endAt:                updated.endAt,
+        customerNameSnapshot: updated.customerNameSnapshot,
+        serviceNameSnapshot:  updated.serviceNameSnapshot,
+        priceSnapshot:        updated.priceSnapshot,
+        status:               updated.status,
+      })
+      setSelectedBookingId(null)
+    },
+    [update],
+  )
+
+  const handleDeleteBooking = useCallback(
+    async (id: string) => {
+      await remove(id)
+      setSelectedBookingId(null)
+    },
+    [remove],
   )
 
   // ── Zoom ───────────────────────────────────────────────────────────────────
@@ -186,6 +152,9 @@ export function CalendarPage() {
     () => setZoomIdx((i) => Math.max(i - 1, 0)),
     [],
   )
+
+  // ── Loading guard ──────────────────────────────────────────────────────
+  const isLoading = bookingsLoading || staffLoading
 
   return (
     <div
@@ -206,21 +175,48 @@ export function CalendarPage() {
         canZoomOut={zoomIdx > 0}
       />
 
-      {view === "week" ? (
+      {isLoading ? (
+        <div
+          style={{
+            flex:           1,
+            display:        "flex",
+            alignItems:     "center",
+            justifyContent: "center",
+            color:          t.colors.semantic.textMuted,
+            fontSize:       t.typography.fontSize.sm,
+          }}
+        >
+          Loading…
+        </div>
+      ) : staff.length === 0 ? (
+        <div
+          style={{
+            flex:           1,
+            display:        "flex",
+            alignItems:     "center",
+            justifyContent: "center",
+            color:          t.colors.semantic.textMuted,
+            fontSize:       t.typography.fontSize.sm,
+          }}
+        >
+          Add staff members to start using the calendar.
+        </div>
+      ) : view === "week" ? (
         /* ── True week view: 7 day groups ─────────────────────────────── */
         <WeekViewGrid
-          staff={MOCK_STAFF}
+          staff={staff}
           bookings={bookings}
           weekStart={weekStart}
           pxPerMinute={pxPerMinute}
           onColumnClick={handleColumnClick}
           onUpdateBooking={handleUpdateBooking}
           onStatusChange={handleStatusChange}
+          onBookingClick={handleBookingClick}
         />
       ) : (
         /* ── Day view: staff columns for a single day ──────────────────── */
         <WeekGrid
-          staff={MOCK_STAFF}
+          staff={staff}
           bookings={bookings}
           weekStart={dayStart}
           weekEnd={dayEnd}
@@ -228,6 +224,7 @@ export function CalendarPage() {
           onColumnClick={handleColumnClick}
           onUpdateBooking={handleUpdateBooking}
           onStatusChange={handleStatusChange}
+          onBookingClick={handleBookingClick}
         />
       )}
 
@@ -238,6 +235,17 @@ export function CalendarPage() {
           startAt={pendingSlot.startAt}
           onClose={() => setPendingSlot(null)}
           onCreate={handleCreate}
+        />
+      )}
+
+      {/* Booking detail panel — slides in from the right */}
+      {selectedBooking && (
+        <BookingDetailPanel
+          booking={selectedBooking}
+          staff={staff}
+          onClose={() => setSelectedBookingId(null)}
+          onSave={handleSaveBooking}
+          onDelete={handleDeleteBooking}
         />
       )}
     </div>

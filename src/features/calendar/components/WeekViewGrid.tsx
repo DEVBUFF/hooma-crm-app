@@ -68,10 +68,12 @@ function BookingPill({
   booking,
   staff,
   onStatusChange,
+  onBookingClick,
 }: {
   booking:        Booking
   staff:          Staff
   onStatusChange: (id: string, status: BookingStatus) => void
+  onBookingClick?: (booking: Booking) => void
 }) {
   const [hovered, setHovered] = useState(false)
   const pillRef = useRef<HTMLDivElement>(null)
@@ -101,7 +103,10 @@ function BookingPill({
       ref={pillRef}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation()
+        onBookingClick?.(booking)
+      }}
       style={{
         padding:      "5px 8px",
         borderRadius: t.radius.sm,
@@ -112,7 +117,7 @@ function BookingPill({
         gap:          2,
         minWidth:     0,
         overflow:     "hidden",
-        cursor:       "default",
+        cursor:       "pointer",
         transition:   `box-shadow ${t.motion.duration.fast} ${t.motion.easing.standard}`,
         boxShadow:    hovered ? t.shadow.sm : "none",
       }}
@@ -358,6 +363,7 @@ interface WeekViewGridProps {
   onColumnClick:   (staff: Staff, startAt: Date) => void
   onUpdateBooking: (id: string, updates: { staffId: string; startAt: Date; endAt: Date }) => void
   onStatusChange:  (id: string, status: BookingStatus) => void
+  onBookingClick?: (booking: Booking) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -387,6 +393,7 @@ export function WeekViewGrid({
   weekStart,
   onColumnClick,
   onStatusChange,
+  onBookingClick,
 }: WeekViewGridProps) {
   // ── 7 days: Monday … Sunday ─────────────────────────────────────────────
   const days = useMemo(
@@ -599,6 +606,7 @@ export function WeekViewGrid({
                       booking={b}
                       staff={s}
                       onStatusChange={onStatusChange}
+                      onBookingClick={onBookingClick}
                     />
                   ))}
                 </div>

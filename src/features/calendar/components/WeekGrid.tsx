@@ -136,6 +136,7 @@ interface WeekGridProps {
   onColumnClick:   (staff: Staff, startAt: Date) => void
   onUpdateBooking: (id: string, updates: { staffId: string; startAt: Date; endAt: Date }) => void
   onStatusChange:  (id: string, status: BookingStatus) => void
+  onBookingClick?: (booking: Booking) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -170,6 +171,7 @@ export function WeekGrid({
   onColumnClick,
   onUpdateBooking,
   onStatusChange,
+  onBookingClick,
 }: WeekGridProps) {
   const scrollRef  = useRef<HTMLDivElement>(null)
   const { toast }  = useToast()
@@ -656,6 +658,7 @@ export function WeekGrid({
                 onDragStart={(e, booking) => startDrag(e, booking, s)}
                 onResizeStart={(e, booking) => startResize(e, booking, s)}
                 onStatusChange={onStatusChange}
+                onBookingClick={onBookingClick}
               />
             )
           })}

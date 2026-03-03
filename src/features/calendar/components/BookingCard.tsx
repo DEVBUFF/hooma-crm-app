@@ -98,6 +98,8 @@ interface BookingCardProps {
   onResizeStart: (e: React.PointerEvent) => void
   /** Called when the user selects a quick-action status from the dropdown. */
   onStatusChange: (status: BookingStatus) => void
+  /** Called when the user clicks the card (tap without drag). */
+  onBookingClick?: (booking: Booking) => void
 }
 
 export function BookingCard({
@@ -111,10 +113,14 @@ export function BookingCard({
   onDragStart,
   onResizeStart,
   onStatusChange,
+  onBookingClick,
 }: BookingCardProps) {
   const [hovered, setHovered] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
   const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null)
+
+  // Track pointer position to distinguish click from drag
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
 
   // Compute popover position when hovered
   useEffect(() => {
@@ -147,9 +153,22 @@ export function BookingCard({
       data-booking-card
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation()
+        // Only fire if pointer didn't travel far (click, not drag)
+        const start = pointerStartRef.current
+        if (start && onBookingClick) {
+          const dx = e.clientX - start.x
+          const dy = e.clientY - start.y
+          if (Math.abs(dx) < 5 && Math.abs(dy) < 5) {
+            onBookingClick(booking)
+          }
+        }
+        pointerStartRef.current = null
+      }}
       onPointerDown={(e) => {
         e.stopPropagation()
+        pointerStartRef.current = { x: e.clientX, y: e.clientY }
         onDragStart(e)
       }}
       style={{
