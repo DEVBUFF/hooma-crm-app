@@ -181,9 +181,9 @@ export function CreateBookingModal({
           position: "fixed",
           inset: 0,
           zIndex: t.zIndex.modal,
-          background: "rgba(46, 33, 28, 0.40)",
-          backdropFilter: "blur(3px)",
-          WebkitBackdropFilter: "blur(3px)",
+          background: "rgba(0, 0, 0, 0.25)",
+          backdropFilter: "blur(4px)",
+          WebkitBackdropFilter: "blur(4px)",
         }}
       />
 
@@ -199,9 +199,9 @@ export function CreateBookingModal({
           transform: "translate(-50%, -50%)",
           zIndex: t.zIndex.modal + 1,
           width: "min(440px, calc(100vw - 32px))",
-          background: t.colors.semantic.panelWarm,
-          border: `1px solid ${t.colors.semantic.borderSubtle}`,
-          borderRadius: t.radius["2xl"],
+          background: t.colors.semantic.panel,
+          border: `1px solid ${t.colors.semantic.border}`,
+          borderRadius: t.radius.xl,
           boxShadow: t.shadow.cardElevated,
           padding: 28,
           display: "flex",
@@ -246,7 +246,7 @@ export function CreateBookingModal({
                   display: "inline-block",
                   width: 8,
                   height: 8,
-                  borderRadius: t.radius.full,
+                  borderRadius: t.radius.sm,
                   background: staff.color,
                   flexShrink: 0,
                 }}

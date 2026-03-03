@@ -1,164 +1,164 @@
 // tokens.ts
-// Design tokens for Hooma CRM.
+// Design tokens for Hooma CRM — Apple-inspired flat palette.
 // Keep this file purely declarative: no runtime logic, no imports.
 
 export const tokens = {
   colors: {
     // -------- Base (raw palette) --------
     base: {
-      cream50: "#F5EFE6",
-      cream75: "#F5EEE2",
-      sand100: "#F0E8DC",
-      sand150: "#EDE4D8",
-      sand200: "#DDD4C4",
-      sand300: "#E5DACB",
+      cream50: "#ffffff",
+      cream75: "#f5f5f7",
+      sand100: "#f5f5f7",
+      sand150: "#e8e8ed",
+      sand200: "#d2d2d7",
+      sand300: "#e8e8ed",
 
-      brown900: "#2E211C",
-      brown800: "#3E2F2A",
-      brown500: "#7A655A",
-      brown350: "#A8998C",
-      brown300: "#B5A396",
+      brown900: "#1d1d1f",
+      brown800: "#1d1d1f",
+      brown500: "#86868b",
+      brown350: "#aeaeb2",
+      brown300: "#c7c7cc",
 
-      blue500: "#7FA6C9",
-      blue550: "#6A94B8",
+      blue500: "#0071e3",
+      blue550: "#0077ed",
 
-      coral500: "#C97B63",
-      coral550: "#B86E58",
+      coral500: "#ff6b3d",
+      coral550: "#e85d30",
 
-      green600: "#4A7A4A",
-      green650: "#5A8A6A",
+      green600: "#34c759",
+      green650: "#30b350",
 
-      red600: "#A04040",
-      blue600: "#4A7EA8",
+      red600: "#ff3b30",
+      blue600: "#007aff",
     },
 
     // -------- Semantic (app meaning) --------
     semantic: {
-      bg: "#F0EEE5",
-      panel: "#E5DACA",
-      panelWarm: "#E5DACA",
+      bg: "#f5f5f7",
+      panel: "#ffffff",
+      panelWarm: "#ffffff",
 
-      surface: "#F0EEE5",
-      surfaceMuted: "#F0E8DC",
-      surfaceHover: "#DDD4C4",
+      surface: "#f5f5f7",
+      surfaceMuted: "#f5f5f7",
+      surfaceHover: "#e8e8ed",
 
-      border: "#E5DACB",
-      borderSubtle: "rgba(229, 218, 203, 0.60)",
-      divider: "#DDD4C4",
+      border: "#d2d2d7",
+      borderSubtle: "#e8e8ed",
+      divider: "#e8e8ed",
 
-      text: "#3E2F2A",
-      textStrong: "#2E211C",
-      textMuted: "#7A655A",
-      textSubtle: "#A8998C",
-      placeholder: "#B5A396",
+      text: "#1d1d1f",
+      textStrong: "#1d1d1f",
+      textMuted: "#86868b",
+      textSubtle: "#aeaeb2",
+      placeholder: "#c7c7cc",
 
       // Brand actions
-      primary: "#7FA6C9",
-      primaryHover: "#6A94B8",
-      primaryTint: "rgba(127, 166, 201, 0.15)",
+      primary: "#0071e3",
+      primaryHover: "#0077ed",
+      primaryTint: "rgba(0, 113, 227, 0.08)",
 
-      accent: "#C97B63",
-      accentHover: "#B86E58",
-      accentTint: "#FAEAE4",
+      accent: "#0071e3",
+      accentHover: "#0077ed",
+      accentTint: "rgba(0, 113, 227, 0.06)",
 
       // Navigation
-      navActiveBg: "#DFE1E0",
-      navActiveFg: "#3E2F2A",
-      navHoverBg: "rgba(228, 217, 204, 0.40)",
+      navActiveBg: "#e8e8ed",
+      navActiveFg: "#1d1d1f",
+      navHoverBg: "rgba(0, 0, 0, 0.04)",
 
       // Feedback
-      success: "#4A7A4A",
-      successBg: "#E8EFE7",
-      successAccent: "#A8BBA3",
-      successAccentHover: "#96A990",
-      successStrong: "#5A8A6A",
+      success: "#34c759",
+      successBg: "rgba(52, 199, 89, 0.08)",
+      successAccent: "#30b350",
+      successAccentHover: "#28a745",
+      successStrong: "#30b350",
 
-      error: "#A04040",
-      errorBg: "#F0D8D3",
-      errorHover: "#E8CCCC",
-      errorBorder: "rgba(196, 96, 90, 0.60)",
+      error: "#ff3b30",
+      errorBg: "rgba(255, 59, 48, 0.08)",
+      errorHover: "rgba(255, 59, 48, 0.12)",
+      errorBorder: "rgba(255, 59, 48, 0.30)",
 
-      info: "#4A7EA8",
-      infoBg: "#E4EEF6",
-      infoHover: "#D4E4F0",
+      info: "#007aff",
+      infoBg: "rgba(0, 122, 255, 0.08)",
+      infoHover: "rgba(0, 122, 255, 0.12)",
 
-      warning: "#A8998C",
-      warningBg: "#F5EFE6",
+      warning: "#ff9500",
+      warningBg: "rgba(255, 149, 0, 0.08)",
     },
 
     // -------- Component-level (optional conveniences) --------
     component: {
       input: {
-        bg: "#F0E8DC",
-        bgFocus: "#EDE4D8",
-        border: "#E5DACB",
-        borderFocus: "rgba(127, 166, 201, 0.55)",
-        text: "#3E2F2A",
-        placeholder: "#B5A396",
+        bg: "#ffffff",
+        bgFocus: "#ffffff",
+        border: "#d2d2d7",
+        borderFocus: "#0071e3",
+        text: "#1d1d1f",
+        placeholder: "#c7c7cc",
       },
       card: {
-        bg: "#E5DACA",
-        bgAuth: "#E5DACA",
-        border: "rgba(229, 218, 203, 0.60)",
+        bg: "#ffffff",
+        bgAuth: "#ffffff",
+        border: "#e8e8ed",
       },
       badge: {
-        todayBg: "#E8EFE7",
-        todayFg: "#5A8A6A",
+        todayBg: "rgba(0, 122, 255, 0.06)",
+        todayFg: "#007aff",
       },
     },
   },
 
   radius: {
-    sm: 10,
-    md: 14,
-    lg: 20,
-    xl: 24,
-    "2xl": 28,
+    sm: 4,
+    md: 6,
+    lg: 8,
+    xl: 10,
+    "2xl": 12,
     full: 9999,
   },
 
   shadow: {
-    // Keep shadows consistent and named by intent.
-    soft: "0 8px 30px rgba(0, 0, 0, 0.06)",
+    // Minimal Apple-style shadows — mostly hairline borders do the work.
+    soft: "0 1px 3px rgba(0, 0, 0, 0.04)",
 
-    card: "0 4px 24px rgba(62, 47, 42, 0.06)",
-    cardElevated: "0 12px 40px rgba(90, 60, 30, 0.08)",
+    card: "0 0 0 1px rgba(0, 0, 0, 0.04)",
+    cardElevated: "0 4px 24px rgba(0, 0, 0, 0.12)",
 
-    sm: "0 2px 12px rgba(62, 47, 42, 0.07)",
-    md: "0 4px 20px rgba(62, 47, 42, 0.09)",
-    lg: "0 4px 24px rgba(62, 47, 42, 0.08)",
+    sm: "0 1px 2px rgba(0, 0, 0, 0.04)",
+    md: "0 2px 8px rgba(0, 0, 0, 0.06)",
+    lg: "0 4px 16px rgba(0, 0, 0, 0.10)",
 
-    inner: "inset 0 1px 3px rgba(62, 47, 42, 0.06)",
+    inner: "inset 0 1px 2px rgba(0, 0, 0, 0.04)",
 
-    primary: "0 2px 8px rgba(127, 166, 201, 0.25)",
-    primaryHover: "0 4px 16px rgba(127, 166, 201, 0.35)",
-    primaryLg: "0 2px 12px rgba(127, 166, 201, 0.30)",
-    primaryLgHover: "0 4px 20px rgba(127, 166, 201, 0.40)",
+    primary: "0 1px 4px rgba(0, 113, 227, 0.20)",
+    primaryHover: "0 2px 8px rgba(0, 113, 227, 0.30)",
+    primaryLg: "0 2px 8px rgba(0, 113, 227, 0.20)",
+    primaryLgHover: "0 4px 16px rgba(0, 113, 227, 0.25)",
 
     authCard:
-      "0 8px 40px rgba(46, 33, 28, 0.12), 0 2px 10px rgba(46, 33, 28, 0.06)",
+      "0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)",
 
-    topbar: "0 2px 16px rgba(62, 47, 42, 0.06)",
-    sidebar: "0 12px 40px rgba(90, 60, 30, 0.08)",
+    topbar: "0 1px 0 rgba(0, 0, 0, 0.06)",
+    sidebar: "0 0 24px rgba(0, 0, 0, 0.08)",
   },
 
   typography: {
     fontFamily: {
-      sans: "var(--font-sf-pro-rounded), ui-rounded, system-ui, -apple-system, sans-serif",
+      sans: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif",
     },
     fontSize: {
       xs: 12,
       sm: 13,
       md: 14,
-      lg: 16,
-      xl: 20,
+      lg: 17,
+      xl: 21,
       "2xl": 28,
       "3xl": 36,
     },
     lineHeight: {
       tight: 1.15,
       snug: 1.25,
-      normal: 1.45,
+      normal: 1.47,
     },
     fontWeight: {
       regular: 400,
@@ -167,12 +167,12 @@ export const tokens = {
       bold: 700,
     },
     letterSpacing: {
-      label: 0.12, // for uppercase labels
+      label: 0.02,
     },
   },
 
   spacing: {
-    pagePadding: 24,
+    pagePadding: 20,
     cardPadding: 20,
     gapSm: 8,
     gapMd: 12,
@@ -182,13 +182,13 @@ export const tokens = {
 
   motion: {
     duration: {
-      fast: "120ms",
-      normal: "180ms",
-      slow: "260ms",
+      fast: "100ms",
+      normal: "200ms",
+      slow: "300ms",
     },
     easing: {
-      standard: "cubic-bezier(0.2, 0.0, 0.0, 1.0)",
-      emphasized: "cubic-bezier(0.2, 0.8, 0.2, 1.0)",
+      standard: "cubic-bezier(0.25, 0.1, 0.25, 1.0)",
+      emphasized: "cubic-bezier(0.22, 1.0, 0.36, 1.0)",
     },
   },
 

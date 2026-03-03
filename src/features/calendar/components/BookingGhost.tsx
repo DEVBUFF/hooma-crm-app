@@ -67,7 +67,7 @@ export function BookingGhost({
         left: CARD_PADDING,
         right: CARD_PADDING,
         height,
-        borderRadius: t.radius.lg,
+        borderRadius: t.radius.sm,
         background: bgColor,
         border: `2px dashed ${borderColor}`,
         // z-index 7 — above booking cards (no explicit z-index) and grid lines,

@@ -188,10 +188,10 @@ export function BookingCard({
         style={{
           width:          "100%",
           height:         "100%",
-          borderRadius:   t.radius.lg,
+          borderRadius:   t.radius.sm,
           background:     cardBg,
-          borderLeft:     `4px solid ${staff.color}`,
-          boxShadow:      hovered && !isDragging ? t.shadow.md : `0 2px 8px rgba(62,47,42,0.12)`,
+          borderLeft:     `3px solid ${staff.color}`,
+          boxShadow:      hovered && !isDragging ? `0 0 0 1px ${staff.color}` : "none",
           overflow:       "hidden",
           padding:        compact ? "3px 7px" : "6px 8px",
           display:        "flex",
@@ -241,7 +241,7 @@ export function BookingCard({
                   width:          18,
                   height:         18,
                   borderRadius:   t.radius.sm,
-                  background:     hexToRgba(staff.color, 0.22),
+                  background:     hexToRgba(staff.color, 0.15),
                   border:         "none",
                   cursor:         "pointer",
                   padding:        0,
@@ -319,7 +319,7 @@ export function BookingCard({
                 fontSize:     10,
                 fontWeight:   t.typography.fontWeight.semibold,
                 padding:      "2px 6px",
-                borderRadius: t.radius.full,
+                borderRadius: t.radius.sm,
                 background:   status.bg,
                 color:        status.color,
                 whiteSpace:   "nowrap",
@@ -380,10 +380,10 @@ export function BookingCard({
         >
           <div
             style={{
-              background:   t.colors.semantic.surface,
-              borderRadius: t.radius.xl,
-              boxShadow:    t.shadow.lg,
-              border:       `1px solid ${t.colors.semantic.divider}`,
+              background:   t.colors.semantic.panel,
+              borderRadius: t.radius.lg,
+              boxShadow:    t.shadow.cardElevated,
+              border:       `1px solid ${t.colors.semantic.border}`,
               overflow:     "hidden",
             }}
           >
@@ -431,7 +431,7 @@ export function BookingCard({
                     justifyContent: "center",
                     width:        28,
                     height:       28,
-                    borderRadius: t.radius.full,
+                    borderRadius: t.radius.md,
                     background:   status.bg,
                     flexShrink:   0,
                   }}

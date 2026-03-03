@@ -110,7 +110,7 @@ function BookingPill({
       style={{
         padding:      "5px 8px",
         borderRadius: t.radius.sm,
-        background:   hexToRgba(staffColor, 0.22),
+        background:   hexToRgba(staffColor, 0.12),
         borderLeft:   `3px solid ${staffColor}`,
         display:      "flex",
         flexDirection: "column",
@@ -118,8 +118,8 @@ function BookingPill({
         minWidth:     0,
         overflow:     "hidden",
         cursor:       "pointer",
-        transition:   `box-shadow ${t.motion.duration.fast} ${t.motion.easing.standard}`,
-        boxShadow:    hovered ? t.shadow.sm : "none",
+        transition:   `background ${t.motion.duration.fast} ${t.motion.easing.standard}`,
+        boxShadow:    "none",
       }}
     >
       {/* Row 1: time range + kebab / status dot */}
@@ -157,7 +157,7 @@ function BookingPill({
                   width:          16,
                   height:         16,
                   borderRadius:   t.radius.sm,
-                  background:     hexToRgba(staffColor, 0.28),
+                  background:     hexToRgba(staffColor, 0.15),
                   border:         "none",
                   cursor:         "pointer",
                   padding:        0,
@@ -229,10 +229,10 @@ function BookingPill({
         >
           <div
             style={{
-              background:   t.colors.semantic.surface,
-              borderRadius: t.radius.xl,
-              boxShadow:    t.shadow.lg,
-              border:       `1px solid ${t.colors.semantic.divider}`,
+              background:   t.colors.semantic.panel,
+              borderRadius: t.radius.lg,
+              boxShadow:    t.shadow.cardElevated,
+              border:       `1px solid ${t.colors.semantic.border}`,
               overflow:     "hidden",
             }}
           >
@@ -280,7 +280,7 @@ function BookingPill({
                     justifyContent: "center",
                     width:          28,
                     height:         28,
-                    borderRadius:   t.radius.full,
+                    borderRadius:   t.radius.md,
                     background:     status.bg,
                     flexShrink:     0,
                   }}
@@ -429,9 +429,7 @@ export function WeekViewGrid({
   return (
     <div
       style={{
-        borderRadius:        t.radius["2xl"],
-        boxShadow:           t.shadow.card,
-        border:              `1px solid ${t.colors.semantic.divider}`,
+        border:              `1px solid ${t.colors.semantic.border}`,
         background:          t.colors.semantic.panel,
         overflow:            "hidden",
         flex:                1,
@@ -492,7 +490,7 @@ export function WeekViewGrid({
                 fontSize:   t.typography.fontSize.xs,
                 fontWeight: t.typography.fontWeight.semibold,
                 color:      isToday
-                  ? t.colors.semantic.success
+                  ? t.colors.semantic.primary
                   : t.colors.semantic.textSubtle,
                 userSelect: "none",
               }}
@@ -508,14 +506,14 @@ export function WeekViewGrid({
                 justifyContent: "center",
                 width:          isToday ? 24 : undefined,
                 height:         isToday ? 24 : undefined,
-                borderRadius:   isToday ? t.radius.full : undefined,
+                borderRadius:   isToday ? t.radius.sm : undefined,
                 background:     isToday
-                  ? t.colors.semantic.success
+                  ? t.colors.semantic.primary
                   : undefined,
                 fontSize:       t.typography.fontSize.xs,
                 fontWeight:     t.typography.fontWeight.semibold,
                 color:          isToday
-                  ? t.colors.base.cream50
+                  ? "#ffffff"
                   : t.colors.semantic.textSubtle,
                 userSelect:     "none",
               }}

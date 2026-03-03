@@ -36,10 +36,8 @@ export function CalendarToolbar({
     <div
       className="flex items-center justify-between gap-4 px-5 py-3"
       style={{
-        background: t.colors.component.card.bg,
-        borderRadius: t.radius.xl,
-        boxShadow: t.shadow.card,
-        border: `1px solid ${t.colors.semantic.borderSubtle}`,
+        background: t.colors.semantic.panel,
+        borderBottom: `1px solid ${t.colors.semantic.border}`,
       }}
     >
       {/* Left: page title */}
@@ -89,7 +87,8 @@ export function CalendarToolbar({
             display: "flex",
             alignItems: "center",
             background: t.colors.semantic.surface,
-            borderRadius: t.radius.full,
+            borderRadius: t.radius.md,
+            border: `1px solid ${t.colors.semantic.border}`,
             padding: "2px 3px",
             gap: 1,
           }}
@@ -101,7 +100,7 @@ export function CalendarToolbar({
             style={{
               width: 22,
               height: 22,
-              borderRadius: t.radius.full,
+              borderRadius: t.radius.sm,
               border: "none",
               background: "transparent",
               cursor: canZoomOut ? "pointer" : "default",
@@ -139,7 +138,7 @@ export function CalendarToolbar({
             style={{
               width: 22,
               height: 22,
-              borderRadius: t.radius.full,
+              borderRadius: t.radius.sm,
               border: "none",
               background: "transparent",
               cursor: canZoomIn ? "pointer" : "default",
@@ -162,7 +161,8 @@ export function CalendarToolbar({
           className="flex items-center p-0.5"
           style={{
             background: t.colors.semantic.surface,
-            borderRadius: t.radius.full,
+            borderRadius: t.radius.md,
+            border: `1px solid ${t.colors.semantic.border}`,
           }}
         >
           {(["day", "week"] as const).map((v) => (
@@ -171,7 +171,7 @@ export function CalendarToolbar({
               onClick={() => onViewChange(v)}
               className="capitalize text-[11px] font-semibold px-3.5 py-1.5 transition-all duration-[180ms]"
               style={{
-                borderRadius: t.radius.full,
+                borderRadius: t.radius.sm,
                 background:
                   view === v ? t.colors.semantic.panel : "transparent",
                 color:

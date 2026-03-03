@@ -113,17 +113,6 @@ function scheduleAutoScroll(
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function hexGlow(hex: string, alpha = 0.35, spread = 6): string {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return `0 0 ${spread}px rgba(${r}, ${g}, ${b}, ${alpha})`
-}
-
-// ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
 
@@ -561,8 +550,6 @@ export function WeekGrid({
     [],
   )
 
-  const nowGlow = hexGlow(t.colors.semantic.accent)
-
   return (
     <div
       ref={scrollRef}
@@ -571,9 +558,7 @@ export function WeekGrid({
         width:     "100%",
         minWidth:  0,
         maxHeight: "calc(100vh - 160px)",
-        borderRadius: t.radius["2xl"],
-        boxShadow:    t.shadow.card,
-        border:   `1px solid ${t.colors.semantic.borderSubtle}`,
+        border:       `1px solid ${t.colors.semantic.border}`,
         background:   t.colors.semantic.panel,
         position: "relative",
       }}
@@ -608,20 +593,18 @@ export function WeekGrid({
               <div
                 style={{
                   position:     "absolute",
-                  left:         -5,
+                  left:         -4,
                   top:          -4,
-                  width:        9,
-                  height:       9,
+                  width:        8,
+                  height:       8,
                   borderRadius: t.radius.full,
                   background:   t.colors.semantic.accent,
-                  boxShadow:    nowGlow,
                 }}
               />
               <div
                 style={{
-                  height:     2,
+                  height:     1,
                   background: t.colors.semantic.accent,
-                  boxShadow:  nowGlow,
                 }}
               />
             </div>
