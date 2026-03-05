@@ -28,18 +28,18 @@ export default function AppHomePage() {
   void handleLogout
 
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-6 sm:space-y-8 max-w-5xl">
       {/* Welcome hero card */}
       <Card
         variant="elevated"
         padding="lg"
         className="relative overflow-hidden"
       >
-        <div className="relative z-10 space-y-4">
+        <div className="relative z-10 space-y-3 sm:space-y-4">
           <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: t.colors.semantic.primary }}>
             {greeting}
           </p>
-          <h2 className="text-3xl font-bold leading-tight text-foreground">
+          <h2 className="text-2xl sm:text-3xl font-bold leading-tight text-foreground">
             Let&apos;s take care<br />of today. 🐾
           </h2>
           <p className="text-sm max-w-md leading-relaxed text-muted-foreground">

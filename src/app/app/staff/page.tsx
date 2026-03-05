@@ -92,24 +92,25 @@ export default function StaffPage() {
   return (
     <div className="max-w-3xl space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-start sm:items-center justify-between gap-3">
+        <div className="min-w-0">
           <p
             className="text-xs font-medium uppercase tracking-widest mb-1"
             style={{ color: t.colors.semantic.textSubtle }}
           >
             Care team
           </p>
-          <p className="text-sm" style={{ color: t.colors.semantic.textMuted }}>
+          <p className="text-sm hidden sm:block" style={{ color: t.colors.semantic.textMuted }}>
             The wonderful people behind every appointment.
           </p>
         </div>
         <Button
           onClick={() => setShowForm((v) => !v)}
-          className="gap-2"
+          className="gap-2 shrink-0"
         >
           <Plus size={16} />
-          Add member
+          <span className="hidden sm:inline">Add member</span>
+          <span className="sm:hidden">Add</span>
         </Button>
       </div>
 

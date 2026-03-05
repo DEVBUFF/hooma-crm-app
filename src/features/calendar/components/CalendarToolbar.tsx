@@ -34,15 +34,15 @@ export function CalendarToolbar({
 }: CalendarToolbarProps) {
   return (
     <div
-      className="flex items-center justify-between gap-4 px-5 py-3"
+      className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 px-3 sm:px-5 py-2 sm:py-3"
       style={{
         background: t.colors.semantic.panel,
         borderBottom: `1px solid ${t.colors.semantic.border}`,
       }}
     >
-      {/* Left: page title */}
+      {/* Left: page title — hidden on mobile (already shown in topbar/header) */}
       <h1
-        className="text-base font-semibold shrink-0"
+        className="hidden sm:block text-base font-semibold shrink-0"
         style={{ color: t.colors.semantic.textStrong }}
       >
         Calendar
@@ -50,14 +50,14 @@ export function CalendarToolbar({
 
       {/* Center: week range label */}
       <span
-        className="text-sm font-medium"
+        className="text-xs sm:text-sm font-medium"
         style={{ color: t.colors.semantic.text }}
       >
         {label}
       </span>
 
       {/* Right: nav controls + zoom pill + view segmented control */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         {/* Prev / Today / Next */}
         <div className="flex items-center gap-0.5">
           <Button
@@ -68,7 +68,7 @@ export function CalendarToolbar({
           >
             <ChevronLeft size={15} />
           </Button>
-          <Button variant="ghost" size="sm" onClick={onToday}>
+          <Button variant="ghost" size="sm" onClick={onToday} className="hidden sm:inline-flex">
             Today
           </Button>
           <Button
@@ -81,8 +81,9 @@ export function CalendarToolbar({
           </Button>
         </div>
 
-        {/* ── Zoom pill: [−] 100% [+] ────────────────────────────────── */}
+        {/* ── Zoom pill: [−] 100% [+] — hidden on small screens ──────── */}
         <div
+          className="hidden sm:flex"
           style={{
             display: "flex",
             alignItems: "center",

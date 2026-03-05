@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/components/auth/AuthProvider"
+import { MobileSidebar } from "@/components/mobile-sidebar"
 import { t } from "@/lib/tokens"
 
 const pageTitles: Record<string, string> = {
@@ -31,12 +32,15 @@ export function DashboardTopbar() {
 
   return (
     <header
-      className="flex items-center justify-between px-6 py-4 border-b"
+      className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b"
       style={{ background: t.colors.component.card.bg, borderColor: t.colors.semantic.borderSubtle }}
     >
-      <h1 className="text-xl font-semibold tracking-tight" style={{ color: t.colors.semantic.text }}>
-        {title}
-      </h1>
+      <div className="flex items-center gap-3">
+        <MobileSidebar />
+        <h1 className="text-lg sm:text-xl font-semibold tracking-tight" style={{ color: t.colors.semantic.text }}>
+          {title}
+        </h1>
+      </div>
 
       <div className="flex items-center gap-3">
         <div

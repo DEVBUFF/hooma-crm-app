@@ -97,27 +97,28 @@ export default function ServicesPage() {
   return (
     <div className="max-w-3xl space-y-6">
       {/* Header row */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-start sm:items-center justify-between gap-3">
+        <div className="min-w-0">
           <p
             className="text-xs font-medium uppercase tracking-widest mb-1"
             style={{ color: t.colors.semantic.textSubtle }}
           >
             Catalogue
           </p>
-          <p className="text-sm" style={{ color: t.colors.semantic.textMuted }}>
+          <p className="text-sm hidden sm:block" style={{ color: t.colors.semantic.textMuted }}>
             Everything you offer, beautifully organised.
           </p>
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5"
+          className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5 shrink-0"
           style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
           onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLgHover }}
           onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLg }}
         >
           <Plus size={16} />
-          New service
+          <span className="hidden sm:inline">New service</span>
+          <span className="sm:hidden">Add</span>
         </button>
       </div>
 
@@ -262,44 +263,48 @@ export default function ServicesPage() {
             ) : (
               <div
                 key={service.id}
-                className="group flex items-center gap-4 px-5 py-4 transition-all"
+                className="group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 transition-all"
                 style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.lg}px`, boxShadow: t.shadow.sm }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.md }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = t.shadow.sm }}
               >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: t.colors.semantic.accentTint }}
-                >
-                  <Sparkles size={16} strokeWidth={1.8} style={{ color: t.colors.semantic.primary }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm" style={{ color: t.colors.semantic.text }}>{service.name}</p>
-                  {service.description && (
-                    <p className="text-xs truncate" style={{ color: t.colors.semantic.textSubtle }}>{service.description}</p>
-                  )}
-                </div>
-                <div className="flex items-center gap-3 text-xs" style={{ color: t.colors.semantic.textSubtle }}>
-                  <span className="flex items-center gap-1"><Clock size={12} />{service.durationMinutes} min</span>
-                  <span className="flex items-center gap-1"><BadgeDollarSign size={12} />{service.price}€</span>
-                </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => startEdit(service)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
-                    style={{ background: t.colors.semantic.bg }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.surfaceHover }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}
+                <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: t.colors.semantic.accentTint }}
                   >
-                    <Pencil size={13} style={{ color: t.colors.semantic.textMuted }} />
-                  </button>
-                  <button onClick={() => removeService(service.id)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
-                    style={{ background: t.colors.semantic.bg }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.errorBg }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}
-                  >
-                    <Trash2 size={13} style={{ color: t.colors.semantic.error }} />
-                  </button>
+                    <Sparkles size={16} strokeWidth={1.8} style={{ color: t.colors.semantic.primary }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm" style={{ color: t.colors.semantic.text }}>{service.name}</p>
+                    {service.description && (
+                      <p className="text-xs truncate" style={{ color: t.colors.semantic.textSubtle }}>{service.description}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between sm:justify-end gap-3 pl-13 sm:pl-0">
+                  <div className="flex items-center gap-3 text-xs" style={{ color: t.colors.semantic.textSubtle }}>
+                    <span className="flex items-center gap-1"><Clock size={12} />{service.durationMinutes} min</span>
+                    <span className="flex items-center gap-1"><BadgeDollarSign size={12} />{service.price}€</span>
+                  </div>
+                  <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => startEdit(service)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
+                      style={{ background: t.colors.semantic.bg }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.surfaceHover }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}
+                    >
+                      <Pencil size={13} style={{ color: t.colors.semantic.textMuted }} />
+                    </button>
+                    <button onClick={() => removeService(service.id)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
+                      style={{ background: t.colors.semantic.bg }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.errorBg }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.bg }}
+                    >
+                      <Trash2 size={13} style={{ color: t.colors.semantic.error }} />
+                    </button>
+                  </div>
                 </div>
               </div>
             )

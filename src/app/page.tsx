@@ -421,7 +421,8 @@ export default function LandingPage() {
               href="/auth/login"
               className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded-xl text-[13px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all"
             >
-              Get Started
+              <span className="hidden sm:inline">Get Started</span>
+              <span className="sm:hidden">Start Free</span>
             </Link>
           </div>
         </nav>

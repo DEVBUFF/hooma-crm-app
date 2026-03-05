@@ -86,21 +86,22 @@ export default function CustomersPage() {
   return (
     <div className="max-w-3xl space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-start sm:items-center justify-between gap-3">
+        <div className="min-w-0">
           <p
             className="text-xs font-medium uppercase tracking-widest mb-1"
             style={{ color: t.colors.semantic.textSubtle }}
           >
             Clients & pets
           </p>
-          <p className="text-sm" style={{ color: t.colors.semantic.textMuted }}>
+          <p className="text-sm hidden sm:block" style={{ color: t.colors.semantic.textMuted }}>
             Everyone who trusts you with their furry family.
           </p>
         </div>
-        <Button onClick={() => setShowForm((v) => !v)} className="gap-2">
+        <Button onClick={() => setShowForm((v) => !v)} className="gap-2 shrink-0">
           <Plus size={16} />
-          New customer
+          <span className="hidden sm:inline">New customer</span>
+          <span className="sm:hidden">Add</span>
         </Button>
       </div>
 
@@ -172,11 +173,11 @@ export default function CustomersPage() {
               <div className="flex-1 min-w-0">
                 <Link
                   href={`/app/customers/${c.id}`}
-                  className="font-semibold text-sm text-foreground hover:text-primary transition-colors"
+                  className="font-semibold text-sm text-foreground hover:text-primary transition-colors truncate block"
                 >
                   {c.name}
                 </Link>
-                <div className="flex items-center gap-3 mt-0.5">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
                   {c.phone && (
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Phone size={11} />{c.phone}
@@ -191,10 +192,10 @@ export default function CustomersPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <button
                   onClick={() => removeCustomer(c.id)}
-                  className="w-8 h-8 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all hover:bg-destructive/8"
+                  className="w-8 h-8 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all hover:bg-destructive/8"
                 >
                   <Trash2 size={13} className="text-destructive/60" />
                 </button>
