@@ -116,6 +116,7 @@ export function BookingCard({
   onBookingClick,
 }: BookingCardProps) {
   const [hovered, setHovered] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
   const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null)
 
@@ -152,7 +153,7 @@ export function BookingCard({
       ref={cardRef}
       data-booking-card
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => { if (!menuOpen) setHovered(false) }}
       onClick={(e) => {
         e.stopPropagation()
         // Only fire if pointer didn't travel far (click, not drag)
@@ -226,9 +227,9 @@ export function BookingCard({
           {booking.customerNameSnapshot}
         </p>
 
-        {/* Kebab "···" — visible on hover, hidden while dragging */}
-        {hovered && !isDragging && actions.length > 0 && (
-          <DropdownMenu>
+        {/* Kebab "···" — visible on hover or when menu is open, hidden while dragging */}
+        {(hovered || menuOpen) && !isDragging && actions.length > 0 && (
+          <DropdownMenu open={menuOpen} onOpenChange={(open) => { setMenuOpen(open); if (!open) setHovered(false) }}>
             <DropdownMenuTrigger asChild>
               <button
                 onPointerDown={(e) => e.stopPropagation()}

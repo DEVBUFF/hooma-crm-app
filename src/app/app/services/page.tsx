@@ -25,9 +25,10 @@ type EditForm = {
 };
 
 const inputStyle: React.CSSProperties = {
-  background: t.colors.component.input.bg,
+  background: t.colors.semantic.bg,
   color: t.colors.component.input.text,
-  borderRadius: `${t.radius.md}px`,
+  border: `1px solid ${t.colors.semantic.borderSubtle}`,
+  borderRadius: `${t.radius.lg}px`,
 };
 
 export default function ServicesPage() {
@@ -132,18 +133,18 @@ export default function ServicesPage() {
               placeholder="Service name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="col-span-full px-4 py-3 text-sm outline-none"
+              className="col-span-full px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
               style={inputStyle}
             />
             <input
               placeholder="Description (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="col-span-full px-4 py-3 text-sm outline-none"
+              className="col-span-full px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
               style={inputStyle}
             />
             <div
-              className="flex items-center gap-2 px-4 py-3"
+              className="flex items-center gap-2 px-4 py-3 focus-within:ring-2 focus-within:ring-primary/20 transition-shadow"
               style={{ ...inputStyle }}
             >
               <Clock size={15} className="shrink-0" style={{ color: t.colors.semantic.placeholder }} />
@@ -157,7 +158,7 @@ export default function ServicesPage() {
               />
             </div>
             <div
-              className="flex items-center gap-2 px-4 py-3"
+              className="flex items-center gap-2 px-4 py-3 focus-within:ring-2 focus-within:ring-primary/20 transition-shadow"
               style={{ ...inputStyle }}
             >
               <BadgeDollarSign size={15} className="shrink-0" style={{ color: t.colors.semantic.placeholder }} />
@@ -233,13 +234,13 @@ export default function ServicesPage() {
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} placeholder="Service name"
-                    className="col-span-full px-4 py-2.5 text-sm outline-none" style={inputStyle} />
+                    className="col-span-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
                   <input value={editForm.description} onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description"
-                    className="col-span-full px-4 py-2.5 text-sm outline-none" style={inputStyle} />
+                    className="col-span-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
                   <input type="number" value={editForm.durationMinutes} onChange={(e) => setEditForm((f) => ({ ...f, durationMinutes: Number(e.target.value) }))}
-                    className="px-4 py-2.5 text-sm outline-none" style={inputStyle} />
+                    className="px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
                   <input type="number" value={editForm.price} onChange={(e) => setEditForm((f) => ({ ...f, price: Number(e.target.value) }))}
-                    className="px-4 py-2.5 text-sm outline-none" style={inputStyle} />
+                    className="px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => saveEdit(service.id)}

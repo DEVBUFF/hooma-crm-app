@@ -31,7 +31,8 @@ const roleStyle: Record<StaffRole, React.CSSProperties> = {
 const inputStyle: React.CSSProperties = {
   background: t.colors.semantic.bg,
   color: t.colors.semantic.text,
-  borderRadius: `${t.radius.sm}px`,
+  border: `1px solid ${t.colors.semantic.borderSubtle}`,
+  borderRadius: `${t.radius.lg}px`,
 };
 
 export default function StaffPage() {
@@ -121,11 +122,11 @@ export default function StaffPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)}
-                className="col-span-full px-4 py-3 text-sm outline-none" style={inputStyle} />
+                className="col-span-full px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
               <input placeholder="Phone (optional)" value={phone} onChange={(e) => setPhone(e.target.value)}
-                className="px-4 py-3 text-sm outline-none" style={inputStyle} />
+                className="px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
               <select value={role} onChange={(e) => setRole(e.target.value as StaffRole)}
-                className="px-4 py-3 text-sm outline-none cursor-pointer appearance-none"
+                className="px-4 py-3 text-sm outline-none cursor-pointer appearance-none focus:ring-2 focus:ring-primary/20 transition-shadow"
                 style={inputStyle}
               >
                 <option value="groomer">Groomer</option>

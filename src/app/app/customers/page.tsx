@@ -25,7 +25,8 @@ type Customer = {
 const inputStyle: React.CSSProperties = {
   background: t.colors.semantic.bg,
   color: t.colors.semantic.text,
-  borderRadius: `${t.radius.sm}px`,
+  border: `1px solid ${t.colors.semantic.borderSubtle}`,
+  borderRadius: `${t.radius.lg}px`,
 };
 
 export default function CustomersPage() {
@@ -112,13 +113,13 @@ export default function CustomersPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input placeholder="Customer name" value={name} onChange={(e) => setName(e.target.value)}
-                className="col-span-full px-4 py-3 text-sm outline-none" style={inputStyle} />
+                className="col-span-full px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
               <input placeholder="Phone (optional)" value={phone} onChange={(e) => setPhone(e.target.value)}
-                className="px-4 py-3 text-sm outline-none" style={inputStyle} />
+                className="px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
               <input placeholder="Email (optional)" value={email} onChange={(e) => setEmail(e.target.value)}
-                className="px-4 py-3 text-sm outline-none" style={inputStyle} />
+                className="px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
               <textarea placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2}
-                className="col-span-full px-4 py-3 text-sm outline-none resize-none" style={inputStyle} />
+                className="col-span-full px-4 py-3 text-sm outline-none resize-none focus:ring-2 focus:ring-primary/20 transition-shadow" style={inputStyle} />
             </div>
             <div className="flex gap-3">
               <Button onClick={addCustomer} disabled={!canSubmit}>Add customer</Button>

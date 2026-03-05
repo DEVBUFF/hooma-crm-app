@@ -557,7 +557,11 @@ export function WeekGrid({
         overflow:  "auto",
         width:     "100%",
         minWidth:  0,
-        maxHeight: "calc(100vh - 160px)",
+        // allow the parent flex container to size this scrollable area
+        // (removing the fixed viewport calc prevents unexpected bottom gaps
+        // when the app header/topbar is hidden or its height changes)
+        flex: 1,
+        minHeight: 0,
         border:       `1px solid ${t.colors.semantic.border}`,
         background:   t.colors.semantic.panel,
         position: "relative",

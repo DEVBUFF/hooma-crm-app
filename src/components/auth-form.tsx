@@ -184,8 +184,8 @@ export function AuthForm() {
         </form>
       )}
 
-      {/* Divider */}
-      {step === "email" && (
+      {/* Divider + Social Buttons — hidden until OAuth is wired up */}
+      {/* {step === "email" && (
         <div className="flex items-center gap-3" aria-hidden="true">
           <div className="flex-1 h-px" style={{ background: t.colors.semantic.divider }} />
           <span
@@ -198,13 +198,12 @@ export function AuthForm() {
         </div>
       )}
 
-      {/* Social Buttons */}
       {step === "email" && (
         <div className="space-y-2.5 animate-in fade-in duration-300">
           <SocialButton provider="google" />
           <SocialButton provider="apple" />
         </div>
-      )}
+      )} */}
     </div>
   )
 }

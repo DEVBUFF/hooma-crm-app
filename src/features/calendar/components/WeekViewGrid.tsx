@@ -76,6 +76,7 @@ function BookingPill({
   onBookingClick?: (booking: Booking) => void
 }) {
   const [hovered, setHovered] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const pillRef = useRef<HTMLDivElement>(null)
   const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null)
 
@@ -102,7 +103,7 @@ function BookingPill({
     <div
       ref={pillRef}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => { if (!menuOpen) setHovered(false) }}
       onClick={(e) => {
         e.stopPropagation()
         onBookingClick?.(booking)
@@ -142,9 +143,9 @@ function BookingPill({
           {formatTime(booking.startAt)}–{formatTime(booking.endAt)}
         </span>
 
-        {/* Kebab on hover — status dot otherwise */}
-        {hovered && actions.length > 0 ? (
-          <DropdownMenu>
+        {/* Kebab on hover or when menu is open — status dot otherwise */}
+        {(hovered || menuOpen) && actions.length > 0 ? (
+          <DropdownMenu open={menuOpen} onOpenChange={(open) => { setMenuOpen(open); if (!open) setHovered(false) }}>
             <DropdownMenuTrigger asChild>
               <button
                 onPointerDown={(e) => e.stopPropagation()}
