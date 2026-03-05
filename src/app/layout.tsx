@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import '@/styles/globals.css'
+import { Analytics } from '@vercel/analytics/react'
 import { AuthProvider } from "@/components/auth/AuthProvider"
 import { Toaster } from "@/components/ui/toaster"
 
@@ -39,6 +40,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <Analytics />
         <Toaster />
       </body>
     </html>
