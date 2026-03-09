@@ -30,7 +30,7 @@ export default function AuthPage() {
         <p className="mt-5 text-center text-[11px]" style={{ color: t.colors.semantic.placeholder }}>
           By continuing, you agree to our{" "}
           <a
-            href="#"
+            href="/terms"
             className="font-semibold transition-colors underline underline-offset-2"
             style={{ color: t.colors.semantic.textMuted }}
           >
@@ -38,7 +38,7 @@ export default function AuthPage() {
           </a>{" "}
           and{" "}
           <a
-            href="#"
+            href="/privacy"
             className="font-semibold transition-colors underline underline-offset-2"
             style={{ color: t.colors.semantic.textMuted }}
           >

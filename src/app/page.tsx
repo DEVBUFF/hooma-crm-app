@@ -709,8 +709,8 @@ export default function LandingPage() {
 
           <nav className="flex items-center gap-6 text-[13px] text-muted-foreground" aria-label="Footer">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
-            <a href="#" className="hover:text-foreground transition-colors">Blog</a>
-            <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
             <Link href="/auth/login" className="hover:text-foreground transition-colors">Login</Link>
           </nav>
 

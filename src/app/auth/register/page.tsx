@@ -43,7 +43,7 @@ export default async function RegisterPage({
         <p className="mt-5 text-center text-[11px]" style={{ color: t.colors.semantic.placeholder }}>
           By creating an account you agree to our{" "}
           <a
-            href="#"
+            href="/terms"
             className="font-semibold transition-colors underline underline-offset-2"
             style={{ color: t.colors.semantic.textMuted }}
           >
@@ -51,7 +51,7 @@ export default async function RegisterPage({
           </a>{" "}
           and{" "}
           <a
-            href="#"
+            href="/privacy"
             className="font-semibold transition-colors underline underline-offset-2"
             style={{ color: t.colors.semantic.textMuted }}
           >
