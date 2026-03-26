@@ -9,6 +9,7 @@ import {
 import { db } from "@/lib/firebase";
 import { useSalon } from "@/lib/useSalon";
 import { t } from "@/lib/tokens";
+import { Skeleton } from "@/components/patterns/skeleton";
 import { UserRound, Plus, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +40,7 @@ export default function StaffPage() {
   const { salon, loading: salonLoading } = useSalon();
 
   const [items, setItems] = useState<Staff[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
   const [name, setName] = useState("");
@@ -87,11 +88,11 @@ export default function StaffPage() {
     loadStaff();
   }
 
-  if (salonLoading) return null;
+  const showSkeleton = salonLoading || loading;
 
   return (
     <div className="max-w-3xl space-y-6">
-      {/* Header */}
+      {/* Header — always visible */}
       <div className="flex items-start sm:items-center justify-between gap-3">
         <div className="min-w-0">
           <p
@@ -114,8 +115,33 @@ export default function StaffPage() {
         </Button>
       </div>
 
+      {/* Skeleton while loading */}
+      {showSkeleton && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="overflow-hidden"
+              style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.lg}px`, boxShadow: t.shadow.sm }}
+            >
+              <div className="flex items-start gap-4 p-5 pb-4">
+                <Skeleton h="h-11" w="w-11" rounded="rounded-2xl" />
+                <div className="flex-1 space-y-2.5">
+                  <Skeleton h="h-4" w="w-28" />
+                  <Skeleton h="h-3" w="w-20" />
+                  <Skeleton h="h-5" w="w-16" rounded="rounded-md" />
+                </div>
+              </div>
+              <div className="flex gap-px" style={{ borderTop: `1px solid ${t.colors.semantic.borderLight}` }}>
+                <Skeleton h="h-10" w="w-full" rounded="rounded-none" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Add form */}
-      {showForm && (
+      {!showSkeleton && showForm && (
         <Card className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
           <CardHeader>
             <CardTitle>Welcome a new team member</CardTitle>
@@ -143,7 +169,7 @@ export default function StaffPage() {
       )}
 
       {/* Empty state */}
-      {!loading && items.length === 0 && !showForm && (
+      {!showSkeleton && items.length === 0 && !showForm && (
         <Card className="p-16 flex flex-col items-center text-center gap-4">
           <div
             className="w-16 h-16 flex items-center justify-center"
@@ -166,7 +192,7 @@ export default function StaffPage() {
       )}
 
       {/* Staff grid */}
-      {!loading && items.length > 0 && (
+      {!showSkeleton && items.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {items.map((s) => (
             <Card

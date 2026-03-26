@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react"
 import { t } from "@/lib/tokens"
+import { Skeleton } from "@/components/patterns/skeleton"
 import {
   addDays,
   formatDayLabel,
@@ -181,17 +182,29 @@ export function CalendarPage() {
       />
 
       {isLoading ? (
-        <div
-          style={{
-            flex:           1,
-            display:        "flex",
-            alignItems:     "center",
-            justifyContent: "center",
-            color:          t.colors.semantic.textMuted,
-            fontSize:       t.typography.fontSize.sm,
-          }}
-        >
-          Loading…
+        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+          {/* Time gutter skeleton */}
+          <div style={{ width: 56, flexShrink: 0, padding: "48px 8px 0", display: "flex", flexDirection: "column", gap: 40 }}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Skeleton key={i} h="h-3" w="w-8" />
+            ))}
+          </div>
+          {/* Column skeletons */}
+          <div style={{ flex: 1, display: "flex", gap: 1 }}>
+            {Array.from({ length: 3 }).map((_, col) => (
+              <div key={col} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, padding: "12px 6px" }}>
+                {/* Column header */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, paddingBottom: 12 }}>
+                  <Skeleton h="h-3" w="w-16" />
+                  <Skeleton h="h-8" w="w-8" rounded="rounded-full" />
+                </div>
+                {/* Fake booking blocks */}
+                {[80, 48, 64, 36].map((height, i) => (
+                  <div key={i} className="hooma-skeleton w-full rounded-lg" style={{ height }} />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       ) : staff.length === 0 ? (
         <div

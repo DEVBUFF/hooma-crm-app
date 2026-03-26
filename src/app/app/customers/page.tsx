@@ -10,6 +10,7 @@ import {
 import { db } from "@/lib/firebase";
 import { useSalon } from "@/lib/useSalon";
 import { t } from "@/lib/tokens";
+import { Skeleton } from "@/components/patterns/skeleton";
 import { Users, Plus, Trash2, ChevronRight, Phone, Mail } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,7 @@ export default function CustomersPage() {
   const { salon, loading: salonLoading } = useSalon();
 
   const [items, setItems] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
   const [name, setName] = useState("");
@@ -81,11 +82,11 @@ export default function CustomersPage() {
     loadCustomers();
   }
 
-  if (salonLoading) return null;
+  const showSkeleton = salonLoading || loading;
 
   return (
     <div className="max-w-3xl space-y-6">
-      {/* Header */}
+      {/* Header — always visible */}
       <div className="flex items-start sm:items-center justify-between gap-3">
         <div className="min-w-0">
           <p
@@ -105,8 +106,27 @@ export default function CustomersPage() {
         </Button>
       </div>
 
+      {/* Skeleton while loading */}
+      {showSkeleton && (
+        <div
+          className="overflow-hidden divide-y divide-border/30"
+          style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.lg}px`, boxShadow: t.shadow.sm }}
+        >
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 px-5 py-4">
+              <Skeleton h="h-10" w="w-10" rounded="rounded-2xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton h="h-4" w="w-32" />
+                <Skeleton h="h-3" w="w-24" />
+              </div>
+              <Skeleton h="h-4" w="w-4" rounded="rounded-full" />
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Add form */}
-      {showForm && (
+      {!showSkeleton && showForm && (
         <Card className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
           <CardHeader>
             <CardTitle>Add a new customer</CardTitle>
@@ -131,7 +151,7 @@ export default function CustomersPage() {
       )}
 
       {/* Empty state */}
-      {!loading && items.length === 0 && !showForm && (
+      {!showSkeleton && items.length === 0 && !showForm && (
         <Card className="p-16 flex flex-col items-center text-center gap-4">
           <div
             className="w-16 h-16 flex items-center justify-center"
@@ -154,7 +174,7 @@ export default function CustomersPage() {
       )}
 
       {/* Customer list */}
-      {!loading && items.length > 0 && (
+      {!showSkeleton && items.length > 0 && (
         <Card variant="flat" padding="sm" className="p-0 overflow-hidden divide-y divide-border/30">
           {items.map((c) => (
             <div

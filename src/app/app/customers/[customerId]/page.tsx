@@ -15,6 +15,8 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useSalon } from "@/lib/useSalon";
+import { t } from "@/lib/tokens";
+import { Skeleton } from "@/components/patterns/skeleton";
 
 type Customer = {
   name: string;
@@ -40,7 +42,7 @@ export default function CustomerDetailsPage() {
 
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [pets, setPets] = useState<Pet[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Pet form
   const [petName, setPetName] = useState("");
@@ -111,7 +113,37 @@ export default function CustomerDetailsPage() {
     loadCustomerAndPets();
   }
 
-  if (salonLoading) return null;
+  const showSkeleton = salonLoading || loading;
+
+  if (showSkeleton) {
+    return (
+      <div className="max-w-3xl p-5 space-y-6">
+        <Skeleton h="h-4" w="w-16" />
+        <div className="space-y-3">
+          <Skeleton h="h-7" w="w-44" />
+          <Skeleton h="h-4" w="w-56" />
+          <Skeleton h="h-3" w="w-72" />
+        </div>
+        <div className="space-y-2 pt-4">
+          <Skeleton h="h-6" w="w-12" />
+          <div
+            className="divide-y divide-border/30 overflow-hidden"
+            style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.lg}px`, boxShadow: t.shadow.sm }}
+          >
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 px-4 py-3.5">
+                <div className="flex-1 space-y-2">
+                  <Skeleton h="h-4" w="w-28" />
+                  <Skeleton h="h-3" w="w-36" />
+                </div>
+                <Skeleton h="h-8" w="w-16" rounded="rounded-lg" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: 20, maxWidth: 900 }}>
@@ -149,8 +181,7 @@ export default function CustomerDetailsPage() {
 
         {/* Pets list */}
         <div style={{ marginTop: 18 }}>
-          {loading && <div>Loading...</div>}
-          {!loading && pets.length === 0 && <div style={{ opacity: 0.8 }}>No pets yet.</div>}
+          {pets.length === 0 && <div style={{ opacity: 0.8 }}>No pets yet.</div>}
 
           {pets.map((p) => (
             <div

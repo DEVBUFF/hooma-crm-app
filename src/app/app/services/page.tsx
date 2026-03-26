@@ -7,6 +7,7 @@ import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "firebase
 import { db } from "@/lib/firebase";
 import { useSalon } from "@/lib/useSalon";
 import { t } from "@/lib/tokens";
+import { Skeleton } from "@/components/patterns/skeleton";
 import { Sparkles, Plus, Pencil, Trash2, Check, X, Clock, BadgeDollarSign } from "lucide-react";
 
 type Service = {
@@ -35,6 +36,7 @@ export default function ServicesPage() {
   const { salon, loading: salonLoading } = useSalon();
 
   const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState(60);
@@ -46,12 +48,14 @@ export default function ServicesPage() {
 
   const loadServices = useCallback(async () => {
     if (!salon) return;
+    setLoading(true);
     const snap = await getDocs(collection(db, "salons", salon.id, "services"));
     const data: Service[] = snap.docs.map((d) => ({
       id: d.id,
       ...(d.data() as Omit<Service, "id">),
     }));
     setServices(data);
+    setLoading(false);
   }, [salon]);
 
   useEffect(() => { loadServices(); }, [loadServices]);
@@ -92,11 +96,11 @@ export default function ServicesPage() {
     loadServices();
   }
 
-  if (salonLoading) return null;
+  const showSkeleton = salonLoading || loading;
 
   return (
     <div className="max-w-3xl space-y-6">
-      {/* Header row */}
+      {/* Header row — always visible */}
       <div className="flex items-start sm:items-center justify-between gap-3">
         <div className="min-w-0">
           <p
@@ -122,8 +126,31 @@ export default function ServicesPage() {
         </button>
       </div>
 
+      {/* Skeleton while loading */}
+      {showSkeleton && (
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-4 px-5 py-4"
+              style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.lg}px`, boxShadow: t.shadow.sm }}
+            >
+              <Skeleton h="h-10" w="w-10" rounded="rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton h="h-4" w="w-36" />
+                <Skeleton h="h-3" w="w-24" />
+              </div>
+              <div className="flex items-center gap-3">
+                <Skeleton h="h-3" w="w-14" />
+                <Skeleton h="h-3" w="w-10" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Add form */}
-      {showForm && (
+      {!showSkeleton && showForm && (
         <div
           className="p-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
           style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.lg}px`, boxShadow: t.shadow.card }}
@@ -194,7 +221,7 @@ export default function ServicesPage() {
       )}
 
       {/* Empty state */}
-      {services.length === 0 && !showForm && (
+      {!showSkeleton && services.length === 0 && !showForm && (
         <div
           className="p-16 flex flex-col items-center text-center gap-4"
           style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius["2xl"]}px`, boxShadow: t.shadow.card }}
@@ -224,7 +251,7 @@ export default function ServicesPage() {
       )}
 
       {/* Services list */}
-      {services.length > 0 && (
+      {!showSkeleton && services.length > 0 && (
         <div className="space-y-3">
           {services.map((service) =>
             editingId === service.id ? (
