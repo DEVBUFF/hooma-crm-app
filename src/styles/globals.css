@@ -1,12 +1,263 @@
-/* SF Pro Rounded font imported globally from src/styles/globals.css */
+/* ============================================================
+   HOOMA — Design Tokens + Tailwind CSS 4
+   CRM for pet grooming salons · hellohooma.app
+   Fonts: SF Pro (system)
+   Tokens: v1.0 — Semantic-first architecture
+   ============================================================ */
+
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   1. PRIMITIVE COLOR RAMPS
+   ============================================================ */
+
 :root {
-  /* Apple-inspired palette */
-  --background: #f5f5f7;
+  /* ── Periwinkle (Primary brand) ─────────────────────────── */
+  --periwinkle-50:  #EEF0FB;
+  --periwinkle-100: #D8DDFA;
+  --periwinkle-200: #B5BEF2;
+  --periwinkle-300: #96A2EA;
+  --periwinkle-400: #7B8CDE;
+  --periwinkle-500: #6474CC;
+  --periwinkle-600: #5563B8;
+  --periwinkle-700: #3B4494;
+  --periwinkle-800: #2A3070;
+  --periwinkle-900: #1A1F4D;
+  --periwinkle-950: #101235;
+
+  /* ── Warm Neutrals ──────────────────────────────────────── */
+  --neutral-50:  #F8F7F4;
+  --neutral-100: #F0EDE8;
+  --neutral-200: #E5E2DC;
+  --neutral-300: #C9C5BD;
+  --neutral-400: #9B9B9B;
+  --neutral-500: #6B6B6B;
+  --neutral-600: #4A4A48;
+  --neutral-700: #333331;
+  --neutral-800: #252523;
+  --neutral-900: #1A1A1A;
+  --neutral-950: #111110;
+
+  /* ── Mint (Accent / Success) ────────────────────────────── */
+  --mint-50:  #E8F5E9;
+  --mint-100: #C8E6C9;
+  --mint-200: #A5D6A7;
+  --mint-300: #81C784;
+  --mint-400: #66BB6A;
+  --mint-500: #4CAF50;
+  --mint-600: #2E8B57;
+  --mint-700: #2E7D4A;
+  --mint-800: #1B5E30;
+  --mint-900: #0D3B1A;
+
+  /* ── Error ──────────────────────────────────────────────── */
+  --error-50:  #FEF2F2;
+  --error-100: #FEE2E2;
+  --error-200: #FECACA;
+  --error-400: #EF4444;
+  --error-500: #D4483B;
+  --error-600: #B91C1C;
+  --error-700: #991B1B;
+  --error-800: #791F1F;
+  --error-900: #501313;
+
+  /* ── Warning ────────────────────────────────────────────── */
+  --warning-50:  #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-200: #FDE68A;
+  --warning-400: #F59E0B;
+  --warning-500: #E6960A;
+  --warning-600: #D97706;
+  --warning-700: #B45309;
+  --warning-800: #854F0B;
+  --warning-900: #633806;
+
+  /* ── Info ────────────────────────────────────────────────── */
+  --info-50:  #EFF6FF;
+  --info-100: #DBEAFE;
+  --info-200: #BFDBFE;
+  --info-400: #60A5FA;
+  --info-500: #2563EB;
+  --info-600: #1D4ED8;
+  --info-700: #1E40AF;
+  --info-800: #0C447C;
+  --info-900: #042C53;
+
+
+  /* ============================================================
+     2. SEMANTIC ALIASES (Light mode)
+     ============================================================ */
+
+  /* ── Backgrounds ────────────────────────────────────────── */
+  --color-bg-page:          var(--neutral-50);
+  --color-bg-surface:       #FFFFFF;
+  --color-bg-elevated:      #FFFFFF;
+  --color-bg-subtle:        var(--neutral-100);
+  --color-bg-primary:       var(--periwinkle-600);
+  --color-bg-primary-hover: var(--periwinkle-700);
+  --color-bg-primary-light: var(--periwinkle-50);
+
+  /* ── Text ────────────────────────────────────────────────── */
+  --color-text-heading:          var(--neutral-900);
+  --color-text-body:             var(--neutral-500);
+  --color-text-muted:            var(--neutral-400);
+  --color-text-placeholder:      #848484;
+  --color-text-on-primary:       #FFFFFF;
+  --color-text-primary:          var(--periwinkle-700);
+  --color-text-on-primary-light: var(--periwinkle-700);
+
+  /* ── Borders ─────────────────────────────────────────────── */
+  --color-border-default: var(--neutral-200);
+  --color-border-light:   var(--neutral-100);
+  --color-border-focus:   var(--periwinkle-400);
+  --color-border-strong:  var(--neutral-300);
+
+  /* ── Semantic Colours ────────────────────────────────────── */
+  --color-success-bg:     var(--mint-50);
+  --color-success-border: var(--mint-600);
+  --color-success-text:   var(--mint-700);
+  --color-warning-bg:     var(--warning-50);
+  --color-warning-border: var(--warning-500);
+  --color-warning-text:   var(--warning-800);
+  --color-error-bg:       var(--error-50);
+  --color-error-border:   var(--error-500);
+  --color-error-text:     var(--error-800);
+  --color-info-bg:        var(--info-50);
+  --color-info-border:    var(--info-500);
+  --color-info-text:      var(--info-800);
+
+  /* ── Allergy (must be immediately noticeable) ────────────── */
+  --color-allergy-bg:     #FEF2F2;
+  --color-allergy-border: #D4483B;
+  --color-allergy-text:   #791F1F;
+  --color-allergy-icon:   #D4483B;
+
+  /* ── Typography ──────────────────────────────────────────── */
+  --hooma-font-display: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  --hooma-font-body: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  --hooma-font-mono: 'SF Mono', ui-monospace, monospace;
+
+  /* ── Border Radius ───────────────────────────────────────── */
+  --hooma-radius-sm: 6px;
+  --hooma-radius-md: 10px;
+  --hooma-radius-lg: 14px;
+  --hooma-radius-full: 9999px;
+
+  /* ── Shadows ─────────────────────────────────────────────── */
+  --hooma-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --hooma-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --hooma-shadow-focus: 0 0 0 3px rgba(123, 140, 222, 0.3);
+  --hooma-shadow-error: 0 0 0 3px rgba(212, 72, 59, 0.2);
+
+  /* ── Focus ───────────────────────────────────────────────── */
+  --hooma-focus-ring: 0 0 0 2px #FFFFFF, 0 0 0 4px #7B8CDE;
+  --hooma-focus-border: var(--periwinkle-400);
+  --hooma-focus-error-ring: 0 0 0 3px rgba(212, 72, 59, 0.12);
+
+  /* ── Spacing ─────────────────────────────────────────────── */
+  --hooma-space-unit: 4px;
+
+  /* ── Layout ──────────────────────────────────────────────── */
+  --hooma-max-w-dashboard: 1200px;
+  --hooma-max-w-form: 640px;
+  --hooma-page-margin-mobile: 16px;
+  --hooma-page-margin-desktop: 24px;
+
+
+  /* ============================================================
+     3. BACKWARD-COMPAT ALIASES (--hooma-* → ramp / semantic)
+     Components still reference these; migrate over time.
+     ============================================================ */
+
+  --hooma-primary: var(--periwinkle-400);
+  --hooma-primary-light: var(--periwinkle-50);
+  --hooma-primary-dark: var(--periwinkle-600);
+  --hooma-primary-text: var(--periwinkle-700);
+
+  --hooma-accent-light: var(--mint-50);
+  --hooma-accent-text: var(--mint-700);
+
+  --hooma-bg-base: var(--neutral-50);
+  --hooma-bg-surface: #FFFFFF;
+  --hooma-text-primary: var(--neutral-900);
+  --hooma-text-secondary: var(--neutral-500);
+  --hooma-text-tertiary: var(--neutral-400);
+  --hooma-border: var(--neutral-200);
+  --hooma-border-light: var(--neutral-100);
+
+  --hooma-error: var(--error-500);
+  --hooma-error-bg: var(--error-50);
+  --hooma-warning: var(--warning-500);
+  --hooma-warning-bg: var(--warning-50);
+  --hooma-success: var(--mint-600);
+  --hooma-success-bg: var(--mint-50);
+  --hooma-info: var(--info-500);
+  --hooma-info-bg: var(--info-50);
+
+  --hooma-text-on-primary: #FFFFFF;
+
+  /* ── Warm Accent ─────────────────────────────────────────── */
+  --hooma-warm-accent: #C97B63;
+  --hooma-warm-accent-bg: rgba(201, 123, 99, 0.08);
+  --hooma-warm-accent-border: rgba(201, 123, 99, 0.15);
+  --hooma-warm-accent-badge: rgba(201, 123, 99, 0.1);
+  --hooma-warm-accent-glow: rgba(201, 123, 99, 0.06);
+
+  /* ── Toast ───────────────────────────────────────────────── */
+  --hooma-toast-text: #3E2F2A;
+  --hooma-toast-shadow: 0 4px 20px rgba(62, 47, 42, 0.09);
+  --hooma-toast-success-border: rgba(168, 187, 163, 0.45);
+  --hooma-toast-success-accent: #A8BBA3;
+  --hooma-toast-success-icon: #4A7A4A;
+  --hooma-toast-error-border: rgba(196, 96, 90, 0.35);
+  --hooma-toast-error-accent: #C4605A;
+  --hooma-toast-error-icon: #A04040;
+  --hooma-toast-info-border: rgba(127, 166, 201, 0.40);
+  --hooma-toast-info-accent: #7FA6C9;
+  --hooma-toast-info-icon: #4A7EA8;
+
+  /* ── Modal / Overlay ─────────────────────────────────────── */
+  --hooma-overlay: rgba(46, 33, 28, 0.45);
+  --hooma-overlay-light: rgba(0, 0, 0, 0.25);
+  --hooma-overlay-lighter: rgba(0, 0, 0, 0.20);
+  --hooma-modal-border: rgba(229, 218, 203, 0.60);
+  --hooma-modal-shadow: 0 12px 40px rgba(90, 60, 30, 0.08);
+
+  /* ── Component shadows (extended) ────────────────────────── */
+  --hooma-shadow-primary: 0 1px 4px rgba(123, 140, 222, 0.20);
+  --hooma-shadow-primary-hover: 0 2px 8px rgba(123, 140, 222, 0.30);
+  --hooma-shadow-primary-lg: 0 2px 8px rgba(123, 140, 222, 0.25);
+  --hooma-shadow-accent: 0 1px 4px rgba(255, 107, 61, 0.20);
+  --hooma-shadow-accent-hover: 0 2px 8px rgba(255, 107, 61, 0.30);
+  --hooma-shadow-card-hero: 0 8px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --hooma-shadow-soft: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --hooma-shadow-elevated: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 20px rgba(0, 0, 0, 0.06);
+  --hooma-shadow-elevated-auth: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 20px rgba(0, 0, 0, 0.08);
+  --hooma-shadow-interactive-hover: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 16px rgba(0, 0, 0, 0.08);
+  --hooma-shadow-sidebar: 4px 0 24px rgba(0, 0, 0, 0.1);
+  --hooma-shadow-btn-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --hooma-shadow-feature-hover: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --hooma-shadow-confirm-danger: 0 2px 10px rgba(160, 64, 64, 0.25);
+  --hooma-shadow-confirm-default: 0 2px 10px rgba(127, 166, 201, 0.25);
+
+  /* ── Logo ─────────────────────────────────────────────────── */
+  --hooma-logo-text: var(--neutral-900);
+  --hooma-logo-gradient-start: #7B8CDE;
+  --hooma-logo-gradient-end: #B4BFEF;
+
+  /* ── Misc ─────────────────────────────────────────────────── */
+  --hooma-border-subtle: rgba(0, 0, 0, 0.06);
+  --hooma-purple: #af52de;
+
+
+  /* ============================================================
+     4. TAILWIND / SHADCN THEME MAPPING
+     ============================================================ */
+
+  --background: var(--neutral-50);
   --background-image:
     radial-gradient(
       circle at 50% -15%,
@@ -15,54 +266,132 @@
       rgba(255, 255, 255, 0.08) 40%,
       rgba(255, 255, 255, 0) 70%
     );
-  --foreground: #1d1d1f;
-  --card: #ffffff;
-  --card-foreground: #1d1d1f;
-  --popover: #ffffff;
-  --popover-foreground: #1d1d1f;
-  --primary: #0071e3;
-  --primary-foreground: #ffffff;
-  --secondary: #34c759;
-  --secondary-foreground: #ffffff;
-  --muted: #f5f5f7;
-  --muted-foreground: #86868b;
-  --accent: #0071e3;
-  --accent-foreground: #ffffff;
-  --destructive: #ff3b30;
-  --destructive-foreground: #ffffff;
-  --border: #d2d2d7;
-  --input: #ffffff;
-  --ring: #0071e3;
-  --chart-1: #34c759;
-  --chart-2: #0071e3;
-  --chart-3: #ff9500;
-  --chart-4: #ff3b30;
-  --chart-5: #af52de;
-  --radius: 0.5rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #1d1d1f;
-  --sidebar-primary: #0071e3;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e8e8ed;
-  --sidebar-accent-foreground: #1d1d1f;
-  --sidebar-border: #d2d2d7;
-  --sidebar-ring: #0071e3;
+  --foreground: var(--neutral-900);
+  --card: #FFFFFF;
+  --card-foreground: var(--neutral-900);
+  --popover: #FFFFFF;
+  --popover-foreground: var(--neutral-900);
+  --primary: var(--periwinkle-400);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--mint-600);
+  --secondary-foreground: #FFFFFF;
+  --muted: var(--periwinkle-50);
+  --muted-foreground: var(--neutral-500);
+  --accent: var(--periwinkle-400);
+  --accent-foreground: #FFFFFF;
+  --destructive: var(--error-500);
+  --destructive-foreground: #FFFFFF;
+  --border: var(--neutral-200);
+  --input: #FFFFFF;
+  --ring: var(--periwinkle-400);
+  --chart-1: var(--mint-600);
+  --chart-2: var(--periwinkle-400);
+  --chart-3: var(--warning-500);
+  --chart-4: var(--error-500);
+  --chart-5: var(--hooma-purple);
+  --radius: 0.375rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: var(--neutral-900);
+  --sidebar-primary: var(--periwinkle-400);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--periwinkle-50);
+  --sidebar-accent-foreground: var(--neutral-900);
+  --sidebar-border: var(--neutral-200);
+  --sidebar-ring: var(--periwinkle-400);
 
-  --box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --box-shadow: var(--hooma-shadow-md);
 
   /* Semantic extras */
-  --sage: #34c759;
-  --calm-blue: #0071e3;
-  --dusty-peach: #ff9500;
+  --sage: var(--mint-600);
+  --calm-blue: var(--periwinkle-400);
+  --dusty-peach: var(--warning-500);
   --terra: #ff6b3d;
-
-  /* Landing page warm accent */
-  --warm-accent: #C97B63;
+  --warm-accent: var(--hooma-warm-accent);
 }
 
+
+/* ============================================================
+   5. TAILWIND v4 THEME INLINE
+   ============================================================ */
+
 @theme inline {
-  --font-sans: '-apple-system', 'SF Pro Rounded', system-ui, sans-serif;
-  --font-mono: '-apple-system', 'SF Pro Rounded', system-ui, sans-serif;
+  /* ── Fonts · SF Pro ────────────────────────────────────── */
+  --font-sans: -apple-system, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
+  --font-display: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  --font-mono: 'SF Mono', ui-monospace, monospace;
+
+  /* ── Periwinkle Ramp ───────────────────────────────────── */
+  --color-periwinkle-50:  var(--periwinkle-50);
+  --color-periwinkle-100: var(--periwinkle-100);
+  --color-periwinkle-200: var(--periwinkle-200);
+  --color-periwinkle-300: var(--periwinkle-300);
+  --color-periwinkle-400: var(--periwinkle-400);
+  --color-periwinkle-500: var(--periwinkle-500);
+  --color-periwinkle-600: var(--periwinkle-600);
+  --color-periwinkle-700: var(--periwinkle-700);
+  --color-periwinkle-800: var(--periwinkle-800);
+  --color-periwinkle-900: var(--periwinkle-900);
+  --color-periwinkle-950: var(--periwinkle-950);
+
+  /* ── Neutral Ramp ──────────────────────────────────────── */
+  --color-neutral-50:  var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  --color-neutral-950: var(--neutral-950);
+
+  /* ── Mint Ramp ─────────────────────────────────────────── */
+  --color-mint-50:  var(--mint-50);
+  --color-mint-100: var(--mint-100);
+  --color-mint-200: var(--mint-200);
+  --color-mint-300: var(--mint-300);
+  --color-mint-400: var(--mint-400);
+  --color-mint-500: var(--mint-500);
+  --color-mint-600: var(--mint-600);
+  --color-mint-700: var(--mint-700);
+  --color-mint-800: var(--mint-800);
+  --color-mint-900: var(--mint-900);
+
+  /* ── Error Ramp ────────────────────────────────────────── */
+  --color-error-50:  var(--error-50);
+  --color-error-100: var(--error-100);
+  --color-error-200: var(--error-200);
+  --color-error-400: var(--error-400);
+  --color-error-500: var(--error-500);
+  --color-error-600: var(--error-600);
+  --color-error-700: var(--error-700);
+  --color-error-800: var(--error-800);
+  --color-error-900: var(--error-900);
+
+  /* ── Warning Ramp ──────────────────────────────────────── */
+  --color-warning-50:  var(--warning-50);
+  --color-warning-100: var(--warning-100);
+  --color-warning-200: var(--warning-200);
+  --color-warning-400: var(--warning-400);
+  --color-warning-500: var(--warning-500);
+  --color-warning-600: var(--warning-600);
+  --color-warning-700: var(--warning-700);
+  --color-warning-800: var(--warning-800);
+  --color-warning-900: var(--warning-900);
+
+  /* ── Info Ramp ─────────────────────────────────────────── */
+  --color-info-50:  var(--info-50);
+  --color-info-100: var(--info-100);
+  --color-info-200: var(--info-200);
+  --color-info-400: var(--info-400);
+  --color-info-500: var(--info-500);
+  --color-info-600: var(--info-600);
+  --color-info-700: var(--info-700);
+  --color-info-800: var(--info-800);
+  --color-info-900: var(--info-900);
+
+  /* ── Semantic Colour Aliases ───────────────────────────── */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -71,26 +400,37 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-light: var(--periwinkle-50);
+  --color-primary-dark: var(--periwinkle-600);
+  --color-primary-text: var(--periwinkle-700);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-light: var(--mint-50);
+  --color-accent-text: var(--mint-700);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  --color-border-light: var(--neutral-100);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-canvas: var(--neutral-50);
+  --color-surface: #FFFFFF;
+  --color-text-primary: var(--neutral-900);
+  --color-text-secondary: var(--neutral-500);
+  --color-text-tertiary: var(--neutral-400);
+  --color-error-bg: var(--error-50);
+  --color-warning-bg: var(--warning-50);
+  --color-success: var(--mint-600);
+  --color-success-bg: var(--mint-50);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 8px);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -100,21 +440,96 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-warm-accent: var(--warm-accent);
+
+  /* ── Radius (from brand guide) ─────────────────────────── */
+  --radius-sm: var(--hooma-radius-sm);
+  --radius-md: var(--hooma-radius-md);
+  --radius-lg: var(--hooma-radius-lg);
+  --radius-xl: calc(var(--hooma-radius-lg) + 4px);
+
+  /* ── Animations ────────────────────────────────────────── */
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-slide-up: slide-up 200ms ease-out;
+  --animate-slide-up-sheet: slide-up-sheet 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-skeleton: skeleton 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+@keyframes fade-in {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slide-up {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up-sheet {
+  0%   { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes skeleton {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+
+/* ============================================================
+   6. BASE LAYER RESETS & DEFAULTS
+   ============================================================ */
 
 @layer base {
   html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
   }
+
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--hooma-font-body);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Headings — SF Pro Display */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--hooma-font-display);
+    font-weight: 500;
+    color: var(--neutral-900);
+  }
+
+  h1 {
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+  @media (min-width: 768px) {
+    h1 { font-size: 32px; }
+  }
+
+  h2 {
+    font-size: 22px;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+  }
+  @media (min-width: 768px) {
+    h2 { font-size: 24px; }
+  }
+
+  h3 {
+    font-size: 18px;
+    line-height: 1.35;
+  }
+
+  /* Focus ring — brand guide */
+  :focus-visible {
+    outline: 2px solid var(--periwinkle-400);
+    outline-offset: 2px;
+  }
 }
-
-
-
-

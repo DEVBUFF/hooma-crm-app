@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { PawIcon } from "@/components/hooma-logo"
 
 // ── SEO Metadata ──────────────────────────────────────────────────────────────
 
@@ -124,17 +125,6 @@ function IconArrowRight({ className }: IconProps) {
   )
 }
 
-function IconPaw({ className }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="currentColor" opacity="0.9">
-      <ellipse cx="12" cy="17.5" rx="5" ry="3.8" />
-      <circle cx="7.5" cy="10.5" r="2" />
-      <circle cx="16.5" cy="10.5" r="2" />
-      <circle cx="5" cy="14.2" r="1.7" />
-      <circle cx="19" cy="14.2" r="1.7" />
-    </svg>
-  )
-}
 
 // ── Calendar Mock Component ───────────────────────────────────────────────────
 
@@ -142,7 +132,7 @@ function CalendarMock() {
   return (
     <div
       className="w-full max-w-[380px] bg-card rounded-[20px] border border-border/40 overflow-hidden select-none"
-      style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)" }}
+      style={{ boxShadow: "var(--hooma-shadow-card-hero)" }}
       aria-hidden="true"
     >
       {/* Header */}
@@ -156,7 +146,7 @@ function CalendarMock() {
         </div>
         <div className="flex bg-muted rounded-lg p-0.5">
           <span className="px-2.5 py-1 text-[11px] rounded-md text-muted-foreground">Day</span>
-          <span className="px-2.5 py-1 text-[11px] rounded-md bg-card font-medium text-foreground" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>Week</span>
+          <span className="px-2.5 py-1 text-[11px] rounded-md bg-card font-medium text-foreground" style={{ boxShadow: "var(--hooma-shadow-btn-sm)" }}>Week</span>
         </div>
       </div>
 
@@ -192,9 +182,9 @@ function CalendarMock() {
             </div>
             <div className="h-12" />
             <div className="relative h-12 overflow-visible">
-              <div className="absolute inset-x-0 top-1 rounded-lg p-1.5 border z-10" style={{ height: 36, backgroundColor: "rgba(201,123,99,0.08)", borderColor: "rgba(201,123,99,0.15)" }}>
-                <div className="text-[10px] font-semibold leading-tight" style={{ color: "#C97B63" }}>Bella</div>
-                <div className="text-[9px]" style={{ color: "#C97B63", opacity: 0.7 }}>Nails</div>
+              <div className="absolute inset-x-0 top-1 rounded-lg p-1.5 border z-10" style={{ height: 36, backgroundColor: "var(--hooma-warm-accent-bg)", borderColor: "var(--hooma-warm-accent-border)" }}>
+                <div className="text-[10px] font-semibold leading-tight" style={{ color: "var(--hooma-warm-accent)" }}>Bella</div>
+                <div className="text-[9px]" style={{ color: "var(--hooma-warm-accent)", opacity: 0.7 }}>Nails</div>
               </div>
             </div>
           </div>
@@ -256,7 +246,7 @@ function FeatureCard({ icon, title, description, badge }: {
   badge?: string
 }) {
   return (
-    <div className="bg-card rounded-[20px] border border-border/40 p-6 transition-shadow duration-200 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+    <div className="bg-card rounded-[20px] border border-border/40 p-6 transition-shadow duration-200 hover:shadow-[var(--hooma-shadow-feature-hover)]">
       <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4">
         {icon}
       </div>
@@ -265,7 +255,7 @@ function FeatureCard({ icon, title, description, badge }: {
         {badge && (
           <span
             className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: "rgba(201,123,99,0.1)", color: "#C97B63" }}
+            style={{ backgroundColor: "var(--hooma-warm-accent-badge)", color: "var(--hooma-warm-accent)" }}
           >
             {badge}
           </span>
@@ -309,7 +299,7 @@ function RoadmapCard() {
   return (
     <div
       className="bg-card rounded-[20px] border border-border/40 p-5 w-full max-w-sm"
-      style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
+      style={{ boxShadow: "var(--hooma-shadow-sm)" }}
     >
       <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
         Roadmap
@@ -391,7 +381,7 @@ export default function LandingPage() {
         aria-hidden="true"
         style={{
           background:
-            "radial-gradient(ellipse 70% 50% at 50% -10%, rgba(201,123,99,0.06), transparent)",
+            "radial-gradient(ellipse 70% 50% at 50% -10%, var(--hooma-warm-accent-glow), transparent)",
         }}
       />
 
@@ -399,9 +389,9 @@ export default function LandingPage() {
 
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40">
         <nav className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group" aria-label="Hooma CRM Home">
-            <IconPaw className="text-warm-accent transition-transform duration-200 group-hover:scale-110" />
-            <span className="text-[16px] font-bold text-foreground tracking-tight">Hooma</span>
+          <Link href="/" className="flex items-center gap-0.5 group" aria-label="Hooma CRM Home">
+            <PawIcon className="w-10 h-10 text-primary transition-transform duration-200 group-hover:scale-110" />
+            <span className="text-[18px] font-bold text-foreground tracking-tight">Hooma</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8 text-[13px] text-muted-foreground">
@@ -452,7 +442,7 @@ export default function LandingPage() {
                   <Link
                     href="/auth/login"
                     className="inline-flex items-center bg-primary text-primary-foreground px-7 py-3 rounded-2xl text-[15px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all"
-                    style={{ boxShadow: "0 2px 8px rgba(0,113,227,0.25)" }}
+                    style={{ boxShadow: "var(--hooma-shadow-primary-lg)" }}
                   >
                     Get Started Free
                   </Link>
@@ -690,7 +680,7 @@ export default function LandingPage() {
             <Link
               href="/auth/login"
               className="inline-flex items-center bg-primary text-primary-foreground px-8 py-3.5 rounded-2xl text-[15px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all mt-8"
-              style={{ boxShadow: "0 2px 8px rgba(0,113,227,0.25)" }}
+              style={{ boxShadow: "var(--hooma-shadow-primary-lg)" }}
             >
               Get Started Free
             </Link>
@@ -702,9 +692,9 @@ export default function LandingPage() {
 
       <footer className="border-t border-border/40 py-10 pb-24 lg:pb-10">
         <div className="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <IconPaw className="text-warm-accent" />
-            <span className="text-[14px] font-semibold text-foreground tracking-tight">Hooma</span>
+          <div className="flex items-center gap-0.5">
+            <PawIcon className="w-10 h-10 text-primary" />
+            <span className="text-[16px] font-semibold text-foreground tracking-tight">Hooma</span>
           </div>
 
           <nav className="flex items-center gap-6 text-[13px] text-muted-foreground" aria-label="Footer">
@@ -726,7 +716,7 @@ export default function LandingPage() {
         <Link
           href="/auth/login"
           className="flex items-center justify-center w-full bg-primary text-primary-foreground py-3 rounded-2xl text-[15px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all"
-          style={{ boxShadow: "0 2px 8px rgba(0,113,227,0.25)" }}
+          style={{ boxShadow: "var(--hooma-shadow-primary-lg)" }}
         >
           Get Started Free
         </Link>
