@@ -217,6 +217,7 @@ export function BookingDetailPanel({
       customerNameSnapshot: customer?.name ?? booking.customerNameSnapshot,
       serviceNameSnapshot:  service?.name ?? booking.serviceNameSnapshot,
       petNameSnapshot:      pet?.name,
+      petAllergiesSnapshot: pet?.allergies ?? undefined,
       priceSnapshot:        service ? `${currency} ${service.price}` : booking.priceSnapshot,
       status,
       staffId,

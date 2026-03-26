@@ -189,7 +189,7 @@ export function BookingCard({
           transition:     `box-shadow ${t.motion.duration.fast} ${t.motion.easing.standard}`,
         }}
       >
-      {/* ── Top row: customer name + kebab menu ────────────────────── */}
+      {/* ── Top row: customer name + allergy indicator + kebab menu ── */}
       <div
         style={{
           display:        "flex",
@@ -198,22 +198,45 @@ export function BookingCard({
           gap:            4,
         }}
       >
-        <p
-          style={{
-            flex:         1,
-            minWidth:     0,
-            overflow:     "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace:   "nowrap",
-            fontSize:     t.typography.fontSize.xs,
-            fontWeight:   t.typography.fontWeight.semibold,
-            color:        t.colors.semantic.textStrong,
-            lineHeight:   1.3,
-            margin:       0,
-          }}
-        >
-          {booking.customerNameSnapshot}
-        </p>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 3 }}>
+          <p
+            style={{
+              flex:         1,
+              minWidth:     0,
+              overflow:     "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace:   "nowrap",
+              fontSize:     t.typography.fontSize.xs,
+              fontWeight:   t.typography.fontWeight.semibold,
+              color:        t.colors.semantic.textStrong,
+              lineHeight:   1.3,
+              margin:       0,
+            }}
+          >
+            {booking.customerNameSnapshot}
+          </p>
+          {booking.petAllergiesSnapshot && (
+            <span
+              title={booking.petAllergiesSnapshot}
+              style={{
+                display:      "inline-flex",
+                alignItems:   "center",
+                justifyContent: "center",
+                flexShrink:   0,
+                width:        14,
+                height:       14,
+                borderRadius: "50%",
+                background:   "var(--color-error-bg)",
+                color:        "var(--color-error-text)",
+                fontSize:     9,
+                lineHeight:   1,
+                cursor:       "default",
+              }}
+            >
+              !
+            </span>
+          )}
+        </div>
 
         {/* Kebab "···" — visible on hover or when menu is open, hidden while dragging */}
         {(hovered || menuOpen) && !isDragging && actions.length > 0 && (
@@ -494,6 +517,26 @@ export function BookingCard({
               >
                 {booking.customerNameSnapshot} · {durationStr}
               </span>
+
+              {/* Allergies warning */}
+              {booking.petAllergiesSnapshot && (
+                <div
+                  style={{
+                    display:      "flex",
+                    alignItems:   "center",
+                    gap:          6,
+                    padding:      "5px 8px",
+                    borderRadius: t.radius.md,
+                    background:   "var(--color-error-bg)",
+                    fontSize:     t.typography.fontSize.xs,
+                    color:        "var(--color-error-text)",
+                    lineHeight:   1.35,
+                  }}
+                >
+                  <span style={{ flexShrink: 0, fontSize: 12 }}>⚠</span>
+                  <span><strong>Allergies:</strong> {booking.petAllergiesSnapshot}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>,

@@ -22,6 +22,7 @@ export interface Booking {
   customerNameSnapshot: string
   serviceNameSnapshot: string
   petNameSnapshot?: string
+  petAllergiesSnapshot?: string
   /** Optional price snapshot for display, e.g. "GEL 25". */
   priceSnapshot?: string
 
@@ -43,6 +44,7 @@ export interface CalendarPet {
   id: string
   name: string
   breed?: string | null
+  allergies?: string | null
 }
 
 export interface CalendarService {

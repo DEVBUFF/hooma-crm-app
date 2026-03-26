@@ -25,6 +25,7 @@ export interface BookingDoc {
   customerNameSnapshot: string
   serviceNameSnapshot:  string
   petNameSnapshot?:     string
+  petAllergiesSnapshot?: string
   priceSnapshot?:       string
   status:               BookingStatus
   createdAt?:           Timestamp
@@ -61,6 +62,7 @@ export function docToBooking(
     customerNameSnapshot: data.customerNameSnapshot as string,
     serviceNameSnapshot:  data.serviceNameSnapshot as string,
     petNameSnapshot:      (data.petNameSnapshot as string | undefined) ?? undefined,
+    petAllergiesSnapshot: (data.petAllergiesSnapshot as string | undefined) ?? undefined,
     priceSnapshot:        (data.priceSnapshot as string | undefined) ?? undefined,
     status:               data.status as BookingStatus,
   }
@@ -85,6 +87,7 @@ export async function createBooking(
     customerNameSnapshot: booking.customerNameSnapshot,
     serviceNameSnapshot:  booking.serviceNameSnapshot,
     petNameSnapshot:      booking.petNameSnapshot ?? null,
+    petAllergiesSnapshot: booking.petAllergiesSnapshot ?? null,
     priceSnapshot:        booking.priceSnapshot ?? null,
     status:               booking.status,
     createdAt:            serverTimestamp(),
@@ -110,6 +113,7 @@ export async function updateBooking(
   if (updates.customerNameSnapshot !== undefined) payload.customerNameSnapshot = updates.customerNameSnapshot
   if (updates.serviceNameSnapshot !== undefined)  payload.serviceNameSnapshot  = updates.serviceNameSnapshot
   if (updates.petNameSnapshot !== undefined)      payload.petNameSnapshot      = updates.petNameSnapshot ?? null
+  if (updates.petAllergiesSnapshot !== undefined) payload.petAllergiesSnapshot = updates.petAllergiesSnapshot ?? null
   if (updates.priceSnapshot !== undefined)        payload.priceSnapshot        = updates.priceSnapshot
   if (updates.status !== undefined)               payload.status               = updates.status
 

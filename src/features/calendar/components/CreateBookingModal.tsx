@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { t } from "@/lib/tokens"
 import { formatTime } from "@/features/calendar/lib/time"
-import { DAY_END_HOUR } from "@/features/calendar/lib/grid-config"
+import { DAY_START_HOUR, DAY_END_HOUR, SLOT_MINUTES } from "@/features/calendar/lib/grid-config"
 import type {
   Booking,
   Staff,
@@ -105,7 +105,29 @@ export function CreateBookingModal({
   const [customerId, setCustomerId] = useState("")
   const [petId, setPetId]           = useState("")
   const [serviceId, setServiceId]   = useState("")
+  const [selectedStartAt, setSelectedStartAt] = useState(startAt)
   const [focusedField, setFocusedField] = useState<string | null>(null)
+
+  // ── Time slot options ─────────────────────────────────────────────────
+  const timeSlots = useMemo(() => {
+    const slots: { label: string; value: number }[] = []
+    for (let h = DAY_START_HOUR; h < DAY_END_HOUR; h++) {
+      for (let m = 0; m < 60; m += SLOT_MINUTES) {
+        const hh = h.toString().padStart(2, "0")
+        const mm = m.toString().padStart(2, "0")
+        slots.push({ label: `${hh}:${mm}`, value: h * 60 + m })
+      }
+    }
+    return slots
+  }, [])
+
+  const startAtMinutes = selectedStartAt.getHours() * 60 + selectedStartAt.getMinutes()
+
+  function handleStartTimeChange(minuteValue: number) {
+    const next = new Date(selectedStartAt)
+    next.setHours(Math.floor(minuteValue / 60), minuteValue % 60, 0, 0)
+    setSelectedStartAt(next)
+  }
 
   // ── Derived ─────────────────────────────────────────────────────────────
   const selectedCustomer = useMemo(
@@ -124,11 +146,11 @@ export function CreateBookingModal({
   // Compute endAt from service duration, clamped to DAY_END_HOUR
   const durationMin = selectedService?.durationMinutes ?? 60
   const endAt = useMemo(() => {
-    const raw = new Date(startAt.getTime() + durationMin * 60_000)
-    const ceiling = new Date(startAt)
+    const raw = new Date(selectedStartAt.getTime() + durationMin * 60_000)
+    const ceiling = new Date(selectedStartAt)
     ceiling.setHours(DAY_END_HOUR, 0, 0, 0)
     return raw > ceiling ? ceiling : raw
-  }, [startAt, durationMin])
+  }, [selectedStartAt, durationMin])
 
   const canCreate = customerId.length > 0 && serviceId.length > 0
 
@@ -144,7 +166,7 @@ export function CreateBookingModal({
     const selectedPet = pets.find((p) => p.id === petId)
     onCreate({
       staffId: staff.id,
-      startAt,
+      startAt: selectedStartAt,
       endAt,
       customerId,
       serviceId,
@@ -152,6 +174,7 @@ export function CreateBookingModal({
       customerNameSnapshot: selectedCustomer.name,
       serviceNameSnapshot: selectedService.name,
       petNameSnapshot: selectedPet?.name,
+      petAllergiesSnapshot: selectedPet?.allergies ?? undefined,
       priceSnapshot: `${currency} ${selectedService.price}`,
       status: "confirmed",
     })
@@ -350,17 +373,23 @@ export function CreateBookingModal({
             </div>
           </Field>
 
-          {/* Start time — readonly */}
+          {/* Start time — selectable */}
           <Field label="Start time">
-            <div
-              style={{
-                ...BASE_INPUT,
-                color: t.colors.semantic.textMuted,
-                cursor: "default",
-                userSelect: "none",
-              }}
-            >
-              {formatTime(startAt)}
+            <div style={{ position: "relative" }}>
+              <select
+                value={startAtMinutes}
+                onChange={(e) => handleStartTimeChange(Number(e.target.value))}
+                onFocus={() => setFocusedField("startTime")}
+                onBlur={() => setFocusedField(null)}
+                style={selectFocusStyle("startTime")}
+              >
+                {timeSlots.map((slot) => (
+                  <option key={slot.value} value={slot.value}>
+                    {slot.label}
+                  </option>
+                ))}
+              </select>
+              <SelectChevron />
             </div>
           </Field>
 

@@ -207,19 +207,45 @@ function BookingPill({
         )}
       </div>
 
-      {/* Row 2: customer · service */}
-      <span
-        style={{
-          fontSize:     10,
-          color:        t.colors.semantic.textMuted,
-          overflow:     "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace:   "nowrap",
-          lineHeight:   1.3,
-        }}
-      >
-        {booking.customerNameSnapshot} · {booking.serviceNameSnapshot}
-      </span>
+      {/* Row 2: customer · service + allergy indicator */}
+      <div style={{ display: "flex", alignItems: "center", gap: 3, minWidth: 0 }}>
+        <span
+          style={{
+            fontSize:     10,
+            color:        t.colors.semantic.textMuted,
+            overflow:     "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace:   "nowrap",
+            lineHeight:   1.3,
+            flex:         1,
+            minWidth:     0,
+          }}
+        >
+          {booking.customerNameSnapshot} · {booking.serviceNameSnapshot}
+        </span>
+        {booking.petAllergiesSnapshot && (
+          <span
+            title={booking.petAllergiesSnapshot}
+            style={{
+              display:        "inline-flex",
+              alignItems:     "center",
+              justifyContent: "center",
+              flexShrink:     0,
+              width:          12,
+              height:         12,
+              borderRadius:   "50%",
+              background:     "var(--color-error-bg)",
+              color:          "var(--color-error-text)",
+              fontSize:       8,
+              fontWeight:     700,
+              lineHeight:     1,
+              cursor:         "default",
+            }}
+          >
+            !
+          </span>
+        )}
+      </div>
 
       {/* ── Hover popover (portal, fixed positioning) ──────────────── */}
       {hovered && popoverPos && createPortal(
@@ -347,6 +373,26 @@ function BookingPill({
               >
                 {booking.customerNameSnapshot} · {durationStr}
               </span>
+
+              {/* Allergies warning */}
+              {booking.petAllergiesSnapshot && (
+                <div
+                  style={{
+                    display:      "flex",
+                    alignItems:   "center",
+                    gap:          6,
+                    padding:      "5px 8px",
+                    borderRadius: t.radius.md,
+                    background:   "var(--color-error-bg)",
+                    fontSize:     t.typography.fontSize.xs,
+                    color:        "var(--color-error-text)",
+                    lineHeight:   1.35,
+                  }}
+                >
+                  <span style={{ flexShrink: 0, fontSize: 12 }}>⚠</span>
+                  <span><strong>Allergies:</strong> {booking.petAllergiesSnapshot}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>,

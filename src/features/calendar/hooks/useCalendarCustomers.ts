@@ -38,9 +38,10 @@ export function useCalendarCustomers(salonId: string | null | undefined) {
             collection(db, "salons", salonId, "customers", d.id, "pets"),
           )
           const pets: CalendarPet[] = petsSnap.docs.map((p) => ({
-            id:    p.id,
-            name:  p.data().name as string,
-            breed: (p.data().breed as string | null) ?? null,
+            id:        p.id,
+            name:      p.data().name as string,
+            breed:     (p.data().breed as string | null) ?? null,
+            allergies: (p.data().allergies as string | null) ?? null,
           }))
           pets.sort((a, b) => a.name.localeCompare(b.name))
 
