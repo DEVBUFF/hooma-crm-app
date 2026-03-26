@@ -5,23 +5,13 @@ import { cn } from "@/lib/utils";
 // ---------------------------------------------------------------------------
 // badgeVariants
 //
-// Colour mapping — every pair below comes directly from tokens.ts semantics:
-//
-//   default  → primary bg tint   (infoBg / info)        #E4EEF6 / #4A7EA8
-//   success  → successBg / success                       #E8EFE7 / #4A7A4A
-//   error    → errorBg / error                           #F0D8D3 / #A04040
-//   info     → infoBg / info                             #E4EEF6 / #4A7EA8
-//   warning  → warningBg / warning                       #F5EFE6 / #A8998C
-//   neutral  → surfaceMuted / textMuted                  #F0E8DC / #7A655A
-//
-// All CSS var references match the @theme inline block in globals.css.
+// Colours mapped to globals.css --color-status-* and --color-*-bg/text tokens.
 // ---------------------------------------------------------------------------
 
 const badgeVariants = cva(
-  // Base — pill shape, text, icon sizing, no pointer-events on SVGs
   [
-    "inline-flex items-center justify-center gap-1",
-    "rounded-full px-2.5 py-0.5",
+    "inline-flex items-center gap-1.5",
+    "rounded-full px-2.5 py-1",
     "text-[11px] font-semibold leading-none whitespace-nowrap",
     "w-fit shrink-0 select-none",
     "[&>svg]:size-3 [&>svg]:pointer-events-none [&>svg]:shrink-0",
@@ -30,53 +20,46 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        // Calm-blue tint — confirmed bookings, general "primary" state
+        // Neutral — scheduled, default
         default:
-          "bg-[#E4EEF6] text-[#4A7EA8]",
+          "bg-[var(--color-status-scheduled-bg)] text-[var(--color-text-body)]",
 
-        // Sage-green tint — completed, active, success
+        // Green — confirmed, success, completed
         success:
-          "bg-[#E8EFE7] text-[#4A7A4A]",
+          "bg-[var(--color-success-bg)] text-[var(--color-success-text)]",
 
-        // Dusty-red tint — canceled, error, destructive
-        error:
-          "bg-[#F0D8D3] text-[#A04040]",
-
-        // Same as default but semantically "informational"
+        // Periwinkle — in progress
         info:
-          "bg-[#E4EEF6] text-[#4A7EA8]",
+          "bg-[var(--color-status-in-progress-bg)] text-[var(--color-text-primary)]",
 
-        // Warm-sand tint — warnings, no-show
+        // Red — cancelled, error
+        error:
+          "bg-[var(--color-error-bg)] text-[var(--color-error-text)]",
+
+        // Amber — warning, no-show
         warning:
-          "bg-[#F5EFE6] text-[#A8998C]",
+          "bg-[var(--color-warning-bg)] text-[var(--color-warning-text)]",
 
-        // Muted surface — inactive, neutral, secondary labels
+        // Muted neutral — inactive, secondary
         neutral:
-          "bg-[#F0E8DC] text-[#7A655A]",
-      },
-
-      // Dot prefix — renders a small coloured circle before the label
-      dot: {
-        true:  "",   // handled by before: pseudo via data-dot
-        false: "",
+          "bg-[var(--color-bg-subtle)] text-[var(--color-text-muted)]",
       },
     },
 
     defaultVariants: {
       variant: "default",
-      dot: false,
     },
   }
 );
 
-// Dot colour — inherits the badge's text colour via currentColor
+// Dot colour — matches the status border/accent colour
 const DOT_VARIANT_CLASS: Record<string, string> = {
-  default: "before:bg-[#4A7EA8]",
-  success: "before:bg-[#4A7A4A]",
-  error:   "before:bg-[#A04040]",
-  info:    "before:bg-[#4A7EA8]",
-  warning: "before:bg-[#A8998C]",
-  neutral: "before:bg-[#7A655A]",
+  default: "bg-[var(--color-status-scheduled)]",
+  success: "bg-[var(--color-status-confirmed)]",
+  info:    "bg-[var(--color-status-in-progress)]",
+  error:   "bg-[var(--color-status-cancelled)]",
+  warning: "bg-[var(--color-status-no-show)]",
+  neutral: "bg-[var(--color-status-completed)]",
 };
 
 // ---------------------------------------------------------------------------
@@ -87,33 +70,30 @@ export type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>["varia
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {
-  /** Prepends a small filled circle that matches the variant colour */
-  dot?: boolean;
-}
+    VariantProps<typeof badgeVariants> {}
 
 // ---------------------------------------------------------------------------
 // Badge
 // ---------------------------------------------------------------------------
 
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant = "default", dot = false, ...props }, ref) => (
+  ({ className, variant = "default", children, ...props }, ref) => (
     <span
       ref={ref}
       data-slot="badge"
       data-variant={variant}
-      className={cn(
-        badgeVariants({ variant, dot }),
-        // Dot pseudo-element — 5 px circle, vertically centred
-        dot && [
-          "before:content-[''] before:inline-block",
-          "before:size-[5px] before:rounded-full before:shrink-0",
-          DOT_VARIANT_CLASS[variant ?? "default"],
-        ],
-        className
-      )}
+      className={cn(badgeVariants({ variant }), className)}
       {...props}
-    />
+    >
+      <span
+        className={cn(
+          "inline-block size-[6px] rounded-full shrink-0",
+          DOT_VARIANT_CLASS[variant ?? "default"],
+        )}
+        aria-hidden="true"
+      />
+      {children}
+    </span>
   )
 );
 Badge.displayName = "Badge";

@@ -48,16 +48,16 @@ const TONE: Record<Tone, ToneConfig> = {
     iconColor: t.colors.semantic.error,
     confirmBg: t.colors.semantic.error,
     confirmHover: t.colors.semantic.errorHover,
-    confirmText: '#fff',
-    confirmShadow: '0 2px 10px rgba(160,64,64,0.25)',
+    confirmText: t.colors.semantic.textOnPrimary,
+    confirmShadow: 'var(--hooma-shadow-confirm-danger)',
   },
   default: {
     iconBg: t.colors.semantic.infoBg,
     iconColor: t.colors.semantic.primary,
     confirmBg: t.colors.semantic.primary,
     confirmHover: t.colors.semantic.primaryHover,
-    confirmText: '#fff',
-    confirmShadow: '0 2px 10px rgba(127,166,201,0.25)',
+    confirmText: t.colors.semantic.textOnPrimary,
+    confirmShadow: 'var(--hooma-shadow-confirm-default)',
   },
 }
 

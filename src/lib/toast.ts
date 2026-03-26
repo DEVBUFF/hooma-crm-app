@@ -42,6 +42,9 @@ export const toast = {
   error(title: string, description?: string, duration?: number): void {
     emit({ variant: 'error', title, description, duration })
   },
+  warning(title: string, description?: string, duration?: number): void {
+    emit({ variant: 'warning', title, description, duration })
+  },
   info(title: string, description?: string, duration?: number): void {
     emit({ variant: 'info', title, description, duration })
   },

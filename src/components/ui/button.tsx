@@ -35,8 +35,8 @@ const buttonVariants = cva(
       variant: {
         /** Blue filled — primary CTA (Apple style) */
         primary:
-          "bg-primary text-primary-foreground shadow-[0_1px_4px_rgba(0,113,227,0.20)] " +
-          "hover:bg-[color-mix(in_srgb,var(--color-primary)_85%,black)] hover:shadow-[0_2px_8px_rgba(0,113,227,0.30)]",
+          "bg-primary text-primary-foreground shadow-[var(--hooma-shadow-primary)] " +
+          "hover:bg-[color-mix(in_srgb,var(--color-primary)_85%,black)] hover:shadow-[var(--hooma-shadow-primary-hover)]",
 
         /** Green filled — secondary CTA */
         secondary:
@@ -55,8 +55,8 @@ const buttonVariants = cva(
 
         /** Accent orange — matches the calendar "Book" button */
         accent:
-          "bg-[var(--terra)] text-white shadow-[0_1px_4px_rgba(255,107,61,0.20)] " +
-          "hover:bg-[color-mix(in_srgb,var(--terra)_85%,black)] hover:shadow-[0_2px_8px_rgba(255,107,61,0.30)]",
+          "bg-[var(--terra)] text-white shadow-[var(--hooma-shadow-accent)] " +
+          "hover:bg-[color-mix(in_srgb,var(--terra)_85%,black)] hover:shadow-[var(--hooma-shadow-accent-hover)]",
 
         /** Destructive */
         destructive:

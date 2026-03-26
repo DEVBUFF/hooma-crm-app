@@ -10,7 +10,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isCalendar = pathname.startsWith("/app/calendar")
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "#f5f5f7" }}>
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "var(--hooma-bg-base)" }}>
       {/* Left sidebar — desktop only */}
       <DashboardSidebar />
 
@@ -21,7 +21,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Calendar: show a minimal mobile-only header with hamburger */}
         {isCalendar && (
-          <div className="md:hidden flex items-center px-3 py-2 border-b" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
+          <div className="md:hidden flex items-center px-3 py-2 border-b" style={{ borderColor: "var(--hooma-border-subtle)" }}>
             <MobileSidebar />
           </div>
         )}

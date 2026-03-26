@@ -17,18 +17,18 @@ import { cn } from "@/lib/utils";
 const VARIANT_CLASSES = {
   default:
     "bg-card text-card-foreground " +
-    "shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_1px_3px_rgba(0,0,0,0.04)] " +
+    "shadow-[var(--hooma-shadow-soft)] " +
     "rounded-2xl",
 
   elevated:
     "bg-card text-card-foreground " +
-    "shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_20px_rgba(0,0,0,0.06)] " +
+    "shadow-[var(--hooma-shadow-elevated)] " +
     "rounded-2xl",
 
   auth:
     "bg-card text-card-foreground " +
     "backdrop-blur-2xl " +
-    "shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_20px_rgba(0,0,0,0.08)] " +
+    "shadow-[var(--hooma-shadow-elevated-auth)] " +
     "rounded-2xl",
 
   flat:
@@ -96,7 +96,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           "cursor-pointer",
           "transition-all duration-200 ease-out",
           "hover:-translate-y-px",
-          "hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_16px_rgba(0,0,0,0.08)]",
+          "hover:shadow-[var(--hooma-shadow-interactive-hover)]",
         ],
         className
       )}

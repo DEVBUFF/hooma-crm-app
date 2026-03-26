@@ -1,85 +1,92 @@
-// ─── Hooma Toast (Hooma-native, no Radix) ─────────────────────────────────
-// This file is the pure visual layer: a single toast pill + its dismiss icon.
-// State management lives in toaster.tsx; the imperative API lives in lib/toast.ts.
-// The legacy Radix types below are kept for backward-compat with any existing
-// code that imported ToastProps / ToastActionElement from this path.
-// ──────────────────────────────────────────────────────────────────────────
+// ─── Hooma Toast ─────────────────────────────────────────────────────────────
+// Pure visual layer: a single toast pill + dismiss icon.
+// State management lives in toaster.tsx; imperative API in lib/toast.ts.
+// ─────────────────────────────────────────────────────────────────────────────
 'use client'
 
 import * as React from 'react'
-import { X, CheckCircle2, XCircle, Info } from 'lucide-react'
+import { X, CheckCircle2, XCircle, AlertTriangle, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-// ── Variant definitions ───────────────────────────────────────────────────
+// ── Variant definitions ────────────────────────────────────────────────────
 
-export type ToastVariant = 'success' | 'error' | 'info'
+export type ToastVariant = 'success' | 'error' | 'warning' | 'info'
 
 interface VariantConfig {
-  /** Wrapper background + border */
-  wrapperClass: string
-  /** Left accent bar colour */
-  accentClass: string
-  /** Icon element */
+  bg: string
+  border: string
+  text: string
   icon: React.ReactNode
 }
 
 const VARIANTS: Record<ToastVariant, VariantConfig> = {
   success: {
-    wrapperClass:
-      'bg-card border-[rgba(168,187,163,0.45)] text-[#3E2F2A]',
-    accentClass: 'bg-[#A8BBA3]',
+    bg: 'bg-[var(--color-success-bg)]',
+    border: 'border-[var(--color-success-border)]/20',
+    text: 'text-[var(--color-success-text)]',
     icon: (
       <CheckCircle2
-        size={16}
+        size={18}
         strokeWidth={2}
-        className="text-[#4A7A4A] shrink-0"
+        className="text-[var(--color-success-border)] shrink-0"
         aria-hidden="true"
       />
     ),
   },
   error: {
-    wrapperClass:
-      'bg-card border-[rgba(196,96,90,0.35)] text-[#3E2F2A]',
-    accentClass: 'bg-[#C4605A]',
+    bg: 'bg-[var(--color-error-bg)]',
+    border: 'border-[var(--color-error-border)]/20',
+    text: 'text-[var(--color-error-text)]',
     icon: (
       <XCircle
-        size={16}
+        size={18}
         strokeWidth={2}
-        className="text-[#A04040] shrink-0"
+        className="text-[var(--color-error-border)] shrink-0"
+        aria-hidden="true"
+      />
+    ),
+  },
+  warning: {
+    bg: 'bg-[var(--color-warning-bg)]',
+    border: 'border-[var(--color-warning-border)]/20',
+    text: 'text-[var(--color-warning-text)]',
+    icon: (
+      <AlertTriangle
+        size={18}
+        strokeWidth={2}
+        className="text-[var(--color-warning-border)] shrink-0"
         aria-hidden="true"
       />
     ),
   },
   info: {
-    wrapperClass:
-      'bg-card border-[rgba(127,166,201,0.40)] text-[#3E2F2A]',
-    accentClass: 'bg-[#7FA6C9]',
+    bg: 'bg-[var(--color-info-bg)]',
+    border: 'border-[var(--color-info-border)]/20',
+    text: 'text-[var(--color-info-text)]',
     icon: (
       <Info
-        size={16}
+        size={18}
         strokeWidth={2}
-        className="text-[#4A7EA8] shrink-0"
+        className="text-[var(--color-info-border)] shrink-0"
         aria-hidden="true"
       />
     ),
   },
 }
 
-// ── ToastItem props ───────────────────────────────────────────────────────
+// ── ToastItem props ────────────────────────────────────────────────────────
 
 export interface ToastItemProps {
   id: string
   variant?: ToastVariant
   title: string
   description?: string
-  /** Duration in ms — used to drive the progress bar width animation */
   duration?: number
   onDismiss: (id: string) => void
-  /** Controls mount/unmount for the leave animation */
   leaving?: boolean
 }
 
-// ── ToastItem ─────────────────────────────────────────────────────────────
+// ── ToastItem ──────────────────────────────────────────────────────────────
 
 export function ToastItem({
   id,
@@ -99,46 +106,30 @@ export function ToastItem({
       aria-atomic="true"
       data-leaving={leaving || undefined}
       className={cn(
-        // Layout
-        'relative flex items-start gap-3 w-full overflow-hidden',
-        // Shape — rounded-[18px] matches the calendar inline panels
-        'rounded-[18px]',
-        // Border + background
+        'relative flex items-center gap-3 w-full overflow-hidden',
+        'rounded-[var(--radius-lg)]',
         'border',
-        cfg.wrapperClass,
-        // Padding
-        'px-4 py-3.5 pr-10',
-        // Shadow — tokens.shadow.md
-        'shadow-[0_4px_20px_rgba(62,47,42,0.09)]',
-        // Enter animation
+        cfg.bg,
+        cfg.border,
+        cfg.text,
+        'px-5 py-4 pr-10',
+        'shadow-[var(--shadow-sm)]',
         'animate-in fade-in slide-in-from-bottom-3 duration-300',
-        // Leave animation
         leaving &&
           'animate-out fade-out slide-out-to-right-4 duration-250 fill-mode-forwards',
       )}
     >
-      {/* Left accent bar */}
-      <span
-        aria-hidden="true"
-        className={cn(
-          'absolute left-0 top-0 bottom-0 w-[3px] rounded-l-[18px]',
-          cfg.accentClass,
-        )}
-      />
-
       {/* Icon */}
-      <span className="mt-[1px]">{cfg.icon}</span>
+      {cfg.icon}
 
       {/* Text */}
-      <div className="flex-1 min-w-0 space-y-0.5">
-        <p className="text-sm font-semibold leading-snug text-foreground">
+      <div className="flex-1 min-w-0">
+        <p className="text-[15px] font-medium leading-snug">
           {title}
+          {description && (
+            <span className="font-normal opacity-80"> {description}</span>
+          )}
         </p>
-        {description && (
-          <p className="text-xs leading-normal text-muted-foreground">
-            {description}
-          </p>
-        )}
       </div>
 
       {/* Dismiss button */}
@@ -147,25 +138,24 @@ export function ToastItem({
         aria-label="Dismiss notification"
         onClick={() => onDismiss(id)}
         className={cn(
-          'absolute top-3 right-3',
+          'absolute top-3.5 right-3.5',
           'w-5 h-5 rounded-full flex items-center justify-center',
-          'text-muted-foreground hover:text-foreground',
-          'hover:bg-muted transition-colors duration-150 cursor-pointer',
+          'opacity-40 hover:opacity-70',
+          'transition-opacity duration-150 cursor-pointer',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
         )}
       >
-        <X size={11} strokeWidth={2.5} aria-hidden="true" />
+        <X size={12} strokeWidth={2.5} aria-hidden="true" />
       </button>
 
       {/* Auto-dismiss progress bar */}
       <span
         aria-hidden="true"
         className={cn(
-          'absolute bottom-0 left-0 h-[2px] rounded-full',
-          cfg.accentClass,
-          'opacity-30',
+          'absolute bottom-0 left-0 h-[2px] rounded-full opacity-25',
         )}
         style={{
+          backgroundColor: 'currentColor',
           animation: `hooma-toast-shrink ${duration}ms linear forwards`,
           width: '100%',
         }}
@@ -174,9 +164,7 @@ export function ToastItem({
   )
 }
 
-// ── Legacy type re-exports (backward-compat) ──────────────────────────────
-// The old scaffolded toaster.tsx / use-toast.ts import these names from here.
-// Keeping them as simple aliases prevents breaking those files.
+// ── Legacy type re-exports (backward-compat) ─────────────────────────────
 
 export type ToastProps = React.HTMLAttributes<HTMLDivElement> & {
   variant?: 'default' | 'destructive'

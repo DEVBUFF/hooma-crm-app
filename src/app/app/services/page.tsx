@@ -112,7 +112,7 @@ export default function ServicesPage() {
         <button
           onClick={() => setShowForm((v) => !v)}
           className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5 shrink-0"
-          style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
+          style={{ background: t.colors.semantic.primary, color: t.colors.semantic.textOnPrimary, boxShadow: t.shadow.primaryLg }}
           onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLgHover }}
           onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryLg }}
         >
@@ -126,7 +126,7 @@ export default function ServicesPage() {
       {showForm && (
         <div
           className="p-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
-          style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.xl}px`, boxShadow: t.shadow.card }}
+          style={{ background: t.colors.component.card.bg, borderRadius: `${t.radius.lg}px`, boxShadow: t.shadow.card }}
         >
           <h3 className="font-semibold" style={{ color: t.colors.semantic.text }}>Add a new service</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -178,7 +178,7 @@ export default function ServicesPage() {
               onClick={addService}
               disabled={!name.trim()}
               className="px-6 py-2.5 rounded-lg text-sm font-semibold disabled:opacity-40 cursor-pointer transition-colors"
-              style={{ background: t.colors.semantic.primary, color: "#fff" }}
+              style={{ background: t.colors.semantic.primary, color: t.colors.semantic.textOnPrimary }}
             >
               Add service
             </button>
@@ -216,7 +216,7 @@ export default function ServicesPage() {
           <button
             onClick={() => setShowForm(true)}
             className="mt-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer"
-            style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
+            style={{ background: t.colors.semantic.primary, color: t.colors.semantic.textOnPrimary, boxShadow: t.shadow.primaryLg }}
           >
             Add your first service
           </button>
@@ -246,7 +246,7 @@ export default function ServicesPage() {
                 <div className="flex gap-2">
                   <button onClick={() => saveEdit(service.id)}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
-                    style={{ background: t.colors.semantic.successAccent, color: "#fff" }}
+                    style={{ background: t.colors.semantic.successAccent, color: t.colors.semantic.textOnPrimary }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = t.colors.semantic.successAccentHover }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = t.colors.semantic.successAccent }}
                   >

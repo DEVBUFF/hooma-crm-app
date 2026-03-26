@@ -35,23 +35,28 @@ function hexToRgba(hex: string, alpha: number): string {
 // ---------------------------------------------------------------------------
 
 const STATUS_CONFIG: Record<BookingStatus, { bg: string; color: string; label: string }> = {
-  confirmed: { bg: t.colors.semantic.infoBg,    color: t.colors.semantic.info,      label: "Confirmed" },
-  completed: { bg: t.colors.semantic.successBg, color: t.colors.semantic.success,   label: "Completed" },
-  canceled:  { bg: t.colors.semantic.errorBg,   color: t.colors.semantic.error,     label: "Canceled"  },
-  no_show:   { bg: t.colors.semantic.surface,   color: t.colors.semantic.textMuted, label: "No show"   },
+  scheduled:   { bg: "var(--color-status-scheduled-bg)",    color: "var(--color-status-scheduled)",    label: "Scheduled"   },
+  confirmed:   { bg: "var(--color-status-confirmed-bg)",    color: "var(--color-status-confirmed)",    label: "Confirmed"   },
+  in_progress: { bg: "var(--color-status-in-progress-bg)",  color: "var(--color-status-in-progress)",  label: "In progress" },
+  completed:   { bg: "var(--color-status-completed-bg)",    color: "var(--color-status-completed)",    label: "Completed"   },
+  canceled:    { bg: "var(--color-status-cancelled-bg)",    color: "var(--color-status-cancelled)",    label: "Cancelled"   },
+  no_show:     { bg: "var(--color-status-no-show-bg)",      color: "var(--color-status-no-show)",      label: "No-show"     },
 }
 
 const STATUS_ICON: Record<BookingStatus, string> = {
-  confirmed: "✓",
-  completed: "✔",
-  canceled:  "✕",
-  no_show:   "∅",
+  scheduled:   "◦",
+  confirmed:   "✓",
+  in_progress: "▶",
+  completed:   "✔",
+  canceled:    "✕",
+  no_show:     "∅",
 }
 
 const QUICK_ACTIONS: Array<{ label: string; status: BookingStatus }> = [
-  { label: "Mark as Completed", status: "completed" },
-  { label: "Mark as No-show",   status: "no_show"   },
-  { label: "Cancel booking",    status: "canceled"   },
+  { label: "Start grooming",    status: "in_progress" },
+  { label: "Mark as Completed", status: "completed"   },
+  { label: "Mark as No-show",   status: "no_show"     },
+  { label: "Cancel booking",    status: "canceled"     },
 ]
 
 // ---------------------------------------------------------------------------
@@ -252,7 +257,7 @@ function BookingPill({
                 style={{
                   fontSize:   t.typography.fontSize.sm,
                   fontWeight: t.typography.fontWeight.semibold,
-                  color:      "#fff",
+                  color:      t.colors.semantic.textOnPrimary,
                   lineHeight: 1.3,
                 }}
               >
@@ -262,7 +267,7 @@ function BookingPill({
                 style={{
                   fontSize:   t.typography.fontSize.xs,
                   fontWeight: t.typography.fontWeight.semibold,
-                  color:      "#fff",
+                  color:      t.colors.semantic.textOnPrimary,
                   lineHeight: 1.3,
                 }}
               >
@@ -514,7 +519,7 @@ export function WeekViewGrid({
                 fontSize:       t.typography.fontSize.xs,
                 fontWeight:     t.typography.fontWeight.semibold,
                 color:          isToday
-                  ? "#ffffff"
+                  ? t.colors.semantic.textOnPrimary
                   : t.colors.semantic.textSubtle,
                 userSelect:     "none",
               }}

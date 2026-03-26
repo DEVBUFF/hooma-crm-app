@@ -73,7 +73,7 @@ function Modal({
       className={cn(
         "fixed inset-0 z-50 flex items-center justify-center p-4",
         // Overlay background — warm dark tint consistent with the app palette
-        "bg-[rgba(46,33,28,0.45)] backdrop-blur-[2px]",
+        "bg-[var(--hooma-overlay)] backdrop-blur-[2px]",
         // Enter animation — tw-animate-css utilities imported via globals.css
         "animate-in fade-in duration-200",
       )}
@@ -94,9 +94,9 @@ function Modal({
           // Colours — bg-card maps to --color-card (#E5DACA)
           "bg-card text-foreground",
           // Border — same subtle line used across all Hooma panels
-          "border border-[rgba(229,218,203,0.60)]",
+          "border border-[var(--hooma-modal-border)]",
           // Shadow — cardElevated from tokens
-          "shadow-[0_12px_40px_rgba(90,60,30,0.08)]",
+          "shadow-[var(--hooma-modal-shadow)]",
           // Size
           SIZE_CLASSES[size],
           // Enter animation

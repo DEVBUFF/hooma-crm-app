@@ -101,13 +101,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "outline-none",
               // Focus: primary ring, clean white bg
               "focus:bg-[--color-popover]",
-              "focus:border-[rgba(0,113,227,0.50)]",
-              "focus:shadow-[0_0_0_3px_rgba(0,113,227,0.12)]",
+              "focus:border-[var(--hooma-focus-border)]",
+              "focus:shadow-[var(--hooma-focus-ring)]",
               // Error state: red border + red ring on focus
               hasError && [
                 "border-destructive/60",
                 "focus:border-destructive/60",
-                "focus:shadow-[0_0_0_3px_rgba(255,59,48,0.12)]",
+                "focus:shadow-[var(--hooma-focus-error-ring)]",
               ],
               // Disabled
               "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",

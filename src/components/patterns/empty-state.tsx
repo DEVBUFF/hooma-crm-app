@@ -122,7 +122,7 @@ export function EmptyState({
           className="mt-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all cursor-pointer hover:opacity-90 active:scale-[0.97]"
           style={{
             background: t.colors.semantic.primary,
-            color: '#fff',
+            color: t.colors.semantic.textOnPrimary,
             boxShadow: t.shadow.primaryLg,
           }}
         >

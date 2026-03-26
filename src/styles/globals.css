@@ -1,7 +1,7 @@
 /* ============================================================
    HOOMA — Design Tokens + Tailwind CSS 4
    CRM for pet grooming salons · hellohooma.app
-   Fonts: SF Pro (system)
+   Fonts: DM Sans / Inter / JetBrains Mono (Google Fonts)
    Tokens: v1.0 — Semantic-first architecture
    ============================================================ */
 
@@ -10,194 +10,153 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
 /* ============================================================
-   1. PRIMITIVE COLOR RAMPS
+   1. LIGHT MODE TOKENS (default)
    ============================================================ */
 
 :root {
-  /* ── Periwinkle (Primary brand) ─────────────────────────── */
-  --periwinkle-50:  #EEF0FB;
-  --periwinkle-100: #D8DDFA;
-  --periwinkle-200: #B5BEF2;
-  --periwinkle-300: #96A2EA;
-  --periwinkle-400: #7B8CDE;
-  --periwinkle-500: #6474CC;
-  --periwinkle-600: #5563B8;
-  --periwinkle-700: #3B4494;
-  --periwinkle-800: #2A3070;
-  --periwinkle-900: #1A1F4D;
-  --periwinkle-950: #101235;
-
-  /* ── Warm Neutrals ──────────────────────────────────────── */
-  --neutral-50:  #F8F7F4;
-  --neutral-100: #F0EDE8;
-  --neutral-200: #E5E2DC;
-  --neutral-300: #C9C5BD;
-  --neutral-400: #9B9B9B;
-  --neutral-500: #6B6B6B;
-  --neutral-600: #4A4A48;
-  --neutral-700: #333331;
-  --neutral-800: #252523;
-  --neutral-900: #1A1A1A;
-  --neutral-950: #111110;
-
-  /* ── Mint (Accent / Success) ────────────────────────────── */
-  --mint-50:  #E8F5E9;
-  --mint-100: #C8E6C9;
-  --mint-200: #A5D6A7;
-  --mint-300: #81C784;
-  --mint-400: #66BB6A;
-  --mint-500: #4CAF50;
-  --mint-600: #2E8B57;
-  --mint-700: #2E7D4A;
-  --mint-800: #1B5E30;
-  --mint-900: #0D3B1A;
-
-  /* ── Error ──────────────────────────────────────────────── */
-  --error-50:  #FEF2F2;
-  --error-100: #FEE2E2;
-  --error-200: #FECACA;
-  --error-400: #EF4444;
-  --error-500: #D4483B;
-  --error-600: #B91C1C;
-  --error-700: #991B1B;
-  --error-800: #791F1F;
-  --error-900: #501313;
-
-  /* ── Warning ────────────────────────────────────────────── */
-  --warning-50:  #FFFBEB;
-  --warning-100: #FEF3C7;
-  --warning-200: #FDE68A;
-  --warning-400: #F59E0B;
-  --warning-500: #E6960A;
-  --warning-600: #D97706;
-  --warning-700: #B45309;
-  --warning-800: #854F0B;
-  --warning-900: #633806;
-
-  /* ── Info ────────────────────────────────────────────────── */
-  --info-50:  #EFF6FF;
-  --info-100: #DBEAFE;
-  --info-200: #BFDBFE;
-  --info-400: #60A5FA;
-  --info-500: #2563EB;
-  --info-600: #1D4ED8;
-  --info-700: #1E40AF;
-  --info-800: #0C447C;
-  --info-900: #042C53;
-
-
-  /* ============================================================
-     2. SEMANTIC ALIASES (Light mode)
-     ============================================================ */
-
   /* ── Backgrounds ────────────────────────────────────────── */
-  --color-bg-page:          var(--neutral-50);
+  --color-bg-page:          #F8F7F4;
   --color-bg-surface:       #FFFFFF;
   --color-bg-elevated:      #FFFFFF;
-  --color-bg-subtle:        var(--neutral-100);
-  --color-bg-primary:       var(--periwinkle-600);
-  --color-bg-primary-hover: var(--periwinkle-700);
-  --color-bg-primary-light: var(--periwinkle-50);
+  --color-bg-subtle:        #F0EDE8;
+
+  /* ── Primary backgrounds ────────────────────────────────── */
+  --color-bg-primary:       #5563B8;
+  --color-bg-primary-hover: #3B4494;
+  --color-bg-primary-light: #EEF0FB;
 
   /* ── Text ────────────────────────────────────────────────── */
-  --color-text-heading:          var(--neutral-900);
-  --color-text-body:             var(--neutral-500);
-  --color-text-muted:            var(--neutral-400);
+  --color-text-heading:          #1A1A1A;
+  --color-text-body:             #6B6B6B;
+  --color-text-muted:            #9B9B9B;
   --color-text-placeholder:      #848484;
   --color-text-on-primary:       #FFFFFF;
-  --color-text-primary:          var(--periwinkle-700);
-  --color-text-on-primary-light: var(--periwinkle-700);
+  --color-text-primary:          #3B4494;
+  --color-text-on-primary-light: #3B4494;
+  --color-text-link:             #5563B8;
+  --color-text-link-hover:       #3B4494;
 
   /* ── Borders ─────────────────────────────────────────────── */
-  --color-border-default: var(--neutral-200);
-  --color-border-light:   var(--neutral-100);
-  --color-border-focus:   var(--periwinkle-400);
-  --color-border-strong:  var(--neutral-300);
+  --color-border-default: #E5E2DC;
+  --color-border-light:   #F0EDE8;
+  --color-border-focus:   #7B8CDE;
+  --color-border-strong:  #C9C5BD;
 
-  /* ── Semantic Colours ────────────────────────────────────── */
-  --color-success-bg:     var(--mint-50);
-  --color-success-border: var(--mint-600);
-  --color-success-text:   var(--mint-700);
-  --color-warning-bg:     var(--warning-50);
-  --color-warning-border: var(--warning-500);
-  --color-warning-text:   var(--warning-800);
-  --color-error-bg:       var(--error-50);
-  --color-error-border:   var(--error-500);
-  --color-error-text:     var(--error-800);
-  --color-info-bg:        var(--info-50);
-  --color-info-border:    var(--info-500);
-  --color-info-text:      var(--info-800);
+  /* ── Semantic: Success ───────────────────────────────────── */
+  --color-success-bg:     #E8F5E9;
+  --color-success-border: #2E8B57;
+  --color-success-text:   #2E7D4A;
 
-  /* ── Allergy (must be immediately noticeable) ────────────── */
+  /* ── Semantic: Warning ───────────────────────────────────── */
+  --color-warning-bg:     #FFFBEB;
+  --color-warning-border: #E6960A;
+  --color-warning-text:   #854F0B;
+
+  /* ── Semantic: Error ─────────────────────────────────────── */
+  --color-error-bg:     #FEF2F2;
+  --color-error-border: #D4483B;
+  --color-error-text:   #791F1F;
+
+  /* ── Semantic: Info ──────────────────────────────────────── */
+  --color-info-bg:     #EFF6FF;
+  --color-info-border: #2563EB;
+  --color-info-text:   #0C447C;
+
+  /* ── Allergy (critical safety element) ───────────────────── */
   --color-allergy-bg:     #FEF2F2;
   --color-allergy-border: #D4483B;
   --color-allergy-text:   #791F1F;
   --color-allergy-icon:   #D4483B;
 
-  /* ── Typography ──────────────────────────────────────────── */
-  --hooma-font-display: -apple-system, 'SF Pro Display', system-ui, sans-serif;
-  --hooma-font-body: -apple-system, 'SF Pro Text', system-ui, sans-serif;
-  --hooma-font-mono: 'SF Mono', ui-monospace, monospace;
+  /* ── Appointment status (left-border colour) ─────────────── */
+  --color-status-scheduled:   #C9C5BD;
+  --color-status-confirmed:   #2E8B57;
+  --color-status-in-progress: #7B8CDE;
+  --color-status-completed:   #9B9B9B;
+  --color-status-cancelled:   #D4483B;
+  --color-status-no-show:     #E6960A;
 
-  /* ── Border Radius ───────────────────────────────────────── */
-  --hooma-radius-sm: 6px;
-  --hooma-radius-md: 10px;
-  --hooma-radius-lg: 14px;
-  --hooma-radius-full: 9999px;
+  /* ── Appointment status (background) ─────────────────────── */
+  --color-status-scheduled-bg:   #F0EDE8;
+  --color-status-confirmed-bg:   #E8F5E9;
+  --color-status-in-progress-bg: #EEF0FB;
+  --color-status-completed-bg:   #F0EDE8;
+  --color-status-cancelled-bg:   #FEF2F2;
+  --color-status-no-show-bg:     #FFFBEB;
 
   /* ── Shadows ─────────────────────────────────────────────── */
+  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:    0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-focus: 0 0 0 3px rgba(123, 140, 222, 0.3);
+  --shadow-error: 0 0 0 3px rgba(212, 72, 59, 0.2);
+
+  /* ── Radius ──────────────────────────────────────────────── */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-full: 9999px;
+
+  /* ── Calendar ────────────────────────────────────────────── */
+  --color-now-line: #D4483B;
+
+
+  /* ============================================================
+     BACKWARD-COMPAT ALIASES (--hooma-* → new tokens)
+     Existing components still reference these.
+     ============================================================ */
+
+  --hooma-primary:       #7B8CDE;
+  --hooma-primary-light: #EEF0FB;
+  --hooma-primary-dark:  #5563B8;
+  --hooma-primary-text:  #3B4494;
+
+  --hooma-accent-light: #E8F5E9;
+  --hooma-accent-text:  #2E7D4A;
+
+  --hooma-bg-base:        #F8F7F4;
+  --hooma-bg-surface:     #FFFFFF;
+  --hooma-text-primary:   #1A1A1A;
+  --hooma-text-secondary: #6B6B6B;
+  --hooma-text-tertiary:  #9B9B9B;
+  --hooma-border:         #E5E2DC;
+  --hooma-border-light:   #F0EDE8;
+
+  --hooma-error:      #D4483B;
+  --hooma-error-bg:   #FEF2F2;
+  --hooma-warning:    #E6960A;
+  --hooma-warning-bg: #FFFBEB;
+  --hooma-success:    #2E8B57;
+  --hooma-success-bg: #E8F5E9;
+  --hooma-info:       #2563EB;
+  --hooma-info-bg:    #EFF6FF;
+
+  --hooma-text-on-primary: #FFFFFF;
+
+  --hooma-font-display: 'DM Sans', system-ui, sans-serif;
+  --hooma-font-body:    'Inter', system-ui, sans-serif;
+  --hooma-font-mono:    'JetBrains Mono', monospace;
+
+  --hooma-radius-sm:   6px;
+  --hooma-radius-md:   10px;
+  --hooma-radius-lg:   14px;
+  --hooma-radius-full: 9999px;
+
   --hooma-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --hooma-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
   --hooma-shadow-focus: 0 0 0 3px rgba(123, 140, 222, 0.3);
   --hooma-shadow-error: 0 0 0 3px rgba(212, 72, 59, 0.2);
 
-  /* ── Focus ───────────────────────────────────────────────── */
   --hooma-focus-ring: 0 0 0 2px #FFFFFF, 0 0 0 4px #7B8CDE;
-  --hooma-focus-border: var(--periwinkle-400);
+  --hooma-focus-border: #7B8CDE;
   --hooma-focus-error-ring: 0 0 0 3px rgba(212, 72, 59, 0.12);
 
-  /* ── Spacing ─────────────────────────────────────────────── */
   --hooma-space-unit: 4px;
-
-  /* ── Layout ──────────────────────────────────────────────── */
   --hooma-max-w-dashboard: 1200px;
   --hooma-max-w-form: 640px;
   --hooma-page-margin-mobile: 16px;
   --hooma-page-margin-desktop: 24px;
-
-
-  /* ============================================================
-     3. BACKWARD-COMPAT ALIASES (--hooma-* → ramp / semantic)
-     Components still reference these; migrate over time.
-     ============================================================ */
-
-  --hooma-primary: var(--periwinkle-400);
-  --hooma-primary-light: var(--periwinkle-50);
-  --hooma-primary-dark: var(--periwinkle-600);
-  --hooma-primary-text: var(--periwinkle-700);
-
-  --hooma-accent-light: var(--mint-50);
-  --hooma-accent-text: var(--mint-700);
-
-  --hooma-bg-base: var(--neutral-50);
-  --hooma-bg-surface: #FFFFFF;
-  --hooma-text-primary: var(--neutral-900);
-  --hooma-text-secondary: var(--neutral-500);
-  --hooma-text-tertiary: var(--neutral-400);
-  --hooma-border: var(--neutral-200);
-  --hooma-border-light: var(--neutral-100);
-
-  --hooma-error: var(--error-500);
-  --hooma-error-bg: var(--error-50);
-  --hooma-warning: var(--warning-500);
-  --hooma-warning-bg: var(--warning-50);
-  --hooma-success: var(--mint-600);
-  --hooma-success-bg: var(--mint-50);
-  --hooma-info: var(--info-500);
-  --hooma-info-bg: var(--info-50);
-
-  --hooma-text-on-primary: #FFFFFF;
 
   /* ── Warm Accent ─────────────────────────────────────────── */
   --hooma-warm-accent: #C97B63;
@@ -244,7 +203,7 @@
   --hooma-shadow-confirm-default: 0 2px 10px rgba(127, 166, 201, 0.25);
 
   /* ── Logo ─────────────────────────────────────────────────── */
-  --hooma-logo-text: var(--neutral-900);
+  --hooma-logo-text: #1A1A1A;
   --hooma-logo-gradient-start: #7B8CDE;
   --hooma-logo-gradient-end: #B4BFEF;
 
@@ -254,10 +213,10 @@
 
 
   /* ============================================================
-     4. TAILWIND / SHADCN THEME MAPPING
+     TAILWIND / SHADCN THEME MAPPING
      ============================================================ */
 
-  --background: var(--neutral-50);
+  --background: #F8F7F4;
   --background-image:
     radial-gradient(
       circle at 50% -15%,
@@ -266,130 +225,131 @@
       rgba(255, 255, 255, 0.08) 40%,
       rgba(255, 255, 255, 0) 70%
     );
-  --foreground: var(--neutral-900);
+  --foreground: #1A1A1A;
   --card: #FFFFFF;
-  --card-foreground: var(--neutral-900);
+  --card-foreground: #1A1A1A;
   --popover: #FFFFFF;
-  --popover-foreground: var(--neutral-900);
-  --primary: var(--periwinkle-400);
+  --popover-foreground: #1A1A1A;
+  --primary: #7B8CDE;
   --primary-foreground: #FFFFFF;
-  --secondary: var(--mint-600);
+  --secondary: #2E8B57;
   --secondary-foreground: #FFFFFF;
-  --muted: var(--periwinkle-50);
-  --muted-foreground: var(--neutral-500);
-  --accent: var(--periwinkle-400);
+  --muted: #EEF0FB;
+  --muted-foreground: #6B6B6B;
+  --accent: #7B8CDE;
   --accent-foreground: #FFFFFF;
-  --destructive: var(--error-500);
+  --destructive: #D4483B;
   --destructive-foreground: #FFFFFF;
-  --border: var(--neutral-200);
+  --border: #E5E2DC;
   --input: #FFFFFF;
-  --ring: var(--periwinkle-400);
-  --chart-1: var(--mint-600);
-  --chart-2: var(--periwinkle-400);
-  --chart-3: var(--warning-500);
-  --chart-4: var(--error-500);
-  --chart-5: var(--hooma-purple);
+  --ring: #7B8CDE;
+  --chart-1: #2E8B57;
+  --chart-2: #7B8CDE;
+  --chart-3: #E6960A;
+  --chart-4: #D4483B;
+  --chart-5: #af52de;
   --radius: 0.375rem;
   --sidebar: #FFFFFF;
-  --sidebar-foreground: var(--neutral-900);
-  --sidebar-primary: var(--periwinkle-400);
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #7B8CDE;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: var(--periwinkle-50);
-  --sidebar-accent-foreground: var(--neutral-900);
-  --sidebar-border: var(--neutral-200);
-  --sidebar-ring: var(--periwinkle-400);
+  --sidebar-accent: #EEF0FB;
+  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-border: #E5E2DC;
+  --sidebar-ring: #7B8CDE;
 
-  --box-shadow: var(--hooma-shadow-md);
+  --box-shadow: var(--shadow-md);
 
-  /* Semantic extras */
-  --sage: var(--mint-600);
-  --calm-blue: var(--periwinkle-400);
-  --dusty-peach: var(--warning-500);
+  --sage: #2E8B57;
+  --calm-blue: #7B8CDE;
+  --dusty-peach: #E6960A;
   --terra: #ff6b3d;
-  --warm-accent: var(--hooma-warm-accent);
+  --warm-accent: #C97B63;
 }
 
 
 /* ============================================================
-   5. TAILWIND v4 THEME INLINE
+   2. DARK MODE
+   ============================================================ */
+
+.dark {
+  --color-bg-page:          #111110;
+  --color-bg-surface:       #252523;
+  --color-bg-elevated:      #333331;
+  --color-bg-subtle:        #252523;
+
+  --color-bg-primary:       #6474CC;
+  --color-bg-primary-hover: #7B8CDE;
+  --color-bg-primary-light: #101235;
+
+  --color-text-heading:          #F0EDE8;
+  --color-text-body:             #C9C5BD;
+  --color-text-muted:            #9B9B9B;
+  --color-text-placeholder:      #7A7A78;
+  --color-text-on-primary:       #FFFFFF;
+  --color-text-primary:          #96A2EA;
+  --color-text-on-primary-light: #B5BEF2;
+  --color-text-link:             #96A2EA;
+  --color-text-link-hover:       #B5BEF2;
+
+  --color-border-default: #333331;
+  --color-border-light:   #252523;
+  --color-border-focus:   #7B8CDE;
+  --color-border-strong:  #4A4A48;
+
+  --color-success-bg:     #0D3B1A;
+  --color-success-border: #4CAF50;
+  --color-success-text:   #A5D6A7;
+
+  --color-warning-bg:     #412402;
+  --color-warning-border: #F59E0B;
+  --color-warning-text:   #FDE68A;
+
+  --color-error-bg:     #501313;
+  --color-error-border: #EF4444;
+  --color-error-text:   #FECACA;
+
+  --color-info-bg:     #042C53;
+  --color-info-border: #60A5FA;
+  --color-info-text:   #BFDBFE;
+
+  --color-allergy-bg:     #501313;
+  --color-allergy-border: #EF4444;
+  --color-allergy-text:   #FECACA;
+  --color-allergy-icon:   #EF4444;
+
+  --color-status-scheduled:   #4A4A48;
+  --color-status-confirmed:   #4CAF50;
+  --color-status-in-progress: #96A2EA;
+  --color-status-completed:   #6B6B6B;
+  --color-status-cancelled:   #EF4444;
+  --color-status-no-show:     #F59E0B;
+
+  --color-status-scheduled-bg:   #252523;
+  --color-status-confirmed-bg:   #0D3B1A;
+  --color-status-in-progress-bg: #101235;
+  --color-status-completed-bg:   #252523;
+  --color-status-cancelled-bg:   #501313;
+  --color-status-no-show-bg:     #412402;
+
+  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md:    0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-focus: 0 0 0 3px rgba(123, 140, 222, 0.4);
+  --shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.3);
+
+  --color-now-line: #EF4444;
+}
+
+
+/* ============================================================
+   3. TAILWIND v4 THEME INLINE
    ============================================================ */
 
 @theme inline {
-  /* ── Fonts · SF Pro ────────────────────────────────────── */
-  --font-sans: -apple-system, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
-  --font-display: -apple-system, 'SF Pro Display', system-ui, sans-serif;
-  --font-mono: 'SF Mono', ui-monospace, monospace;
-
-  /* ── Periwinkle Ramp ───────────────────────────────────── */
-  --color-periwinkle-50:  var(--periwinkle-50);
-  --color-periwinkle-100: var(--periwinkle-100);
-  --color-periwinkle-200: var(--periwinkle-200);
-  --color-periwinkle-300: var(--periwinkle-300);
-  --color-periwinkle-400: var(--periwinkle-400);
-  --color-periwinkle-500: var(--periwinkle-500);
-  --color-periwinkle-600: var(--periwinkle-600);
-  --color-periwinkle-700: var(--periwinkle-700);
-  --color-periwinkle-800: var(--periwinkle-800);
-  --color-periwinkle-900: var(--periwinkle-900);
-  --color-periwinkle-950: var(--periwinkle-950);
-
-  /* ── Neutral Ramp ──────────────────────────────────────── */
-  --color-neutral-50:  var(--neutral-50);
-  --color-neutral-100: var(--neutral-100);
-  --color-neutral-200: var(--neutral-200);
-  --color-neutral-300: var(--neutral-300);
-  --color-neutral-400: var(--neutral-400);
-  --color-neutral-500: var(--neutral-500);
-  --color-neutral-600: var(--neutral-600);
-  --color-neutral-700: var(--neutral-700);
-  --color-neutral-800: var(--neutral-800);
-  --color-neutral-900: var(--neutral-900);
-  --color-neutral-950: var(--neutral-950);
-
-  /* ── Mint Ramp ─────────────────────────────────────────── */
-  --color-mint-50:  var(--mint-50);
-  --color-mint-100: var(--mint-100);
-  --color-mint-200: var(--mint-200);
-  --color-mint-300: var(--mint-300);
-  --color-mint-400: var(--mint-400);
-  --color-mint-500: var(--mint-500);
-  --color-mint-600: var(--mint-600);
-  --color-mint-700: var(--mint-700);
-  --color-mint-800: var(--mint-800);
-  --color-mint-900: var(--mint-900);
-
-  /* ── Error Ramp ────────────────────────────────────────── */
-  --color-error-50:  var(--error-50);
-  --color-error-100: var(--error-100);
-  --color-error-200: var(--error-200);
-  --color-error-400: var(--error-400);
-  --color-error-500: var(--error-500);
-  --color-error-600: var(--error-600);
-  --color-error-700: var(--error-700);
-  --color-error-800: var(--error-800);
-  --color-error-900: var(--error-900);
-
-  /* ── Warning Ramp ──────────────────────────────────────── */
-  --color-warning-50:  var(--warning-50);
-  --color-warning-100: var(--warning-100);
-  --color-warning-200: var(--warning-200);
-  --color-warning-400: var(--warning-400);
-  --color-warning-500: var(--warning-500);
-  --color-warning-600: var(--warning-600);
-  --color-warning-700: var(--warning-700);
-  --color-warning-800: var(--warning-800);
-  --color-warning-900: var(--warning-900);
-
-  /* ── Info Ramp ─────────────────────────────────────────── */
-  --color-info-50:  var(--info-50);
-  --color-info-100: var(--info-100);
-  --color-info-200: var(--info-200);
-  --color-info-400: var(--info-400);
-  --color-info-500: var(--info-500);
-  --color-info-600: var(--info-600);
-  --color-info-700: var(--info-700);
-  --color-info-800: var(--info-800);
-  --color-info-900: var(--info-900);
+  /* ── Fonts · Google Fonts ──────────────────────────────── */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
   /* ── Semantic Colour Aliases ───────────────────────────── */
   --color-background: var(--background);
@@ -400,32 +360,36 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-primary-light: var(--periwinkle-50);
-  --color-primary-dark: var(--periwinkle-600);
-  --color-primary-text: var(--periwinkle-700);
+  --color-primary-light: #EEF0FB;
+  --color-primary-dark: #5563B8;
+  --color-primary-text: #3B4494;
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accent-light: var(--mint-50);
-  --color-accent-text: var(--mint-700);
+  --color-accent-light: #E8F5E9;
+  --color-accent-text: #2E7D4A;
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
-  --color-border-light: var(--neutral-100);
+  --color-border-light: #F0EDE8;
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-canvas: var(--neutral-50);
+  --color-canvas: #F8F7F4;
   --color-surface: #FFFFFF;
-  --color-text-primary: var(--neutral-900);
-  --color-text-secondary: var(--neutral-500);
-  --color-text-tertiary: var(--neutral-400);
-  --color-error-bg: var(--error-50);
-  --color-warning-bg: var(--warning-50);
-  --color-success: var(--mint-600);
-  --color-success-bg: var(--mint-50);
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #6B6B6B;
+  --color-text-tertiary: #9B9B9B;
+  --color-error: #D4483B;
+  --color-error-bg: #FEF2F2;
+  --color-warning: #E6960A;
+  --color-warning-bg: #FFFBEB;
+  --color-success: #2E8B57;
+  --color-success-bg: #E8F5E9;
+  --color-info: #2563EB;
+  --color-info-bg: #EFF6FF;
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -441,11 +405,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-warm-accent: var(--warm-accent);
 
-  /* ── Radius (from brand guide) ─────────────────────────── */
-  --radius-sm: var(--hooma-radius-sm);
-  --radius-md: var(--hooma-radius-md);
-  --radius-lg: var(--hooma-radius-lg);
-  --radius-xl: calc(var(--hooma-radius-lg) + 4px);
+  /* ── Radius ────────────────────────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
 
   /* ── Animations ────────────────────────────────────────── */
   --animate-fade-in: fade-in 200ms ease-out;
@@ -476,10 +440,16 @@
 
 
 /* ============================================================
-   6. BASE LAYER RESETS & DEFAULTS
+   4. BASE LAYER RESETS & DEFAULTS
    ============================================================ */
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -493,15 +463,17 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--hooma-font-body);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Headings — SF Pro Display */
+  /* Headings — DM Sans */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--hooma-font-display);
+    font-family: 'DM Sans', system-ui, sans-serif;
     font-weight: 500;
-    color: var(--neutral-900);
+    color: var(--color-text-heading);
   }
 
   h1 {
@@ -526,10 +498,61 @@
     font-size: 18px;
     line-height: 1.35;
   }
+}
 
-  /* Focus ring — brand guide */
-  :focus-visible {
-    outline: 2px solid var(--periwinkle-400);
-    outline-offset: 2px;
-  }
+
+/* ============================================================
+   5. FOCUS STYLES (accessibility)
+   ============================================================ */
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+
+/* ============================================================
+   6. SELECTION
+   ============================================================ */
+
+::selection {
+  background-color: #EEF0FB;
+  color: #3B4494;
+}
+
+.dark ::selection {
+  background-color: #2A3070;
+  color: #D8DDFA;
+}
+
+
+/* ============================================================
+   7. SCROLLBAR (subtle, warm)
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
 }

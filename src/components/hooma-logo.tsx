@@ -21,8 +21,7 @@ export function HoomaLogo({ className }: { className?: string }) {
     <div className={`flex items-center gap-2.5 ${className ?? ""}`}>
       <PawIcon className="w-7 h-7 text-primary" />
       <span
-        className="text-[20px] font-medium tracking-[-0.3px] text-text-primary"
-        style={{ fontFamily: "var(--hooma-font-display)" }}
+        className="text-[20px] font-medium tracking-[-0.3px] text-text-primary font-display"
       >
         hooma
       </span>

@@ -1,4 +1,4 @@
-export type BookingStatus = "confirmed" | "canceled" | "completed" | "no_show"
+export type BookingStatus = "scheduled" | "confirmed" | "in_progress" | "completed" | "canceled" | "no_show"
 
 export interface Staff {
   id: string

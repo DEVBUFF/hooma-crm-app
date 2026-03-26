@@ -62,7 +62,7 @@ export function MobileSidebar() {
         style={{
           background: t.colors.component.card.bg,
           borderRight: `1px solid ${t.colors.semantic.borderSubtle}`,
-          boxShadow: open ? "4px 0 24px rgba(0,0,0,0.1)" : "none",
+          boxShadow: open ? "var(--hooma-shadow-sidebar)" : "none",
         }}
       >
         {/* Header */}

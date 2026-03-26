@@ -45,7 +45,7 @@ export function DashboardTopbar() {
       <div className="flex items-center gap-3">
         <div
           className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold select-none cursor-pointer transition-all duration-200 hover:scale-105"
-          style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primaryLg }}
+          style={{ background: t.colors.semantic.primary, color: t.colors.semantic.textOnPrimary, boxShadow: t.shadow.primaryLg }}
           title={user?.email ?? ""}
         >
           {initials}

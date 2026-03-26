@@ -180,7 +180,7 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
 
           if (isActive) {
             bubbleBg = t.colors.semantic.primary
-            bubbleFg = "#fff"
+            bubbleFg = t.colors.semantic.textOnPrimary
             bubbleShadow = t.shadow.primaryLg
           } else if (isDone) {
             bubbleBg = t.colors.semantic.successBg
@@ -293,7 +293,7 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
             type="submit"
             disabled={!name || !salonName || !email}
             className="w-full flex items-center justify-center gap-2 py-3.5 px-6 mt-2 rounded-lg font-bold text-sm transition-all duration-200 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-            style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primary }}
+            style={{ background: t.colors.semantic.primary, color: t.colors.semantic.textOnPrimary, boxShadow: t.shadow.primary }}
             onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryHover }}
             onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primary }}
           >
@@ -410,7 +410,7 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
               type="submit"
               disabled={isLoading || !password}
               className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-lg font-bold text-sm transition-all duration-200 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              style={{ background: t.colors.semantic.primary, color: "#fff", boxShadow: t.shadow.primary }}
+              style={{ background: t.colors.semantic.primary, color: t.colors.semantic.textOnPrimary, boxShadow: t.shadow.primary }}
               onMouseEnter={(e) => { e.currentTarget.style.boxShadow = t.shadow.primaryHover }}
               onMouseLeave={(e) => { e.currentTarget.style.boxShadow = t.shadow.primary }}
             >

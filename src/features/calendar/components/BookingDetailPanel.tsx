@@ -17,10 +17,12 @@ import type {
 // ---------------------------------------------------------------------------
 
 const STATUS_OPTIONS: Array<{ value: BookingStatus; label: string; color: string; bg: string }> = [
-  { value: "confirmed", label: "Confirmed", color: t.colors.semantic.info,      bg: t.colors.semantic.infoBg },
-  { value: "completed", label: "Completed", color: t.colors.semantic.success,   bg: t.colors.semantic.successBg },
-  { value: "canceled",  label: "Canceled",  color: t.colors.semantic.error,     bg: t.colors.semantic.errorBg },
-  { value: "no_show",   label: "No show",   color: t.colors.semantic.textMuted, bg: t.colors.semantic.surface },
+  { value: "scheduled",   label: "Scheduled",   color: "var(--color-status-scheduled)",   bg: "var(--color-status-scheduled-bg)"   },
+  { value: "confirmed",   label: "Confirmed",   color: "var(--color-status-confirmed)",   bg: "var(--color-status-confirmed-bg)"   },
+  { value: "in_progress", label: "In progress", color: "var(--color-status-in-progress)", bg: "var(--color-status-in-progress-bg)" },
+  { value: "completed",   label: "Completed",   color: "var(--color-status-completed)",   bg: "var(--color-status-completed-bg)"   },
+  { value: "canceled",    label: "Cancelled",   color: "var(--color-status-cancelled)",   bg: "var(--color-status-cancelled-bg)"   },
+  { value: "no_show",     label: "No-show",     color: "var(--color-status-no-show)",     bg: "var(--color-status-no-show-bg)"     },
 ]
 
 // ---------------------------------------------------------------------------
@@ -250,7 +252,7 @@ export function BookingDetailPanel({
           position:   "fixed",
           inset:      0,
           zIndex:     t.zIndex.modal,
-          background: "rgba(0, 0, 0, 0.20)",
+          background: "var(--hooma-overlay-lighter)",
           transition: `opacity ${t.motion.duration.normal} ${t.motion.easing.standard}`,
           opacity:    visible ? 1 : 0,
         }}
@@ -622,7 +624,7 @@ export function BookingDetailPanel({
               fontSize:     t.typography.fontSize.sm,
               fontWeight:   t.typography.fontWeight.semibold,
               fontFamily:   t.typography.fontFamily.sans,
-              color:        "#fff",
+              color:        t.colors.semantic.textOnPrimary,
               cursor:       isDirty ? "pointer" : "not-allowed",
               opacity:      isDirty ? 1 : 0.45,
               boxShadow:    isDirty ? t.shadow.primary : "none",

@@ -11,14 +11,14 @@ import type { Staff } from "@/features/calendar/types"
 // ---------------------------------------------------------------------------
 
 const STAFF_COLORS = [
-  t.colors.base.blue500,
+  t.colors.base.periwinkle500,
   t.colors.base.coral500,
   t.colors.base.green600,
   t.colors.base.blue600,
   t.colors.base.brown500,
   t.colors.base.coral550,
   t.colors.base.green650,
-  t.colors.base.blue550,
+  t.colors.base.periwinkle700,
 ]
 
 // ---------------------------------------------------------------------------
