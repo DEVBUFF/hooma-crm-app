@@ -275,6 +275,8 @@ export function BookingDetailPanel({
           transform:     visible ? "translateX(0)" : "translateX(100%)",
           transition:    `transform ${t.motion.duration.slow} ${t.motion.easing.emphasized}`,
           overflowY:     "auto",
+          overflowX:     "hidden",
+          WebkitOverflowScrolling: "touch",
         }}
       >
         {/* ── Header ──────────────────────────────────────────────────── */}

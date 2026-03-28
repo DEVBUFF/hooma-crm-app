@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import type { Booking, BookingStatus, Staff } from "@/features/calendar/types"
 import { formatDayGroupLabel } from "@/features/calendar/lib/time"
+import { User, PawPrint, Scissors, Clock } from "lucide-react"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -269,111 +270,78 @@ function BookingPill({
               overflow:     "hidden",
             }}
           >
-            {/* Header bar */}
+            {/* Header: time + status */}
             <div
               style={{
-                background:     staffColor,
-                padding:        "8px 12px",
                 display:        "flex",
                 alignItems:     "center",
                 justifyContent: "space-between",
-                gap:            8,
+                padding:        "10px 14px",
+                background:     hexToRgba(staffColor, 0.1),
+                borderBottom:   `1px solid ${t.colors.semantic.borderSubtle}`,
               }}
             >
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Clock size={14} style={{ color: t.colors.semantic.textSubtle }} />
+                <span
+                  style={{
+                    fontSize:       t.typography.fontSize.sm,
+                    fontWeight:     t.typography.fontWeight.medium,
+                    color:          t.colors.semantic.textStrong,
+                    fontFamily:     t.typography.fontFamily.mono,
+                    letterSpacing:  "-0.3px",
+                  }}
+                >
+                  {formatTime(booking.startAt)}–{formatTime(booking.endAt)}
+                </span>
+              </div>
               <span
                 style={{
-                  fontSize:   t.typography.fontSize.sm,
-                  fontWeight: t.typography.fontWeight.semibold,
-                  color:      t.colors.semantic.textOnPrimary,
-                  lineHeight: 1.3,
-                }}
-              >
-                {formatTime(booking.startAt)} – {formatTime(booking.endAt)}
-              </span>
-              <span
-                style={{
-                  fontSize:   t.typography.fontSize.xs,
-                  fontWeight: t.typography.fontWeight.semibold,
-                  color:      t.colors.semantic.textOnPrimary,
-                  lineHeight: 1.3,
+                  fontSize:     11,
+                  fontWeight:   t.typography.fontWeight.semibold,
+                  padding:      "3px 8px",
+                  borderRadius: 10,
+                  background:   status.bg,
+                  color:        status.color,
+                  whiteSpace:   "nowrap",
                 }}
               >
                 {status.label}
               </span>
             </div>
 
-            {/* Body */}
-            <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
-              {/* Status row with icon */}
+            {/* Body: icon rows */}
+            <div style={{ padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
+              {/* Customer */}
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span
-                  style={{
-                    display:        "flex",
-                    alignItems:     "center",
-                    justifyContent: "center",
-                    width:          28,
-                    height:         28,
-                    borderRadius:   t.radius.md,
-                    background:     status.bg,
-                    flexShrink:     0,
-                  }}
-                >
-                  <span style={{ fontSize: 14, color: status.color }}>
-                    {STATUS_ICON[booking.status]}
-                  </span>
-                </span>
-                <span
-                  style={{
-                    fontSize:   t.typography.fontSize.sm,
-                    fontWeight: t.typography.fontWeight.medium,
-                    color:      t.colors.semantic.text,
-                  }}
-                >
-                  {status.label}
+                <User size={14} style={{ color: t.colors.semantic.textSubtle, flexShrink: 0 }} />
+                <span style={{ fontSize: t.typography.fontSize.sm, fontWeight: t.typography.fontWeight.medium, color: t.colors.semantic.textStrong }}>
+                  {booking.customerNameSnapshot}
                 </span>
               </div>
 
+              {/* Pet */}
+              {booking.petNameSnapshot && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <PawPrint size={14} style={{ color: t.colors.semantic.textSubtle, flexShrink: 0 }} />
+                  <span style={{ fontSize: t.typography.fontSize.sm, color: t.colors.semantic.textStrong }}>
+                    {booking.petNameSnapshot}
+                  </span>
+                </div>
+              )}
+
               {/* Service + price */}
-              <div
-                style={{
-                  display:        "flex",
-                  justifyContent: "space-between",
-                  alignItems:     "baseline",
-                  gap:            8,
-                }}
-              >
-                <span
-                  style={{
-                    fontSize:   t.typography.fontSize.sm,
-                    fontWeight: t.typography.fontWeight.semibold,
-                    color:      t.colors.semantic.text,
-                  }}
-                >
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Scissors size={14} style={{ color: t.colors.semantic.textSubtle, flexShrink: 0 }} />
+                <span style={{ fontSize: t.typography.fontSize.sm, color: t.colors.semantic.textStrong, flex: 1 }}>
                   {booking.serviceNameSnapshot}
                 </span>
                 {booking.priceSnapshot && (
-                  <span
-                    style={{
-                      fontSize:   t.typography.fontSize.sm,
-                      fontWeight: t.typography.fontWeight.semibold,
-                      color:      t.colors.semantic.text,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <span style={{ fontSize: t.typography.fontSize.sm, fontWeight: t.typography.fontWeight.medium, color: t.colors.semantic.primary, fontFamily: t.typography.fontFamily.mono, whiteSpace: "nowrap" }}>
                     {booking.priceSnapshot}
                   </span>
                 )}
               </div>
-
-              {/* Customer + duration */}
-              <span
-                style={{
-                  fontSize: t.typography.fontSize.xs,
-                  color:    t.colors.semantic.textMuted,
-                }}
-              >
-                {booking.customerNameSnapshot} · {durationStr}
-              </span>
 
               {/* Allergies warning */}
               {booking.petAllergiesSnapshot && (

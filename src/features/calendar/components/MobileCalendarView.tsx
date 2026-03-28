@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { ChevronLeft, ChevronRight, Filter, Plus } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, User, PawPrint, Scissors, Clock, Users, ShieldAlert } from "lucide-react"
 import { t } from "@/lib/tokens"
 import {
   addDays,
@@ -18,13 +18,29 @@ import type { Booking, BookingStatus, Staff } from "@/features/calendar/types"
 // Status helpers
 // ---------------------------------------------------------------------------
 
-const STATUS_DOT: Record<BookingStatus, string> = {
-  scheduled:   "var(--color-status-scheduled)",
-  confirmed:   "var(--color-status-confirmed)",
-  in_progress: "var(--color-status-in-progress)",
-  completed:   "var(--color-status-completed)",
-  canceled:    "var(--color-status-cancelled)",
-  no_show:     "var(--color-status-no-show)",
+const STATUS_CONFIG: Record<BookingStatus, { label: string; color: string; bg: string }> = {
+  scheduled:   { label: "Scheduled",   color: "var(--color-status-scheduled)",   bg: "var(--color-status-scheduled-bg)"   },
+  confirmed:   { label: "Confirmed",   color: "var(--color-status-confirmed)",   bg: "var(--color-status-confirmed-bg)"   },
+  in_progress: { label: "In progress", color: "var(--color-status-in-progress)", bg: "var(--color-status-in-progress-bg)" },
+  completed:   { label: "Completed",   color: "var(--color-status-completed)",   bg: "var(--color-status-completed-bg)"   },
+  canceled:    { label: "Cancelled",   color: "var(--color-status-cancelled)",   bg: "var(--color-status-cancelled-bg)"   },
+  no_show:     { label: "No-show",     color: "var(--color-status-no-show)",     bg: "var(--color-status-no-show-bg)"     },
+}
+
+function StatusBadge({ status }: { status: BookingStatus }) {
+  const s = STATUS_CONFIG[status]
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap shrink-0"
+      style={{ background: s.bg, color: s.color }}
+    >
+      <span
+        className="w-[5px] h-[5px] rounded-full shrink-0"
+        style={{ background: s.color }}
+      />
+      {s.label}
+    </span>
+  )
 }
 
 function hexToRgba(hex: string, alpha: number): string {
@@ -41,6 +57,7 @@ function hexToRgba(hex: string, alpha: number): string {
 interface MobileCalendarViewProps {
   staff: Staff[]
   bookings: Booking[]
+  loading?: boolean
   onBookingClick?: (booking: Booking) => void
   onAddBooking?: (staff: Staff, startAt: Date) => void
 }
@@ -52,6 +69,7 @@ interface MobileCalendarViewProps {
 export function MobileCalendarView({
   staff,
   bookings,
+  loading = false,
   onBookingClick,
   onAddBooking,
 }: MobileCalendarViewProps) {
@@ -236,8 +254,57 @@ export function MobileCalendarView({
       </div>
 
       {/* ── Bookings list ───────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-4 pb-28">
-        {dayBookings.length === 0 ? (
+      <div className="flex-1 overflow-y-auto px-4 pb-28" style={{ WebkitOverflowScrolling: "touch" }}>
+        {loading ? (
+          /* ── Skeleton loading ─────────────────────────────────────────── */
+          <div className="flex flex-col gap-6">
+            {[0, 1].map((group) => (
+              <div key={group}>
+                {/* Staff header skeleton */}
+                <div className="flex items-center gap-2 mb-3 px-0.5">
+                  <div className="w-2.5 h-2.5 rounded-full hooma-skeleton" />
+                  <div className="h-4 w-24 rounded hooma-skeleton" />
+                  <div className="h-3 w-16 rounded hooma-skeleton ml-auto" />
+                </div>
+                {/* Card skeletons */}
+                <div className="flex flex-col gap-2.5">
+                  {Array.from({ length: group === 0 ? 3 : 2 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="rounded-[14px] overflow-hidden"
+                      style={{ border: `1px solid ${t.colors.semantic.borderSubtle}` }}
+                    >
+                      {/* Header skeleton */}
+                      <div
+                        className="flex items-center justify-between px-3.5 py-3"
+                        style={{ background: t.colors.semantic.bg }}
+                      >
+                        <div className="h-4 w-28 rounded hooma-skeleton" />
+                        <div className="h-5 w-20 rounded-full hooma-skeleton" />
+                      </div>
+                      {/* Body skeleton */}
+                      <div className="flex flex-col gap-2.5 px-3.5 py-3" style={{ background: t.colors.semantic.panel }}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3.5 h-3.5 rounded hooma-skeleton shrink-0" />
+                          <div className="h-3.5 w-32 rounded hooma-skeleton" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3.5 h-3.5 rounded hooma-skeleton shrink-0" />
+                          <div className="h-3.5 w-24 rounded hooma-skeleton" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3.5 h-3.5 rounded hooma-skeleton shrink-0" />
+                          <div className="h-3.5 w-28 rounded hooma-skeleton flex-1" />
+                          <div className="h-3.5 w-14 rounded hooma-skeleton" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : dayBookings.length === 0 ? (
           <div className="text-center py-12" style={{ color: t.colors.semantic.textSubtle }}>
             <div className="text-sm">No bookings for this day.</div>
             <div className="text-[13px] mt-1">Tap + to add one.</div>
@@ -248,15 +315,15 @@ export function MobileCalendarView({
             const s = staff.find((st) => st.id === staffId)
             if (!s) return null
             return (
-              <div key={staffId} className="mb-5">
+              <div key={staffId} className="mb-6">
                 {/* Staff header */}
-                <div className="flex items-center gap-2 mb-2.5">
+                <div className="flex items-center gap-2 mb-3 px-0.5">
                   <span
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ background: s.color }}
                   />
                   <span
-                    className="text-sm font-medium"
+                    className="text-[15px] font-medium"
                     style={{ color: t.colors.semantic.textStrong }}
                   >
                     {s.name}
@@ -269,47 +336,78 @@ export function MobileCalendarView({
                   </span>
                 </div>
                 {/* Booking cards */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   {staffBookings.map((b) => (
                     <button
                       key={b.id}
                       onClick={() => onBookingClick?.(b)}
-                      className="w-full text-left cursor-pointer"
+                      className="w-full text-left cursor-pointer overflow-hidden rounded-[14px]"
                       style={{
-                        background: hexToRgba(s.color, 0.08),
-                        borderLeft: `3px solid ${s.color}`,
-                        borderRadius: "0 10px 10px 0",
-                        padding: "12px 14px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        border: "none",
-                        borderLeftWidth: 3,
-                        borderLeftStyle: "solid",
-                        borderLeftColor: s.color,
+                        background: t.colors.semantic.panel,
+                        border: `1px solid ${t.colors.semantic.borderSubtle}`,
                       }}
                     >
-                      <div>
-                        <div
-                          className="text-[15px] font-medium tracking-tight"
-                          style={{
-                            color: t.colors.semantic.textStrong,
-                            fontFamily: t.typography.fontFamily.mono,
-                          }}
-                        >
-                          {formatTime(b.startAt)}–{formatTime(b.endAt)}
+                      {/* Card header: time + status */}
+                      <div
+                        className="flex items-center justify-between px-3.5 py-2.5"
+                        style={{
+                          background: hexToRgba(s.color, 0.08),
+                          borderBottom: `1px solid ${t.colors.semantic.borderSubtle}`,
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Clock size={14} style={{ color: t.colors.semantic.textSubtle }} />
+                          <span
+                            className="text-sm font-medium tracking-tight"
+                            style={{
+                              color: t.colors.semantic.textStrong,
+                              fontFamily: t.typography.fontFamily.mono,
+                            }}
+                          >
+                            {formatTime(b.startAt)}–{formatTime(b.endAt)}
+                          </span>
                         </div>
-                        <div
-                          className="text-[13px] mt-0.5"
-                          style={{ color: t.colors.semantic.textMuted }}
-                        >
-                          {b.customerNameSnapshot} · {b.serviceNameSnapshot}
-                        </div>
+                        <StatusBadge status={b.status} />
                       </div>
-                      <span
-                        className="w-2 h-2 rounded-full shrink-0"
-                        style={{ background: STATUS_DOT[b.status] }}
-                      />
+                      {/* Card body: icon rows */}
+                      <div className="flex flex-col gap-2 px-3.5 py-2.5">
+                        <div className="flex items-center gap-2">
+                          <User size={14} style={{ color: t.colors.semantic.textSubtle, flexShrink: 0 }} />
+                          <span className="text-[13px] font-medium truncate" style={{ color: t.colors.semantic.textStrong }}>
+                            {b.customerNameSnapshot}
+                          </span>
+                        </div>
+                        {b.petNameSnapshot && (
+                          <div className="flex items-center gap-2">
+                            <PawPrint size={14} style={{ color: t.colors.semantic.textSubtle, flexShrink: 0 }} />
+                            <span className="text-[13px] truncate" style={{ color: t.colors.semantic.textStrong }}>
+                              {b.petNameSnapshot}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <Scissors size={14} style={{ color: t.colors.semantic.textSubtle, flexShrink: 0 }} />
+                          <span className="text-[13px] flex-1 truncate" style={{ color: t.colors.semantic.textStrong }}>
+                            {b.serviceNameSnapshot}
+                          </span>
+                          {b.priceSnapshot && (
+                            <span
+                              className="text-[13px] font-medium shrink-0"
+                              style={{ color: t.colors.semantic.primary, fontFamily: t.typography.fontFamily.mono }}
+                            >
+                              {b.priceSnapshot}
+                            </span>
+                          )}
+                        </div>
+                        {b.petAllergiesSnapshot && (
+                          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg" style={{ background: "var(--color-error-bg)" }}>
+                            <ShieldAlert size={13} style={{ color: "var(--color-error-text)", flexShrink: 0 }} />
+                            <span className="text-[12px] font-medium" style={{ color: "var(--color-error-text)" }}>
+                              {b.petAllergiesSnapshot}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -318,7 +416,7 @@ export function MobileCalendarView({
           })
         ) : (
           /* ── Timeline view ───────────────────────────────────────────── */
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             {dayBookings.map((b) => {
               const s = staff.find((st) => st.id === b.staffId)
               const color = s?.color ?? t.colors.semantic.primary
@@ -327,61 +425,72 @@ export function MobileCalendarView({
                 <button
                   key={b.id}
                   onClick={() => onBookingClick?.(b)}
-                  className="w-full text-left cursor-pointer flex items-center gap-3"
+                  className="w-full text-left cursor-pointer overflow-hidden rounded-[14px]"
                   style={{
                     background: t.colors.semantic.panel,
-                    borderRadius: 14,
-                    padding: "14px 16px",
                     border: `1px solid ${t.colors.semantic.borderSubtle}`,
                   }}
                 >
-                  {/* Time column */}
+                  {/* Card header: time + status */}
                   <div
-                    className="min-w-[72px]"
+                    className="flex items-center justify-between px-3.5 py-2.5"
                     style={{
-                      fontFamily: t.typography.fontFamily.mono,
-                      fontSize: 14,
-                      fontWeight: 500,
-                      color: t.colors.semantic.textStrong,
-                      letterSpacing: "-0.3px",
+                      background: t.colors.semantic.bg,
+                      borderBottom: `1px solid ${t.colors.semantic.borderSubtle}`,
                     }}
                   >
-                    {formatTime(b.startAt)}
-                    <div
-                      className="text-xs font-normal"
-                      style={{ color: t.colors.semantic.textSubtle }}
-                    >
-                      {formatTime(b.endAt)}
-                    </div>
-                  </div>
-                  {/* Divider */}
-                  <div
-                    className="w-[3px] h-9 rounded-sm shrink-0"
-                    style={{ background: color }}
-                  />
-                  {/* Details */}
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className="text-[15px] font-medium truncate"
-                      style={{ color: t.colors.semantic.textStrong }}
-                    >
-                      {b.customerNameSnapshot}
-                    </div>
-                    <div
-                      className="text-[13px] flex items-center gap-1.5 mt-0.5"
-                      style={{ color: t.colors.semantic.textMuted }}
-                    >
+                    <div className="flex items-center gap-2">
+                      <Clock size={14} style={{ color: t.colors.semantic.textSubtle }} />
                       <span
-                        className="w-1.5 h-1.5 rounded-full shrink-0"
-                        style={{ background: color }}
-                      />
-                      {s?.name} · {b.serviceNameSnapshot}
+                        className="text-sm font-medium tracking-tight"
+                        style={{
+                          color: t.colors.semantic.textStrong,
+                          fontFamily: t.typography.fontFamily.mono,
+                        }}
+                      >
+                        {formatTime(b.startAt)}–{formatTime(b.endAt)}
+                      </span>
                     </div>
+                    <StatusBadge status={b.status} />
                   </div>
-                  <span
-                    className="w-2 h-2 rounded-full shrink-0"
-                    style={{ background: STATUS_DOT[b.status] }}
-                  />
+                  {/* Card body: icon rows */}
+                  <div className="flex flex-col gap-2 px-3.5 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <Users size={14} style={{ color: color, flexShrink: 0 }} />
+                      <span className="text-[13px] font-medium truncate" style={{ color: t.colors.semantic.textStrong }}>
+                        {s?.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <User size={14} style={{ color: t.colors.semantic.textSubtle, flexShrink: 0 }} />
+                      <span className="text-[13px] truncate" style={{ color: t.colors.semantic.textStrong }}>
+                        {b.customerNameSnapshot}
+                        {b.petNameSnapshot ? ` · ${b.petNameSnapshot}` : ""}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Scissors size={14} style={{ color: t.colors.semantic.textSubtle, flexShrink: 0 }} />
+                      <span className="text-[13px] flex-1 truncate" style={{ color: t.colors.semantic.textStrong }}>
+                        {b.serviceNameSnapshot}
+                      </span>
+                      {b.priceSnapshot && (
+                        <span
+                          className="text-[13px] font-medium shrink-0"
+                          style={{ color: t.colors.semantic.primary, fontFamily: t.typography.fontFamily.mono }}
+                        >
+                          {b.priceSnapshot}
+                        </span>
+                      )}
+                    </div>
+                    {b.petAllergiesSnapshot && (
+                      <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg" style={{ background: "var(--color-error-bg)" }}>
+                        <ShieldAlert size={13} style={{ color: "var(--color-error-text)", flexShrink: 0 }} />
+                        <span className="text-[12px] font-medium" style={{ color: "var(--color-error-text)" }}>
+                          {b.petAllergiesSnapshot}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </button>
               )
             })}
@@ -392,7 +501,7 @@ export function MobileCalendarView({
       {/* ── FAB ─────────────────────────────────────────────────────────── */}
       <button
         onClick={handleFab}
-        className="absolute bottom-24 right-4 w-[52px] h-[52px] rounded-full flex items-center justify-center cursor-pointer z-10"
+        className="fixed bottom-24 right-4 w-[52px] h-[52px] rounded-full flex items-center justify-center cursor-pointer z-10"
         style={{
           background: t.colors.semantic.primary,
           border: "none",

@@ -64,7 +64,7 @@ export function CalendarPage() {
   }, [currentDay])
 
   // ── Salon + Firestore data ──────────────────────────────────────────────
-  const { salon }                                  = useSalon()
+  const { salon, loading: salonLoading }            = useSalon()
   const { currency }                                = useSalonSettings()
   const salonId                                    = salon?.id ?? null
 
@@ -163,7 +163,7 @@ export function CalendarPage() {
   )
 
   // ── Loading guard ──────────────────────────────────────────────────────
-  const isLoading = bookingsLoading || staffLoading
+  const isLoading = salonLoading || bookingsLoading || staffLoading
 
   return (
     <div
@@ -175,6 +175,7 @@ export function CalendarPage() {
         <MobileCalendarView
           staff={staff}
           bookings={bookings}
+          loading={isLoading}
           onBookingClick={handleBookingClick}
           onAddBooking={(s, startAt) => setPendingSlot({ staff: s, startAt })}
         />
