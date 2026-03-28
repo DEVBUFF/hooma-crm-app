@@ -24,10 +24,11 @@ export function BottomTabBar() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-start pt-2 pb-7"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-around items-start pt-2"
       style={{
         background: t.colors.semantic.panel,
         borderTop: `1px solid ${t.colors.semantic.borderSubtle}`,
+        paddingBottom: "max(8px, env(safe-area-inset-bottom))",
       }}
     >
       {tabs.map(({ href, label, icon: Icon }) => {
