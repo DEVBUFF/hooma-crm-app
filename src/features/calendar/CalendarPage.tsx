@@ -20,6 +20,7 @@ import { WeekGrid } from "@/features/calendar/components/WeekGrid"
 import { WeekViewGrid } from "@/features/calendar/components/WeekViewGrid"
 import { CreateBookingModal } from "@/features/calendar/components/CreateBookingModal"
 import { BookingDetailPanel } from "@/features/calendar/components/BookingDetailPanel"
+import { MobileCalendarView } from "@/features/calendar/components/MobileCalendarView"
 import { BASE_PX_PER_MINUTE } from "@/features/calendar/lib/grid-config"
 import type { Booking, BookingStatus, Staff } from "@/features/calendar/types"
 
@@ -169,84 +170,93 @@ export function CalendarPage() {
       className="flex flex-col h-full w-full min-w-0"
       style={{ background: t.colors.semantic.bg }}
     >
-      <CalendarToolbar
-        label={label ?? formatWeekRangeLabel(weekStart, weekEnd)}
-        view={view}
-        onPrev={onPrev}
-        onNext={onNext}
-        onToday={onToday}
-        onViewChange={setView}
-        zoom={zoom}
-        onZoomIn={onZoomIn}
-        onZoomOut={onZoomOut}
-        canZoomIn={zoomIdx  < ZOOM_LEVELS.length - 1}
-        canZoomOut={zoomIdx > 0}
-      />
+      {/* ── Mobile calendar ─────────────────────────────────────────────── */}
+      <div className="md:hidden flex-1 overflow-hidden">
+        <MobileCalendarView
+          staff={staff}
+          bookings={bookings}
+          onBookingClick={handleBookingClick}
+          onAddBooking={(s, startAt) => setPendingSlot({ staff: s, startAt })}
+        />
+      </div>
 
-      {isLoading ? (
-        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-          {/* Time gutter skeleton */}
-          <div style={{ width: 56, flexShrink: 0, padding: "48px 8px 0", display: "flex", flexDirection: "column", gap: 40 }}>
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} h="h-3" w="w-8" />
-            ))}
-          </div>
-          {/* Column skeletons */}
-          <div style={{ flex: 1, display: "flex", gap: 1 }}>
-            {Array.from({ length: 3 }).map((_, col) => (
-              <div key={col} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, padding: "12px 6px" }}>
-                {/* Column header */}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, paddingBottom: 12 }}>
-                  <Skeleton h="h-3" w="w-16" />
-                  <Skeleton h="h-8" w="w-8" rounded="rounded-full" />
+      {/* ── Desktop calendar ────────────────────────────────────────────── */}
+      <div className="hidden md:flex md:flex-col md:flex-1 md:min-h-0">
+        <CalendarToolbar
+          label={label ?? formatWeekRangeLabel(weekStart, weekEnd)}
+          view={view}
+          onPrev={onPrev}
+          onNext={onNext}
+          onToday={onToday}
+          onViewChange={setView}
+          zoom={zoom}
+          onZoomIn={onZoomIn}
+          onZoomOut={onZoomOut}
+          canZoomIn={zoomIdx  < ZOOM_LEVELS.length - 1}
+          canZoomOut={zoomIdx > 0}
+        />
+
+        {isLoading ? (
+          <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+            {/* Time gutter skeleton */}
+            <div style={{ width: 56, flexShrink: 0, padding: "48px 8px 0", display: "flex", flexDirection: "column", gap: 40 }}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} h="h-3" w="w-8" />
+              ))}
+            </div>
+            {/* Column skeletons */}
+            <div style={{ flex: 1, display: "flex", gap: 1 }}>
+              {Array.from({ length: 3 }).map((_, col) => (
+                <div key={col} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, padding: "12px 6px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, paddingBottom: 12 }}>
+                    <Skeleton h="h-3" w="w-16" />
+                    <Skeleton h="h-8" w="w-8" rounded="rounded-full" />
+                  </div>
+                  {[80, 48, 64, 36].map((height, i) => (
+                    <div key={i} className="hooma-skeleton w-full rounded-lg" style={{ height }} />
+                  ))}
                 </div>
-                {/* Fake booking blocks */}
-                {[80, 48, 64, 36].map((height, i) => (
-                  <div key={i} className="hooma-skeleton w-full rounded-lg" style={{ height }} />
-                ))}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      ) : staff.length === 0 ? (
-        <div
-          style={{
-            flex:           1,
-            display:        "flex",
-            alignItems:     "center",
-            justifyContent: "center",
-            color:          t.colors.semantic.textMuted,
-            fontSize:       t.typography.fontSize.sm,
-          }}
-        >
-          Add staff members to start using the calendar.
-        </div>
-      ) : view === "week" ? (
-        /* ── True week view: 7 day groups ─────────────────────────────── */
-        <WeekViewGrid
-          staff={staff}
-          bookings={bookings}
-          weekStart={weekStart}
-          pxPerMinute={pxPerMinute}
-          onColumnClick={handleColumnClick}
-          onUpdateBooking={handleUpdateBooking}
-          onStatusChange={handleStatusChange}
-          onBookingClick={handleBookingClick}
-        />
-      ) : (
-        /* ── Day view: staff columns for a single day ──────────────────── */
-        <WeekGrid
-          staff={staff}
-          bookings={bookings}
-          weekStart={dayStart}
-          weekEnd={dayEnd}
-          pxPerMinute={pxPerMinute}
-          onColumnClick={handleColumnClick}
-          onUpdateBooking={handleUpdateBooking}
-          onStatusChange={handleStatusChange}
-          onBookingClick={handleBookingClick}
-        />
-      )}
+        ) : staff.length === 0 ? (
+          <div
+            style={{
+              flex:           1,
+              display:        "flex",
+              alignItems:     "center",
+              justifyContent: "center",
+              color:          t.colors.semantic.textMuted,
+              fontSize:       t.typography.fontSize.sm,
+            }}
+          >
+            Add staff members to start using the calendar.
+          </div>
+        ) : view === "week" ? (
+          <WeekViewGrid
+            staff={staff}
+            bookings={bookings}
+            weekStart={weekStart}
+            pxPerMinute={pxPerMinute}
+            onColumnClick={handleColumnClick}
+            onUpdateBooking={handleUpdateBooking}
+            onStatusChange={handleStatusChange}
+            onBookingClick={handleBookingClick}
+          />
+        ) : (
+          <WeekGrid
+            staff={staff}
+            bookings={bookings}
+            weekStart={dayStart}
+            weekEnd={dayEnd}
+            pxPerMinute={pxPerMinute}
+            onColumnClick={handleColumnClick}
+            onUpdateBooking={handleUpdateBooking}
+            onStatusChange={handleStatusChange}
+            onBookingClick={handleBookingClick}
+          />
+        )}
+      </div>
 
       {/* Modal rendered at page level — above the scroll container. */}
       {pendingSlot && (
