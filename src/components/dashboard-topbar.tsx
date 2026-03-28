@@ -11,6 +11,7 @@ const pageTitles: Record<string, string> = {
   "/app/staff": "Staff",
   "/app/customers": "Customers",
   "/app/calendar": "Calendar",
+  "/app/settings": "Settings",
 }
 
 function getPageTitle(pathname: string): string {

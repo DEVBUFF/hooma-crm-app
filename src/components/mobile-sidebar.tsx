@@ -9,6 +9,7 @@ import {
   Heart,
   Users,
   CalendarDays,
+  Settings,
   LogOut,
   Menu,
   X,
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/app/staff", label: "Staff", icon: Users },
   { href: "/app/customers", label: "Customers", icon: Heart },
   { href: "/app/calendar", label: "Calendar", icon: CalendarDays },
+  { href: "/app/settings", label: "Settings", icon: Settings },
 ]
 
 export function MobileSidebar() {

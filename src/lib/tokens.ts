@@ -1,6 +1,6 @@
 // tokens.ts
 // Design tokens for Hooma CRM — Brand Guide v1.0
-// Fonts: DM Sans / Inter / JetBrains Mono (Google Fonts). Keep this file purely declarative.
+// Fonts: Geist / Geist Mono (Google Fonts). Keep this file purely declarative.
 
 export const tokens = {
   colors: {
@@ -160,9 +160,9 @@ export const tokens = {
 
   typography: {
     fontFamily: {
-      sans: "'Inter', system-ui, sans-serif",
-      display: "'DM Sans', system-ui, sans-serif",
-      mono: "'JetBrains Mono', monospace",
+      sans: "'Geist', system-ui, sans-serif",
+      display: "'Geist', system-ui, sans-serif",
+      mono: "'Geist Mono', monospace",
     },
     fontSize: {
       xs: 12,

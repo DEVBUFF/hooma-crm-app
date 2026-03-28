@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/patterns/skeleton"
 import {
   addDays,
   formatDayLabel,
+  formatWeekRangeLabel,
 } from "@/features/calendar/lib/time"
 import { useWeekRange } from "@/features/calendar/hooks/useWeekRange"
 import { useBookings } from "@/features/calendar/hooks/useBookings"
@@ -13,6 +14,7 @@ import { useCalendarStaff } from "@/features/calendar/hooks/useCalendarStaff"
 import { useCalendarCustomers } from "@/features/calendar/hooks/useCalendarCustomers"
 import { useCalendarServices } from "@/features/calendar/hooks/useCalendarServices"
 import { useSalon } from "@/lib/useSalon"
+import { useSalonSettings } from "@/lib/useSalonSettings"
 import { CalendarToolbar } from "@/features/calendar/components/CalendarToolbar"
 import { WeekGrid } from "@/features/calendar/components/WeekGrid"
 import { WeekViewGrid } from "@/features/calendar/components/WeekViewGrid"
@@ -60,20 +62,20 @@ export function CalendarPage() {
     const d = new Date(currentDay); d.setHours(23, 59, 59, 999); return d
   }, [currentDay])
 
+  // ── Salon + Firestore data ──────────────────────────────────────────────
+  const { salon }                                  = useSalon()
+  const { currency }                                = useSalonSettings()
+  const salonId                                    = salon?.id ?? null
+
   // ── Unified toolbar values ─────────────────────────────────────────────────
   const label   = view === "week" ? undefined : formatDayLabel(currentDay)
   const onPrev  = view === "week" ? goPrevWeek  : goPrevDay
   const onNext  = view === "week" ? goNextWeek  : goNextDay
   const onToday = view === "week" ? goThisWeek  : goTodayDay
-
-  // ── Salon + Firestore data ──────────────────────────────────────────────
-  const { salon }                                  = useSalon()
-  const salonId                                    = salon?.id ?? null
   const { bookings, loading: bookingsLoading, add, update, remove } = useBookings(salonId)
   const { staff, loading: staffLoading }           = useCalendarStaff(salonId)
   const { customers }                              = useCalendarCustomers(salonId)
   const { services }                               = useCalendarServices(salonId)
-  const currency                                   = salon?.settings?.currency ?? "GEL"
 
   // ── Create-booking modal ───────────────────────────────────────────────────
   const [pendingSlot, setPendingSlot] = useState<PendingSlot | null>(null)
@@ -168,7 +170,7 @@ export function CalendarPage() {
       style={{ background: t.colors.semantic.bg }}
     >
       <CalendarToolbar
-        label={label ?? `${weekStart.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${weekEnd.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}
+        label={label ?? formatWeekRangeLabel(weekStart, weekEnd)}
         view={view}
         onPrev={onPrev}
         onNext={onNext}

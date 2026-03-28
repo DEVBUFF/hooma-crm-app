@@ -1,7 +1,7 @@
 /* ============================================================
    HOOMA — Design Tokens + Tailwind CSS 4
    CRM for pet grooming salons · hellohooma.app
-   Fonts: DM Sans / Inter / JetBrains Mono (Google Fonts)
+   Fonts: Geist / Geist Mono (Google Fonts)
    Tokens: v1.0 — Semantic-first architecture
    ============================================================ */
 
@@ -134,9 +134,9 @@
 
   --hooma-text-on-primary: #FFFFFF;
 
-  --hooma-font-display: 'DM Sans', system-ui, sans-serif;
-  --hooma-font-body:    'Inter', system-ui, sans-serif;
-  --hooma-font-mono:    'JetBrains Mono', monospace;
+  --hooma-font-display: 'Geist', system-ui, sans-serif;
+  --hooma-font-body:    'Geist', system-ui, sans-serif;
+  --hooma-font-mono:    'Geist Mono', monospace;
 
   --hooma-radius-sm:   6px;
   --hooma-radius-md:   10px;
@@ -347,9 +347,9 @@
 
 @theme inline {
   /* ── Fonts · Google Fonts ──────────────────────────────── */
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'DM Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-display: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
 
   /* ── Semantic Colour Aliases ───────────────────────────── */
   --color-background: var(--background);
@@ -463,15 +463,15 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Geist', system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Headings — DM Sans */
+  /* Headings — Geist */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Sans', system-ui, sans-serif;
+    font-family: 'Geist', system-ui, sans-serif;
     font-weight: 500;
     color: var(--color-text-heading);
   }

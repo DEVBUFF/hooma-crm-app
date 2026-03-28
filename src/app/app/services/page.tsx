@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useSalon } from "@/lib/useSalon";
+import { useSalonSettings } from "@/lib/useSalonSettings";
 import { t } from "@/lib/tokens";
 import { Skeleton } from "@/components/patterns/skeleton";
 import { Sparkles, Plus, Pencil, Trash2, Check, X, Clock, BadgeDollarSign } from "lucide-react";
@@ -34,6 +35,7 @@ const inputStyle: React.CSSProperties = {
 
 export default function ServicesPage() {
   const { salon, loading: salonLoading } = useSalon();
+  const { currency } = useSalonSettings();
 
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -312,7 +314,7 @@ export default function ServicesPage() {
                 <div className="flex items-center justify-between sm:justify-end gap-3 pl-13 sm:pl-0">
                   <div className="flex items-center gap-3 text-xs" style={{ color: t.colors.semantic.textSubtle }}>
                     <span className="flex items-center gap-1"><Clock size={12} />{service.durationMinutes} min</span>
-                    <span className="flex items-center gap-1"><BadgeDollarSign size={12} />{service.price}€</span>
+                    <span className="flex items-center gap-1"><BadgeDollarSign size={12} />{currency} {service.price}</span>
                   </div>
                   <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <button onClick={() => startEdit(service)}

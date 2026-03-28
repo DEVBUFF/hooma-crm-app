@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { t } from "@/lib/tokens"
 import { formatTime } from "@/features/calendar/lib/time"
 import { DAY_START_HOUR, DAY_END_HOUR, SLOT_MINUTES } from "@/features/calendar/lib/grid-config"
+import { formatDayLabel } from "@/features/calendar/lib/time"
 import type {
   Booking,
   Staff,
@@ -74,9 +75,7 @@ function SelectChevron() {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatDateLabel(date: Date): string {
-  return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
-}
+// formatDateLabel — uses shared formatDayLabel from time.ts
 
 // ---------------------------------------------------------------------------
 // Component
@@ -274,7 +273,7 @@ export function CreateBookingModal({
                   flexShrink: 0,
                 }}
               />
-              {staff.name} · {formatDateLabel(startAt)}
+              {staff.name} · {formatDayLabel(startAt)}
             </p>
           </div>
 

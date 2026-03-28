@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { t } from "@/lib/tokens"
 import { formatTime, formatDuration, diffMinutes } from "@/features/calendar/lib/time"
+import { formatDayLabel } from "@/features/calendar/lib/time"
 import type {
   Booking,
   BookingStatus,
@@ -49,13 +50,7 @@ function formatTimeForInput(date: Date): string {
   return `${h}:${m}`
 }
 
-function formatDateLabel(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    month:   "short",
-    day:     "numeric",
-  })
-}
+// formatDateLabel — uses shared formatDayLabel from time.ts
 
 // ---------------------------------------------------------------------------
 // Shared styles
@@ -326,7 +321,7 @@ export function BookingDetailPanel({
                   flexShrink:   0,
                 }}
               />
-              {currentStaff.name} · {formatDateLabel(booking.startAt)}
+              {currentStaff.name} · {formatDayLabel(booking.startAt)}
             </p>
           </div>
 

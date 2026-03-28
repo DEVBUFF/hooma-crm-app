@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import type { Booking, BookingStatus, Staff } from "@/features/calendar/types"
+import { formatDayGroupLabel } from "@/features/calendar/lib/time"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -547,7 +548,7 @@ export function WeekViewGrid({
                 userSelect: "none",
               }}
             >
-              {day.toLocaleDateString("en-US", { weekday: "short" })}
+              {formatDayGroupLabel(day)}
             </span>
 
             {/* Date number — today gets a circle indicator */}

@@ -13,6 +13,7 @@ export type Salon = {
   settings?: {
     slotDuration?: number;
     currency?: string;
+    dateFormat?: string;
     workHours?: Record<string, WorkDay>;
   };
 };
