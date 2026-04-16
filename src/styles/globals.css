@@ -2,7 +2,7 @@
    HOOMA — Design Tokens + Tailwind CSS 4
    CRM for pet grooming salons · hellohooma.app
    Fonts: Geist / Geist Mono (Google Fonts)
-   Tokens: v1.0 — Semantic-first architecture
+   Tokens: v2.0 — Aligned to hooma-design-notes.md
    ============================================================ */
 
 @import 'tailwindcss';
@@ -13,39 +13,64 @@
 
 /* ============================================================
    1. LIGHT MODE TOKENS (default)
+   Palette follows the design-notes source of truth:
+   - Brand: brand-500 decorative / brand-600 CTA / brand-700 hover
+   - Ink:   cool-grey neutral scale (Vercel-clean)
+   - Mint:  surgical accent only (selection, halos)
    ============================================================ */
 
 :root {
+  /* ── Brand ───────────────────────────────────────────────── */
+  --brand-500: #6B72C9;   /* decorative, focus, large-text headings */
+  --brand-600: #5A61B8;   /* CTA bg — hits WCAG AA 4.5:1 on white */
+  --brand-700: #4950A3;   /* CTA hover/pressed, text on brand-50 */
+  --brand-50:  #EEF0FA;   /* subtle brand tint, booking chip bg */
+
+  /* ── Mint (accent, use surgically) ───────────────────────── */
+  --mint-100: #DAFCE0;
+  --mint-50:  #ECFEF0;
+
+  /* ── Ink (neutral scale) ─────────────────────────────────── */
+  --ink-900: #0A0A1A;     /* near-black — CTAs, headings */
+  --ink-800: #1A1A2E;     /* body dark */
+  --ink-700: #374151;     /* secondary text, dark UI */
+  --ink-500: #6B7280;     /* muted text, captions */
+  --ink-400: #9CA3AF;     /* disabled, placeholders */
+  --ink-300: #D1D5DB;     /* hover borders */
+  --ink-200: #E5E7EB;     /* borders */
+  --ink-100: #F3F4F6;     /* subtle fills */
+  --ink-50:  #F9FAFB;     /* section muted bg */
+
   /* ── Backgrounds ────────────────────────────────────────── */
-  --color-bg-page:          #F8F7F4;
+  --color-bg-page:          #FFFFFF;
   --color-bg-surface:       #FFFFFF;
   --color-bg-elevated:      #FFFFFF;
-  --color-bg-subtle:        #F0EDE8;
+  --color-bg-subtle:        #F3F4F6;
 
   /* ── Primary backgrounds ────────────────────────────────── */
-  --color-bg-primary:       #5563B8;
-  --color-bg-primary-hover: #3B4494;
-  --color-bg-primary-light: #EEF0FB;
+  --color-bg-primary:       #5A61B8;
+  --color-bg-primary-hover: #4950A3;
+  --color-bg-primary-light: #EEF0FA;
 
   /* ── Text ────────────────────────────────────────────────── */
-  --color-text-heading:          #1A1A1A;
-  --color-text-body:             #6B6B6B;
-  --color-text-muted:            #9B9B9B;
-  --color-text-placeholder:      #848484;
+  --color-text-heading:          #0A0A1A;
+  --color-text-body:             #374151;
+  --color-text-muted:            #6B7280;
+  --color-text-placeholder:      #9CA3AF;
   --color-text-on-primary:       #FFFFFF;
-  --color-text-primary:          #3B4494;
-  --color-text-on-primary-light: #3B4494;
-  --color-text-link:             #5563B8;
-  --color-text-link-hover:       #3B4494;
+  --color-text-primary:          #4950A3;
+  --color-text-on-primary-light: #4950A3;
+  --color-text-link:             #5A61B8;
+  --color-text-link-hover:       #4950A3;
 
   /* ── Borders ─────────────────────────────────────────────── */
-  --color-border-default: #E5E2DC;
-  --color-border-light:   #F0EDE8;
-  --color-border-focus:   #7B8CDE;
-  --color-border-strong:  #C9C5BD;
+  --color-border-default: #E5E7EB;
+  --color-border-light:   #F3F4F6;
+  --color-border-focus:   #6B72C9;
+  --color-border-strong:  #D1D5DB;
 
   /* ── Semantic: Success ───────────────────────────────────── */
-  --color-success-bg:     #E8F5E9;
+  --color-success-bg:     #ECFEF0;
   --color-success-border: #2E8B57;
   --color-success-text:   #2E7D4A;
 
@@ -71,31 +96,35 @@
   --color-allergy-icon:   #D4483B;
 
   /* ── Appointment status (left-border colour) ─────────────── */
-  --color-status-scheduled:   #C9C5BD;
+  --color-status-scheduled:   #D1D5DB;
   --color-status-confirmed:   #2E8B57;
-  --color-status-in-progress: #7B8CDE;
-  --color-status-completed:   #9B9B9B;
+  --color-status-in-progress: #6B72C9;
+  --color-status-completed:   #9CA3AF;
   --color-status-cancelled:   #D4483B;
   --color-status-no-show:     #E6960A;
 
   /* ── Appointment status (background) ─────────────────────── */
-  --color-status-scheduled-bg:   #F0EDE8;
-  --color-status-confirmed-bg:   #E8F5E9;
-  --color-status-in-progress-bg: #EEF0FB;
-  --color-status-completed-bg:   #F0EDE8;
+  --color-status-scheduled-bg:   #F3F4F6;
+  --color-status-confirmed-bg:   #ECFEF0;
+  --color-status-in-progress-bg: #EEF0FA;
+  --color-status-completed-bg:   #F3F4F6;
   --color-status-cancelled-bg:   #FEF2F2;
   --color-status-no-show-bg:     #FFFBEB;
 
-  /* ── Shadows ─────────────────────────────────────────────── */
-  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md:    0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-focus: 0 0 0 3px rgba(123, 140, 222, 0.3);
-  --shadow-error: 0 0 0 3px rgba(212, 72, 59, 0.2);
+  /* ── Shadows (subtle — spec "never heavy") ───────────────── */
+  --shadow-xs:    0 1px 2px rgba(10, 10, 26, 0.04);
+  --shadow-sm:    0 1px 3px rgba(10, 10, 26, 0.06), 0 1px 2px rgba(10, 10, 26, 0.04);
+  --shadow-md:    0 4px 12px rgba(10, 10, 26, 0.06), 0 2px 4px rgba(10, 10, 26, 0.04);
+  --shadow-lg:    0 12px 32px rgba(10, 10, 26, 0.08), 0 4px 8px rgba(10, 10, 26, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(107, 114, 201, 0.15);
+  --shadow-error: 0 0 0 3px rgba(212, 72, 59, 0.20);
 
-  /* ── Radius ──────────────────────────────────────────────── */
+  /* ── Radius (6 · 8 · 12 · 16 · 20 — spec) ────────────────── */
   --radius-sm:   6px;
-  --radius-md:   10px;
-  --radius-lg:   14px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  20px;
   --radius-full: 9999px;
 
   /* ── Calendar ────────────────────────────────────────────── */
@@ -103,32 +132,32 @@
 
 
   /* ============================================================
-     BACKWARD-COMPAT ALIASES (--hooma-* → new tokens)
-     Existing components still reference these.
+     BACKWARD-COMPAT ALIASES (--hooma-* → new spec values)
+     Existing components continue to reference these names.
      ============================================================ */
 
-  --hooma-primary:       #7B8CDE;
-  --hooma-primary-light: #EEF0FB;
-  --hooma-primary-dark:  #5563B8;
-  --hooma-primary-text:  #3B4494;
+  --hooma-primary:       #5A61B8;   /* brand-600 (CTA) */
+  --hooma-primary-light: #EEF0FA;   /* brand-50 */
+  --hooma-primary-dark:  #4950A3;   /* brand-700 (hover) */
+  --hooma-primary-text:  #4950A3;   /* brand-700 (text on light) */
 
-  --hooma-accent-light: #E8F5E9;
+  --hooma-accent-light: #ECFEF0;    /* mint-50 */
   --hooma-accent-text:  #2E7D4A;
 
-  --hooma-bg-base:        #F8F7F4;
+  --hooma-bg-base:        #FFFFFF;
   --hooma-bg-surface:     #FFFFFF;
-  --hooma-text-primary:   #1A1A1A;
-  --hooma-text-secondary: #6B6B6B;
-  --hooma-text-tertiary:  #9B9B9B;
-  --hooma-border:         #E5E2DC;
-  --hooma-border-light:   #F0EDE8;
+  --hooma-text-primary:   #0A0A1A;  /* ink-900 */
+  --hooma-text-secondary: #374151;  /* ink-700 */
+  --hooma-text-tertiary:  #6B7280;  /* ink-500 */
+  --hooma-border:         #E5E7EB;  /* ink-200 */
+  --hooma-border-light:   #F3F4F6;  /* ink-100 */
 
   --hooma-error:      #D4483B;
   --hooma-error-bg:   #FEF2F2;
   --hooma-warning:    #E6960A;
   --hooma-warning-bg: #FFFBEB;
   --hooma-success:    #2E8B57;
-  --hooma-success-bg: #E8F5E9;
+  --hooma-success-bg: #ECFEF0;
   --hooma-info:       #2563EB;
   --hooma-info-bg:    #EFF6FF;
 
@@ -139,17 +168,17 @@
   --hooma-font-mono:    'Geist Mono', monospace;
 
   --hooma-radius-sm:   6px;
-  --hooma-radius-md:   10px;
-  --hooma-radius-lg:   14px;
+  --hooma-radius-md:   8px;
+  --hooma-radius-lg:   12px;
   --hooma-radius-full: 9999px;
 
-  --hooma-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --hooma-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --hooma-shadow-focus: 0 0 0 3px rgba(123, 140, 222, 0.3);
-  --hooma-shadow-error: 0 0 0 3px rgba(212, 72, 59, 0.2);
+  --hooma-shadow-sm: 0 1px 3px rgba(10, 10, 26, 0.06), 0 1px 2px rgba(10, 10, 26, 0.04);
+  --hooma-shadow-md: 0 4px 12px rgba(10, 10, 26, 0.06), 0 2px 4px rgba(10, 10, 26, 0.04);
+  --hooma-shadow-focus: 0 0 0 3px rgba(107, 114, 201, 0.15);
+  --hooma-shadow-error: 0 0 0 3px rgba(212, 72, 59, 0.20);
 
-  --hooma-focus-ring: 0 0 0 2px #FFFFFF, 0 0 0 4px #7B8CDE;
-  --hooma-focus-border: #7B8CDE;
+  --hooma-focus-ring: 0 0 0 2px #FFFFFF, 0 0 0 4px #6B72C9;
+  --hooma-focus-border: #6B72C9;
   --hooma-focus-error-ring: 0 0 0 3px rgba(212, 72, 59, 0.12);
 
   --hooma-space-unit: 4px;
@@ -158,7 +187,7 @@
   --hooma-page-margin-mobile: 16px;
   --hooma-page-margin-desktop: 24px;
 
-  /* ── Warm Accent ─────────────────────────────────────────── */
+  /* ── Warm Accent (kept for backward compat only; not used) ─ */
   --hooma-warm-accent: #C97B63;
   --hooma-warm-accent-bg: rgba(201, 123, 99, 0.08);
   --hooma-warm-accent-border: rgba(201, 123, 99, 0.15);
@@ -166,8 +195,8 @@
   --hooma-warm-accent-glow: rgba(201, 123, 99, 0.06);
 
   /* ── Toast ───────────────────────────────────────────────── */
-  --hooma-toast-text: #3E2F2A;
-  --hooma-toast-shadow: 0 4px 20px rgba(62, 47, 42, 0.09);
+  --hooma-toast-text: #1A1A2E;
+  --hooma-toast-shadow: 0 4px 12px rgba(10, 10, 26, 0.06), 0 2px 4px rgba(10, 10, 26, 0.04);
   --hooma-toast-success-border: rgba(168, 187, 163, 0.45);
   --hooma-toast-success-accent: #A8BBA3;
   --hooma-toast-success-icon: #4A7A4A;
@@ -179,36 +208,36 @@
   --hooma-toast-info-icon: #4A7EA8;
 
   /* ── Modal / Overlay ─────────────────────────────────────── */
-  --hooma-overlay: rgba(46, 33, 28, 0.45);
-  --hooma-overlay-light: rgba(0, 0, 0, 0.25);
-  --hooma-overlay-lighter: rgba(0, 0, 0, 0.20);
-  --hooma-modal-border: rgba(229, 218, 203, 0.60);
-  --hooma-modal-shadow: 0 12px 40px rgba(90, 60, 30, 0.08);
+  --hooma-overlay: rgba(10, 10, 26, 0.45);
+  --hooma-overlay-light: rgba(10, 10, 26, 0.25);
+  --hooma-overlay-lighter: rgba(10, 10, 26, 0.20);
+  --hooma-modal-border: rgba(229, 231, 235, 0.60);
+  --hooma-modal-shadow: 0 12px 32px rgba(10, 10, 26, 0.08), 0 4px 8px rgba(10, 10, 26, 0.04);
 
   /* ── Component shadows (extended) ────────────────────────── */
-  --hooma-shadow-primary: 0 1px 4px rgba(123, 140, 222, 0.20);
-  --hooma-shadow-primary-hover: 0 2px 8px rgba(123, 140, 222, 0.30);
-  --hooma-shadow-primary-lg: 0 2px 8px rgba(123, 140, 222, 0.25);
-  --hooma-shadow-accent: 0 1px 4px rgba(255, 107, 61, 0.20);
-  --hooma-shadow-accent-hover: 0 2px 8px rgba(255, 107, 61, 0.30);
-  --hooma-shadow-card-hero: 0 8px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --hooma-shadow-soft: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --hooma-shadow-elevated: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 20px rgba(0, 0, 0, 0.06);
-  --hooma-shadow-elevated-auth: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 20px rgba(0, 0, 0, 0.08);
-  --hooma-shadow-interactive-hover: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 16px rgba(0, 0, 0, 0.08);
-  --hooma-shadow-sidebar: 4px 0 24px rgba(0, 0, 0, 0.1);
-  --hooma-shadow-btn-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --hooma-shadow-feature-hover: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --hooma-shadow-confirm-danger: 0 2px 10px rgba(160, 64, 64, 0.25);
-  --hooma-shadow-confirm-default: 0 2px 10px rgba(127, 166, 201, 0.25);
+  --hooma-shadow-primary:       0 1px 4px rgba(107, 114, 201, 0.20);
+  --hooma-shadow-primary-hover: 0 2px 8px rgba(107, 114, 201, 0.30);
+  --hooma-shadow-primary-lg:    0 2px 8px rgba(107, 114, 201, 0.25);
+  --hooma-shadow-accent:        0 1px 4px rgba(107, 114, 201, 0.20);
+  --hooma-shadow-accent-hover:  0 2px 8px rgba(107, 114, 201, 0.30);
+  --hooma-shadow-card-hero:     0 12px 32px rgba(10, 10, 26, 0.08), 0 4px 8px rgba(10, 10, 26, 0.04);
+  --hooma-shadow-soft:          0 1px 2px rgba(10, 10, 26, 0.04);
+  --hooma-shadow-elevated:      0 4px 12px rgba(10, 10, 26, 0.06), 0 2px 4px rgba(10, 10, 26, 0.04);
+  --hooma-shadow-elevated-auth: 0 12px 32px rgba(10, 10, 26, 0.08), 0 4px 8px rgba(10, 10, 26, 0.04);
+  --hooma-shadow-interactive-hover: 0 4px 12px rgba(10, 10, 26, 0.06), 0 2px 4px rgba(10, 10, 26, 0.04);
+  --hooma-shadow-sidebar:       4px 0 24px rgba(10, 10, 26, 0.08);
+  --hooma-shadow-btn-sm:        0 1px 2px rgba(10, 10, 26, 0.04);
+  --hooma-shadow-feature-hover: 0 4px 12px rgba(10, 10, 26, 0.06);
+  --hooma-shadow-confirm-danger:  0 2px 10px rgba(160, 64, 64, 0.25);
+  --hooma-shadow-confirm-default: 0 2px 10px rgba(107, 114, 201, 0.25);
 
   /* ── Logo ─────────────────────────────────────────────────── */
-  --hooma-logo-text: #1A1A1A;
-  --hooma-logo-gradient-start: #7B8CDE;
-  --hooma-logo-gradient-end: #B4BFEF;
+  --hooma-logo-text: #0A0A1A;
+  --hooma-logo-gradient-start: #6B72C9;
+  --hooma-logo-gradient-end: #A5AAE6;
 
   /* ── Misc ─────────────────────────────────────────────────── */
-  --hooma-border-subtle: rgba(0, 0, 0, 0.06);
+  --hooma-border-subtle: rgba(10, 10, 26, 0.06);
   --hooma-purple: #af52de;
 
 
@@ -216,52 +245,45 @@
      TAILWIND / SHADCN THEME MAPPING
      ============================================================ */
 
-  --background: #F8F7F4;
-  --background-image:
-    radial-gradient(
-      circle at 50% -15%,
-      rgba(255, 255, 255, 0.50) 0%,
-      rgba(255, 255, 255, 0.25) 25%,
-      rgba(255, 255, 255, 0.08) 40%,
-      rgba(255, 255, 255, 0) 70%
-    );
-  --foreground: #1A1A1A;
+  --background: #FFFFFF;
+  --background-image: none;
+  --foreground: #0A0A1A;
   --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
+  --card-foreground: #0A0A1A;
   --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
-  --primary: #7B8CDE;
+  --popover-foreground: #0A0A1A;
+  --primary: #5A61B8;
   --primary-foreground: #FFFFFF;
   --secondary: #2E8B57;
   --secondary-foreground: #FFFFFF;
-  --muted: #EEF0FB;
-  --muted-foreground: #6B6B6B;
-  --accent: #7B8CDE;
+  --muted: #EEF0FA;
+  --muted-foreground: #6B7280;
+  --accent: #5A61B8;
   --accent-foreground: #FFFFFF;
   --destructive: #D4483B;
   --destructive-foreground: #FFFFFF;
-  --border: #E5E2DC;
+  --border: #E5E7EB;
   --input: #FFFFFF;
-  --ring: #7B8CDE;
+  --ring: #6B72C9;
   --chart-1: #2E8B57;
-  --chart-2: #7B8CDE;
+  --chart-2: #6B72C9;
   --chart-3: #E6960A;
   --chart-4: #D4483B;
   --chart-5: #af52de;
-  --radius: 0.375rem;
+  --radius: 0.5rem;    /* 8px — spec default */
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #1A1A1A;
-  --sidebar-primary: #7B8CDE;
+  --sidebar-foreground: #0A0A1A;
+  --sidebar-primary: #5A61B8;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #EEF0FB;
-  --sidebar-accent-foreground: #1A1A1A;
-  --sidebar-border: #E5E2DC;
-  --sidebar-ring: #7B8CDE;
+  --sidebar-accent: #EEF0FA;
+  --sidebar-accent-foreground: #0A0A1A;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #6B72C9;
 
   --box-shadow: var(--shadow-md);
 
   --sage: #2E8B57;
-  --calm-blue: #7B8CDE;
+  --calm-blue: #6B72C9;
   --dusty-peach: #E6960A;
   --terra: #ff6b3d;
   --warm-accent: #C97B63;
@@ -273,29 +295,44 @@
    ============================================================ */
 
 .dark {
-  --color-bg-page:          #111110;
-  --color-bg-surface:       #252523;
-  --color-bg-elevated:      #333331;
-  --color-bg-subtle:        #252523;
+  --brand-500: #7B82D9;
+  --brand-600: #6B72C9;
+  --brand-700: #5A61B8;
+  --brand-50:  #14163A;
 
-  --color-bg-primary:       #6474CC;
-  --color-bg-primary-hover: #7B8CDE;
-  --color-bg-primary-light: #101235;
+  --ink-900: #F9FAFB;
+  --ink-800: #E5E7EB;
+  --ink-700: #D1D5DB;
+  --ink-500: #9CA3AF;
+  --ink-400: #6B7280;
+  --ink-300: #374151;
+  --ink-200: #1F2937;
+  --ink-100: #111827;
+  --ink-50:  #0A0A1A;
 
-  --color-text-heading:          #F0EDE8;
-  --color-text-body:             #C9C5BD;
-  --color-text-muted:            #9B9B9B;
-  --color-text-placeholder:      #7A7A78;
+  --color-bg-page:          #0A0A1A;
+  --color-bg-surface:       #111827;
+  --color-bg-elevated:      #1F2937;
+  --color-bg-subtle:        #111827;
+
+  --color-bg-primary:       #6B72C9;
+  --color-bg-primary-hover: #7B82D9;
+  --color-bg-primary-light: #14163A;
+
+  --color-text-heading:          #F9FAFB;
+  --color-text-body:             #E5E7EB;
+  --color-text-muted:            #9CA3AF;
+  --color-text-placeholder:      #6B7280;
   --color-text-on-primary:       #FFFFFF;
-  --color-text-primary:          #96A2EA;
-  --color-text-on-primary-light: #B5BEF2;
-  --color-text-link:             #96A2EA;
-  --color-text-link-hover:       #B5BEF2;
+  --color-text-primary:          #A5AAE6;
+  --color-text-on-primary-light: #C2C6EE;
+  --color-text-link:             #A5AAE6;
+  --color-text-link-hover:       #C2C6EE;
 
-  --color-border-default: #333331;
-  --color-border-light:   #252523;
-  --color-border-focus:   #7B8CDE;
-  --color-border-strong:  #4A4A48;
+  --color-border-default: #1F2937;
+  --color-border-light:   #111827;
+  --color-border-focus:   #7B82D9;
+  --color-border-strong:  #374151;
 
   --color-success-bg:     #0D3B1A;
   --color-success-border: #4CAF50;
@@ -318,24 +355,26 @@
   --color-allergy-text:   #FECACA;
   --color-allergy-icon:   #EF4444;
 
-  --color-status-scheduled:   #4A4A48;
+  --color-status-scheduled:   #374151;
   --color-status-confirmed:   #4CAF50;
-  --color-status-in-progress: #96A2EA;
-  --color-status-completed:   #6B6B6B;
+  --color-status-in-progress: #A5AAE6;
+  --color-status-completed:   #6B7280;
   --color-status-cancelled:   #EF4444;
   --color-status-no-show:     #F59E0B;
 
-  --color-status-scheduled-bg:   #252523;
+  --color-status-scheduled-bg:   #1F2937;
   --color-status-confirmed-bg:   #0D3B1A;
-  --color-status-in-progress-bg: #101235;
-  --color-status-completed-bg:   #252523;
+  --color-status-in-progress-bg: #14163A;
+  --color-status-completed-bg:   #1F2937;
   --color-status-cancelled-bg:   #501313;
   --color-status-no-show-bg:     #412402;
 
-  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md:    0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-focus: 0 0 0 3px rgba(123, 140, 222, 0.4);
-  --shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.3);
+  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.40), 0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-md:    0 4px 12px rgba(0, 0, 0, 0.40), 0 2px 4px rgba(0, 0, 0, 0.30);
+  --shadow-lg:    0 12px 32px rgba(0, 0, 0, 0.50), 0 4px 8px rgba(0, 0, 0, 0.30);
+  --shadow-focus: 0 0 0 3px rgba(123, 130, 217, 0.30);
+  --shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.30);
 
   --color-now-line: #EF4444;
 }
@@ -346,7 +385,7 @@
    ============================================================ */
 
 @theme inline {
-  /* ── Fonts · Google Fonts ──────────────────────────────── */
+  /* ── Fonts · Geist / Geist Mono ────────────────────────── */
   --font-sans: 'Geist', system-ui, sans-serif;
   --font-display: 'Geist', system-ui, sans-serif;
   --font-mono: 'Geist Mono', monospace;
@@ -360,34 +399,34 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-primary-light: #EEF0FB;
-  --color-primary-dark: #5563B8;
-  --color-primary-text: #3B4494;
+  --color-primary-light: #EEF0FA;
+  --color-primary-dark: #4950A3;
+  --color-primary-text: #4950A3;
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accent-light: #E8F5E9;
+  --color-accent-light: #ECFEF0;
   --color-accent-text: #2E7D4A;
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
-  --color-border-light: #F0EDE8;
+  --color-border-light: #F3F4F6;
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-canvas: #F8F7F4;
+  --color-canvas: #FFFFFF;
   --color-surface: #FFFFFF;
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #6B6B6B;
-  --color-text-tertiary: #9B9B9B;
+  --color-text-primary: #0A0A1A;
+  --color-text-secondary: #374151;
+  --color-text-tertiary: #6B7280;
   --color-error: #D4483B;
   --color-error-bg: #FEF2F2;
   --color-warning: #E6960A;
   --color-warning-bg: #FFFBEB;
   --color-success: #2E8B57;
-  --color-success-bg: #E8F5E9;
+  --color-success-bg: #ECFEF0;
   --color-info: #2563EB;
   --color-info-bg: #EFF6FF;
   --color-chart-1: var(--chart-1);
@@ -405,11 +444,12 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-warm-accent: var(--warm-accent);
 
-  /* ── Radius ────────────────────────────────────────────── */
+  /* ── Radius (spec: 6 · 8 · 12 · 16 · 20) ───────────────── */
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
 
   /* ── Animations ────────────────────────────────────────── */
   --animate-fade-in: fade-in 200ms ease-out;
@@ -466,10 +506,10 @@
     font-family: 'Geist', system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.6;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings: "rlig" 1, "calt" 1, "cv11" 1, "ss01" 1;
   }
 
-  /* Headings — Geist */
+  /* Headings — Geist (weight 500 per spec, ink-900) */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Geist', system-ui, sans-serif;
     font-weight: 500;
@@ -477,25 +517,26 @@
   }
 
   h1 {
-    font-size: 28px;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
+    font-size: 32px;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
   }
   @media (min-width: 768px) {
-    h1 { font-size: 32px; }
+    h1 { font-size: 40px; }
   }
 
   h2 {
-    font-size: 22px;
-    letter-spacing: -0.3px;
+    font-size: 24px;
+    letter-spacing: -0.025em;
     line-height: 1.25;
   }
   @media (min-width: 768px) {
-    h2 { font-size: 24px; }
+    h2 { font-size: 32px; }
   }
 
   h3 {
     font-size: 18px;
+    letter-spacing: -0.01em;
     line-height: 1.35;
   }
 }
@@ -525,8 +566,8 @@ textarea:focus-visible {
    ============================================================ */
 
 ::selection {
-  background-color: #EEF0FB;
-  color: #3B4494;
+  background-color: #EEF0FA;
+  color: #4950A3;
 }
 
 .dark ::selection {
@@ -536,7 +577,7 @@ textarea:focus-visible {
 
 
 /* ============================================================
-   7. SCROLLBAR (subtle, warm)
+   7. SCROLLBAR (subtle)
    ============================================================ */
 
 ::-webkit-scrollbar {
