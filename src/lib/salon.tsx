@@ -6,9 +6,17 @@ type WorkDay = { start: string; end: string } | null;
 export type Salon = {
   id: string;
   ownerId: string;
-  name: string;
+  name?: string;
+  salonName?: string;
+  ownerName?: string;
   phone?: string;
   address?: string;
+  city?: string;
+  postcode?: string;
+  email?: string;
+  onboardingCompleted?: boolean;
+  onboardingSkipped?: boolean;
+  onboardingBannerDismissals?: number;
   createdAt?: Timestamp | Date;
   settings?: {
     slotDuration?: number;

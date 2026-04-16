@@ -33,7 +33,7 @@ export default async function RegisterPage({
               hooma
             </span>
             <p className="mt-1.5 text-sm" style={{ color: t.colors.semantic.textSubtle }}>
-              Create your account — it&apos;s free
+              Create your free account
             </p>
           </div>
           <RegisterForm initialEmail={email} />

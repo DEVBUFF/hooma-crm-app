@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { PawIcon } from "@/components/hooma-logo"
 
 // ── SEO Metadata ──────────────────────────────────────────────────────────────
 
@@ -125,113 +124,167 @@ function IconArrowRight({ className }: IconProps) {
   )
 }
 
+function IconPaw({ className }: IconProps) {
+  return (
+    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <circle cx="8" cy="6" r="2.5" fill="currentColor" opacity="0.85" />
+      <circle cx="16" cy="6" r="2.5" fill="currentColor" opacity="0.85" />
+      <circle cx="5" cy="12" r="2" fill="currentColor" opacity="0.6" />
+      <circle cx="19" cy="12" r="2" fill="currentColor" opacity="0.6" />
+      <ellipse cx="12" cy="16" rx="4" ry="4.5" fill="currentColor" />
+    </svg>
+  )
+}
 
-// ── Calendar Mock Component ───────────────────────────────────────────────────
+// ── Calendar Mock — matches mobile-calendar visual language ───────────────────
+// Staff-coloured booking strips with status dots and mono time stamps.
+
+type BookingMock = {
+  staff: "alex" | "mia" | "sam"
+  time: string
+  pet: string
+  service: string
+  status: "confirmed" | "pending" | "warning"
+}
+
+const STAFF_COLORS: Record<BookingMock["staff"], { dot: string; bg: string; border: string }> = {
+  alex: { dot: "#7B8CDE", bg: "#EEF0FB", border: "#C8D0F0" },
+  mia:  { dot: "#2E8B57", bg: "#E8F5E9", border: "#B2DFB8" },
+  sam:  { dot: "#E6960A", bg: "#FFF5E6", border: "#FFDFA6" },
+}
+
+const STATUS_DOT: Record<BookingMock["status"], string> = {
+  confirmed: "#2E7D4A",
+  pending:   "#E6960A",
+  warning:   "#D4483B",
+}
 
 function CalendarMock() {
+  const days = [
+    { label: "Mon", date: 23 },
+    { label: "Tue", date: 24 },
+    { label: "Wed", date: 25, isToday: true },
+    { label: "Thu", date: 26 },
+  ]
+
+  const bookings: Record<number, BookingMock[]> = {
+    23: [{ staff: "alex", time: "09:00", pet: "Luna", service: "Full Groom", status: "confirmed" }],
+    24: [{ staff: "mia",  time: "10:30", pet: "Milo", service: "Bath & Dry", status: "confirmed" }],
+    25: [
+      { staff: "alex", time: "09:00", pet: "Bella", service: "Full Groom", status: "confirmed" },
+      { staff: "sam",  time: "13:00", pet: "Rocky", service: "Nail Trim",  status: "pending"   },
+    ],
+    26: [{ staff: "mia",  time: "11:00", pet: "Teddy", service: "Deshed",    status: "warning"   }],
+  }
+
   return (
     <div
-      className="w-full max-w-[380px] bg-card rounded-[20px] border border-border/40 overflow-hidden select-none"
-      style={{ boxShadow: "var(--hooma-shadow-card-hero)" }}
+      className="w-full max-w-[380px] bg-card rounded-[14px] overflow-hidden select-none"
+      style={{
+        border: "1px solid var(--hooma-border)",
+        boxShadow: "var(--hooma-shadow-card-hero)",
+      }}
       aria-hidden="true"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
+      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid var(--hooma-border-light)" }}>
         <div className="flex items-center gap-2">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <path d="M16 2v4M8 2v4M3 10h18" />
-          </svg>
-          <span className="text-[13px] font-semibold text-foreground">March 2026</span>
+          <IconCalendar className="w-3.5 h-3.5" />
+          <span className="text-[13px] font-medium text-foreground">March 2026</span>
         </div>
-        <div className="flex bg-muted rounded-lg p-0.5">
-          <span className="px-2.5 py-1 text-[11px] rounded-md text-muted-foreground">Day</span>
-          <span className="px-2.5 py-1 text-[11px] rounded-md bg-card font-medium text-foreground" style={{ boxShadow: "var(--hooma-shadow-btn-sm)" }}>Week</span>
+        <div className="flex rounded-lg p-0.5" style={{ background: "var(--hooma-border-light)" }}>
+          <span className="px-2.5 py-1 text-[11px] rounded-md text-[color:var(--hooma-text-tertiary)]">Day</span>
+          <span
+            className="px-2.5 py-1 text-[11px] rounded-md bg-card font-medium text-foreground"
+            style={{ boxShadow: "var(--hooma-shadow-btn-sm)" }}
+          >
+            Week
+          </span>
         </div>
       </div>
 
-      <div className="p-3">
-        {/* Day headers */}
-        <div className="grid grid-cols-[40px_1fr_1fr_1fr] gap-1.5 mb-2">
-          <div />
-          <div className="text-center">
-            <div className="text-[10px] text-muted-foreground">Mon</div>
-            <div className="text-[12px] font-medium text-muted-foreground">2</div>
+      {/* Day strip */}
+      <div className="grid grid-cols-4">
+        {days.map((d) => (
+          <div
+            key={d.date}
+            className="flex flex-col items-center gap-0.5 py-3"
+            style={{
+              backgroundColor: d.isToday ? "var(--hooma-primary-light)" : "transparent",
+              borderRight: "1px solid var(--hooma-border-light)",
+            }}
+          >
+            <span
+              className="text-[10px] font-medium uppercase tracking-wide"
+              style={{ color: "var(--hooma-text-tertiary)" }}
+            >
+              {d.label}
+            </span>
+            <span
+              className="text-[15px] font-medium"
+              style={{
+                color: d.isToday ? "var(--hooma-primary-text)" : "var(--hooma-text-primary)",
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              {d.date}
+            </span>
           </div>
-          <div className="text-center">
-            <div className="text-[10px] text-primary font-medium">Tue</div>
-            <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-[12px] font-semibold flex items-center justify-center mx-auto">3</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[10px] text-muted-foreground">Wed</div>
-            <div className="text-[12px] font-medium text-muted-foreground">4</div>
-          </div>
-        </div>
+        ))}
+      </div>
 
-        {/* Time grid */}
-        <div className="relative">
-          {/* 9:00 */}
-          <div className="grid grid-cols-[40px_1fr_1fr_1fr] gap-x-1.5 border-t border-border/25">
-            <div className="text-[9px] text-muted-foreground pt-1 text-right pr-2">9:00</div>
-            <div className="relative h-12 overflow-visible">
-              <div className="absolute inset-x-0 top-1 rounded-lg p-1.5 bg-primary/10 border border-primary/15 z-10" style={{ height: 68 }}>
-                <div className="text-[10px] font-semibold text-primary leading-tight">Luna</div>
-                <div className="text-[9px] text-primary/70">Full Groom</div>
-                <div className="text-[8px] text-primary/50 mt-0.5">9:00 – 10:30</div>
-              </div>
+      {/* Bookings grid */}
+      <div className="grid grid-cols-4 min-h-[200px]" style={{ borderTop: "1px solid var(--hooma-border-light)" }}>
+        {days.map((d) => {
+          const dayItems = bookings[d.date] ?? []
+          return (
+            <div
+              key={d.date}
+              className="p-1.5 flex flex-col gap-1.5"
+              style={{
+                borderRight: "1px solid var(--hooma-border-light)",
+                backgroundColor: d.isToday ? "rgba(123,140,222,0.04)" : "transparent",
+              }}
+            >
+              {dayItems.map((b, i) => {
+                const c = STAFF_COLORS[b.staff]
+                return (
+                  <div
+                    key={i}
+                    className="py-1 px-1.5 rounded-[0_6px_6px_0]"
+                    style={{
+                      backgroundColor: c.bg,
+                      borderLeft: `3px solid ${c.dot}`,
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-1">
+                      <span
+                        className="text-[10px] font-medium"
+                        style={{
+                          color: "var(--hooma-text-primary)",
+                          fontVariantNumeric: "tabular-nums",
+                          letterSpacing: "-0.2px",
+                        }}
+                      >
+                        {b.time}
+                      </span>
+                      <span
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ backgroundColor: STATUS_DOT[b.status] }}
+                      />
+                    </div>
+                    <div
+                      className="text-[9px] mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap"
+                      style={{ color: "var(--hooma-text-secondary)" }}
+                    >
+                      {b.pet} · {b.service}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
-            <div className="h-12" />
-            <div className="relative h-12 overflow-visible">
-              <div className="absolute inset-x-0 top-1 rounded-lg p-1.5 border z-10" style={{ height: 36, backgroundColor: "var(--hooma-warm-accent-bg)", borderColor: "var(--hooma-warm-accent-border)" }}>
-                <div className="text-[10px] font-semibold leading-tight" style={{ color: "var(--hooma-warm-accent)" }}>Bella</div>
-                <div className="text-[9px]" style={{ color: "var(--hooma-warm-accent)", opacity: 0.7 }}>Nails</div>
-              </div>
-            </div>
-          </div>
-
-          {/* 10:00 */}
-          <div className="grid grid-cols-[40px_1fr_1fr_1fr] gap-x-1.5 border-t border-border/25">
-            <div className="text-[9px] text-muted-foreground pt-1 text-right pr-2">10:00</div>
-            <div className="h-12" />
-            <div className="relative h-12 overflow-visible">
-              <div className="absolute inset-x-0 top-1 rounded-lg p-1.5 bg-secondary/10 border border-secondary/15 z-10" style={{ height: 58 }}>
-                <div className="text-[10px] font-semibold text-secondary leading-tight">Max</div>
-                <div className="text-[9px] text-secondary/70">Bath &amp; Trim</div>
-                <div className="text-[8px] text-secondary/50 mt-0.5">10:00 – 11:15</div>
-              </div>
-            </div>
-            <div className="h-12" />
-          </div>
-
-          {/* 11:00 */}
-          <div className="grid grid-cols-[40px_1fr_1fr_1fr] gap-x-1.5 border-t border-border/25">
-            <div className="text-[9px] text-muted-foreground pt-1 text-right pr-2">11:00</div>
-            <div className="h-12" />
-            <div className="h-12" />
-            <div className="h-12" />
-          </div>
-
-          {/* 12:00 */}
-          <div className="grid grid-cols-[40px_1fr_1fr_1fr] gap-x-1.5 border-t border-border/25">
-            <div className="text-[9px] text-muted-foreground pt-1 text-right pr-2">12:00</div>
-            <div className="h-12" />
-            <div className="h-12" />
-            <div className="relative h-12 overflow-visible">
-              <div className="absolute inset-x-0 top-1 rounded-lg p-1.5 bg-chart-3/10 border border-chart-3/15 z-10" style={{ height: 44 }}>
-                <div className="text-[10px] font-semibold text-chart-3 leading-tight">Coco</div>
-                <div className="text-[9px] text-chart-3/70">Puppy Bath</div>
-              </div>
-            </div>
-          </div>
-
-          {/* 1:00 */}
-          <div className="grid grid-cols-[40px_1fr_1fr_1fr] gap-x-1.5 border-t border-border/25">
-            <div className="text-[9px] text-muted-foreground pt-1 text-right pr-2">1:00</div>
-            <div className="h-6" />
-            <div className="h-6" />
-            <div className="h-6" />
-          </div>
-        </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -246,16 +299,27 @@ function FeatureCard({ icon, title, description, badge }: {
   badge?: string
 }) {
   return (
-    <div className="bg-card rounded-[20px] border border-border/40 p-6 transition-shadow duration-200 hover:shadow-[var(--hooma-shadow-feature-hover)]">
-      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4">
+    <div
+      className="bg-card rounded-[14px] p-6 transition-all duration-200"
+      style={{
+        border: "1px solid var(--hooma-border)",
+      }}
+    >
+      <div
+        className="w-10 h-10 rounded-[10px] flex items-center justify-center mb-4"
+        style={{ backgroundColor: "var(--hooma-primary-light)", color: "var(--hooma-primary-text)" }}
+      >
         {icon}
       </div>
       <h3 className="text-[15px] font-semibold text-foreground mb-1.5 flex items-center gap-2">
         {title}
         {badge && (
           <span
-            className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: "var(--hooma-warm-accent-badge)", color: "var(--hooma-warm-accent)" }}
+            className="text-[10px] font-medium px-2 py-0.5 rounded-[10px]"
+            style={{
+              backgroundColor: "var(--hooma-accent-light)",
+              color: "var(--hooma-accent-text)",
+            }}
           >
             {badge}
           </span>
@@ -270,7 +334,7 @@ function FeatureCard({ icon, title, description, badge }: {
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   return (
-    <details className="group border-b border-border/40">
+    <details className="group" style={{ borderBottom: "1px solid var(--hooma-border-light)" }}>
       <summary className="flex items-center justify-between py-5 cursor-pointer text-[15px] font-medium text-foreground hover:text-primary transition-colors list-none [&::-webkit-details-marker]:hidden">
         {question}
         <svg
@@ -287,53 +351,123 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   )
 }
 
-// ── Roadmap Card ──────────────────────────────────────────────────────────────
+// ── Onboarding Stepper Preview ────────────────────────────────────────────────
 
-function RoadmapCard() {
-  const items = [
-    { label: "Week view improvements", status: "done" as const },
-    { label: "Auto-reminders", status: "progress" as const },
-    { label: "Payments integration", status: "planned" as const },
+function OnboardingPreview() {
+  const steps = [
+    { label: "Salon",   done: true  },
+    { label: "Service", done: true  },
+    { label: "Staff",   done: false },
   ]
+  const currentIdx = steps.findIndex((s) => !s.done)
 
   return (
     <div
-      className="bg-card rounded-[20px] border border-border/40 p-5 w-full max-w-sm"
-      style={{ boxShadow: "var(--hooma-shadow-sm)" }}
+      className="w-full max-w-sm rounded-[14px] p-6 bg-card"
+      style={{
+        border: "1px solid var(--hooma-border)",
+        boxShadow: "var(--hooma-shadow-sm)",
+      }}
     >
-      <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-        Roadmap
-      </div>
-      <div className="space-y-3.5">
-        {items.map((item) => (
-          <div key={item.label} className="flex items-center gap-3">
-            <div
-              className={`w-2 h-2 rounded-full shrink-0 ${
-                item.status === "done"
-                  ? "bg-secondary"
-                  : item.status === "progress"
-                    ? "bg-primary"
-                    : "bg-border"
-              }`}
-            />
-            <span className="text-[13px] text-foreground">{item.label}</span>
-            {item.status === "done" && (
-              <span className="text-[10px] text-secondary font-medium ml-auto">Shipped</span>
-            )}
-            {item.status === "progress" && (
-              <span className="text-[10px] text-primary font-medium ml-auto">In Progress</span>
-            )}
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2">
+          <div
+            className="w-7 h-7 rounded-[8px] flex items-center justify-center"
+            style={{ backgroundColor: "var(--hooma-accent-light)" }}
+          >
+            <IconPaw className="text-primary" />
           </div>
-        ))}
+          <span className="text-[14px] font-medium text-foreground">Set up your salon</span>
+        </div>
+        <span className="text-[11px]" style={{ color: "var(--hooma-text-tertiary)" }}>
+          Skip for now
+        </span>
       </div>
-      <div className="mt-5 pt-4 border-t border-border/30">
-        <a
-          href="#"
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-primary hover:underline"
-        >
-          Vote on features
-          <IconArrowRight />
-        </a>
+
+      {/* Stepper */}
+      <div className="flex items-start justify-between mb-5">
+        {steps.map((s, i) => {
+          const isCurrent = i === currentIdx
+          const isDone = s.done
+          return (
+            <div key={s.label} className="flex items-start flex-1">
+              <div className="flex flex-col items-center flex-1">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-medium"
+                  style={{
+                    background: isDone || isCurrent ? "var(--hooma-primary)" : "var(--hooma-border-light)",
+                    color: isDone || isCurrent ? "#FFFFFF" : "var(--hooma-text-tertiary)",
+                    border: !isDone && !isCurrent ? "2px solid var(--hooma-border)" : "none",
+                  }}
+                >
+                  {isDone ? (
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                      <path d="M3.5 8.5L6.5 11.5L12.5 5.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  ) : (
+                    i + 1
+                  )}
+                </div>
+                <span
+                  className="mt-1.5 text-[11px]"
+                  style={{
+                    color: isCurrent
+                      ? "var(--hooma-primary-text)"
+                      : isDone
+                      ? "var(--hooma-text-secondary)"
+                      : "var(--hooma-text-tertiary)",
+                    fontWeight: isCurrent ? 500 : 400,
+                  }}
+                >
+                  {s.label}
+                </span>
+              </div>
+              {i < steps.length - 1 && (
+                <div
+                  className="h-[2px] flex-1 mt-[15px] rounded-full"
+                  style={{
+                    background: steps[i].done ? "var(--hooma-primary)" : "var(--hooma-border)",
+                  }}
+                />
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Step preview body */}
+      <div className="space-y-2.5">
+        <div>
+          <div className="text-[11px] font-medium mb-1" style={{ color: "var(--hooma-text-primary)" }}>
+            Name
+          </div>
+          <div
+            className="rounded-[6px] px-3 py-2 text-[13px]"
+            style={{
+              background: "var(--hooma-bg-surface)",
+              border: "1.5px solid var(--hooma-primary)",
+              color: "var(--hooma-text-primary)",
+              boxShadow: "0 0 0 3px var(--hooma-primary-light)",
+            }}
+          >
+            Sarah
+          </div>
+        </div>
+        <div>
+          <div className="text-[11px] font-medium mb-1" style={{ color: "var(--hooma-text-primary)" }}>
+            Role
+          </div>
+          <div
+            className="rounded-[6px] px-3 py-2 text-[13px]"
+            style={{
+              background: "var(--hooma-bg-surface)",
+              border: "1.5px solid var(--hooma-border)",
+              color: "var(--hooma-text-primary)",
+            }}
+          >
+            Groomer
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -344,8 +478,11 @@ function RoadmapCard() {
 function BulletPoint({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-3">
-      <span className="mt-0.5 shrink-0">
-        <IconCheck className="text-secondary" />
+      <span
+        className="mt-0.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
+        style={{ backgroundColor: "var(--hooma-accent-light)", color: "var(--hooma-accent-text)" }}
+      >
+        <IconCheck className="w-3 h-3" />
       </span>
       <span className="text-[14px] text-foreground/90 leading-relaxed">{children}</span>
     </li>
@@ -375,28 +512,37 @@ export default function LandingPage() {
         }}
       />
 
-      {/* Radial glow */}
+      {/* Radial glow — periwinkle top */}
       <div
         className="pointer-events-none fixed top-0 left-0 right-0 h-[800px]"
         aria-hidden="true"
         style={{
           background:
-            "radial-gradient(ellipse 70% 50% at 50% -10%, var(--hooma-warm-accent-glow), transparent)",
+            "radial-gradient(ellipse 70% 50% at 50% -10%, rgba(123,140,222,0.08), transparent)",
         }}
       />
 
       {/* ─── Navigation ─────────────────────────────────────────────────── */}
 
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40">
+      <header
+        className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl"
+        style={{ borderBottom: "1px solid var(--hooma-border-light)" }}
+      >
         <nav className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-0.5 group" aria-label="Hooma CRM Home">
-            <PawIcon className="w-10 h-10 text-primary transition-transform duration-200 group-hover:scale-110" />
-            <span className="text-[18px] font-bold text-foreground tracking-tight">Hooma</span>
+          <Link href="/" className="flex items-center gap-2 group" aria-label="Hooma CRM Home">
+            <span
+              className="w-7 h-7 rounded-[8px] flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
+              style={{ backgroundColor: "var(--hooma-accent-light)" }}
+            >
+              <IconPaw className="text-primary" />
+            </span>
+            <span className="text-[16px] font-semibold text-foreground tracking-tight">Hooma</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8 text-[13px] text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#for-who" className="hover:text-foreground transition-colors">For Who</a>
+            <a href="#setup" className="hover:text-foreground transition-colors">Setup</a>
             <a href="#faq" className="hover:text-foreground transition-colors">FAQ</a>
           </div>
 
@@ -409,7 +555,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/auth/login"
-              className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded-xl text-[13px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all"
+              className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded-[6px] text-[13px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all"
             >
               <span className="hidden sm:inline">Get Started</span>
               <span className="sm:hidden">Start Free</span>
@@ -426,29 +572,39 @@ export default function LandingPage() {
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* Text */}
               <div>
+                {/* Eyebrow chip */}
+                <span
+                  className="inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1 rounded-[10px] mb-5"
+                  style={{
+                    backgroundColor: "var(--hooma-accent-light)",
+                    color: "var(--hooma-accent-text)",
+                  }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                  Free forever for early users
+                </span>
+
                 <h1 className="text-[36px] sm:text-[44px] lg:text-[52px] font-bold tracking-tight leading-[1.1] text-foreground">
-                  Free CRM for{" "}
-                  <span className="text-primary">Grooming Salons</span>
+                  Calm CRM for{" "}
+                  <span style={{ color: "var(--hooma-primary-text)" }}>grooming salons</span>
                 </h1>
                 <p className="mt-5 text-[17px] sm:text-[19px] text-muted-foreground leading-relaxed max-w-lg">
-                  Manage bookings, staff and clients in one simple, calm system — completely free.
-                </p>
-                <p className="mt-3 text-[13px] text-muted-foreground/80">
-                  No credit card. Setup in minutes. Built specifically for grooming businesses.
+                  Manage bookings, staff and clients in one simple system — completely free. Built specifically for grooming businesses.
                 </p>
 
                 {/* CTAs */}
                 <div className="flex flex-wrap items-center gap-3 mt-8">
                   <Link
                     href="/auth/login"
-                    className="inline-flex items-center bg-primary text-primary-foreground px-7 py-3 rounded-2xl text-[15px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all"
+                    className="inline-flex items-center bg-primary text-primary-foreground px-7 py-3 rounded-[6px] text-[15px] font-semibold hover:opacity-95 active:scale-[0.97] transition-all"
                     style={{ boxShadow: "var(--hooma-shadow-primary-lg)" }}
                   >
                     Get Started Free
                   </Link>
                   <a
                     href="#features"
-                    className="inline-flex items-center bg-card text-foreground border border-border/60 px-7 py-3 rounded-2xl text-[15px] font-medium hover:bg-muted/50 active:scale-[0.97] transition-all"
+                    className="inline-flex items-center bg-card text-foreground px-7 py-3 rounded-[6px] text-[15px] font-medium hover:bg-muted/50 active:scale-[0.97] transition-all"
+                    style={{ border: "1px solid var(--hooma-border)" }}
                   >
                     See How It Works
                   </a>
@@ -457,12 +613,12 @@ export default function LandingPage() {
                 {/* Trust hints */}
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-6 text-[12px] text-muted-foreground">
                   <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                    Free forever for early users
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "var(--hooma-success)" }} />
+                    No credit card required
                   </span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    We ship improvements every week
+                    New features weekly
                   </span>
                 </div>
               </div>
@@ -548,9 +704,45 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ─── 4. Who It's For ────────────────────────────────────────── */}
+        {/* ─── 4. Setup / Onboarding preview ──────────────────────────── */}
 
-        <section id="for-who" className="py-16 lg:py-24 bg-card scroll-mt-16">
+        <section id="setup" className="py-16 lg:py-24 bg-card scroll-mt-16">
+          <div className="max-w-6xl mx-auto px-5">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <div className="flex justify-center lg:justify-start order-2 lg:order-1">
+                <OnboardingPreview />
+              </div>
+              <div className="order-1 lg:order-2">
+                <span
+                  className="inline-block text-[11px] font-medium px-3 py-1 rounded-[10px] mb-4"
+                  style={{
+                    backgroundColor: "var(--hooma-primary-light)",
+                    color: "var(--hooma-primary-text)",
+                  }}
+                >
+                  3-minute setup
+                </span>
+                <h2 className="text-[26px] sm:text-[32px] font-bold tracking-tight text-foreground">
+                  Get running in three steps
+                </h2>
+                <p className="mt-4 text-[15px] text-muted-foreground leading-relaxed max-w-lg">
+                  We don&apos;t ask for a credit card. Just tell us about your salon, your first
+                  service, and your first team member — you&apos;ll be booking appointments
+                  before your kettle boils.
+                </p>
+                <ul className="mt-6 space-y-3">
+                  <BulletPoint>Add your salon details and town</BulletPoint>
+                  <BulletPoint>Create your first service with duration and price</BulletPoint>
+                  <BulletPoint>Invite a teammate (or just yourself)</BulletPoint>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── 5. Who It's For ────────────────────────────────────────── */}
+
+        <section id="for-who" className="py-16 lg:py-24 scroll-mt-16">
           <div className="max-w-6xl mx-auto px-5">
             <div className="text-center mb-12">
               <h2 className="text-[26px] sm:text-[32px] font-bold tracking-tight text-foreground">
@@ -563,32 +755,23 @@ export default function LandingPage() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
               {[
-                {
-                  icon: <IconScissors className="text-primary" />,
-                  title: "Independent Groomers",
-                  desc: "Solo professionals managing their own schedule and clients",
-                },
-                {
-                  icon: <IconUsers className="text-primary" />,
-                  title: "Small Salons",
-                  desc: "Teams of 2–5 coordinating bookings and availability",
-                },
-                {
-                  icon: <IconMapPin className="text-primary" />,
-                  title: "Mobile Groomers",
-                  desc: "On-the-go businesses that need simple, reliable tools",
-                },
-                {
-                  icon: <IconTrendingUp className="text-primary" />,
-                  title: "Growing Teams",
-                  desc: "Expanding businesses that need structure without complexity",
-                },
+                { icon: <IconScissors />,    title: "Independent Groomers", desc: "Solo professionals managing their own schedule and clients" },
+                { icon: <IconUsers />,       title: "Small Salons",         desc: "Teams of 2–5 coordinating bookings and availability" },
+                { icon: <IconMapPin />,      title: "Mobile Groomers",      desc: "On-the-go businesses that need simple, reliable tools" },
+                { icon: <IconTrendingUp />,  title: "Growing Teams",        desc: "Expanding businesses that need structure without complexity" },
               ].map((item) => (
                 <div
                   key={item.title}
-                  className="rounded-[20px] border border-border/40 p-5 text-center bg-background"
+                  className="rounded-[14px] p-5 text-center bg-card"
+                  style={{ border: "1px solid var(--hooma-border)" }}
                 >
-                  <div className="w-10 h-10 mx-auto rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                  <div
+                    className="w-10 h-10 mx-auto rounded-[10px] flex items-center justify-center mb-3"
+                    style={{
+                      backgroundColor: "var(--hooma-primary-light)",
+                      color: "var(--hooma-primary-text)",
+                    }}
+                  >
                     {item.icon}
                   </div>
                   <h3 className="text-[14px] font-semibold text-foreground mb-1">{item.title}</h3>
@@ -599,36 +782,24 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ─── 5. Why It's Free ───────────────────────────────────────── */}
+        {/* ─── 6. Why It's Free ───────────────────────────────────────── */}
 
-        <section className="py-16 lg:py-24">
-          <div className="max-w-6xl mx-auto px-5">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-              <div>
-                <h2 className="text-[26px] sm:text-[32px] font-bold tracking-tight text-foreground">
-                  Why is Hooma free?
-                </h2>
-                <p className="mt-5 text-[15px] text-muted-foreground leading-relaxed">
-                  We believe small businesses deserve great tools without great costs. Hooma is
-                  built in public — we ship improvements every week based on real feedback from
-                  real groomers.
-                </p>
-                <ul className="mt-6 space-y-3">
-                  <BulletPoint>We want to support independent groomers and small salons</BulletPoint>
-                  <BulletPoint>We build with real community feedback, not assumptions</BulletPoint>
-                  <BulletPoint>Early users help shape the product and get free access forever</BulletPoint>
-                </ul>
-              </div>
-              <div className="flex justify-center lg:justify-end">
-                <RoadmapCard />
-              </div>
-            </div>
+        <section className="py-16 lg:py-24 bg-card">
+          <div className="max-w-3xl mx-auto px-5 text-center">
+            <h2 className="text-[26px] sm:text-[32px] font-bold tracking-tight text-foreground">
+              Why is Hooma free?
+            </h2>
+            <p className="mt-5 text-[15px] text-muted-foreground leading-relaxed">
+              We believe small businesses deserve great tools without great costs. Hooma is
+              built in public — we ship improvements every week based on real feedback from
+              real groomers. Early users help shape the product and get free access forever.
+            </p>
           </div>
         </section>
 
-        {/* ─── 6. FAQ ─────────────────────────────────────────────────── */}
+        {/* ─── 7. FAQ ─────────────────────────────────────────────────── */}
 
-        <section id="faq" className="py-16 lg:py-24 bg-card scroll-mt-16">
+        <section id="faq" className="py-16 lg:py-24 scroll-mt-16">
           <div className="max-w-2xl mx-auto px-5">
             <h2 className="text-[26px] sm:text-[32px] font-bold tracking-tight text-foreground text-center mb-10">
               Frequently Asked Questions
@@ -667,9 +838,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ─── 7. Final CTA ───────────────────────────────────────────── */}
+        {/* ─── 8. Final CTA ───────────────────────────────────────────── */}
 
-        <section className="py-20 lg:py-28">
+        <section className="py-20 lg:py-28 bg-card">
           <div className="max-w-2xl mx-auto px-5 text-center">
             <h2 className="text-[26px] sm:text-[32px] font-bold tracking-tight text-foreground">
               Start managing your grooming business the calm way.
@@ -679,7 +850,7 @@ export default function LandingPage() {
             </p>
             <Link
               href="/auth/login"
-              className="inline-flex items-center bg-primary text-primary-foreground px-8 py-3.5 rounded-2xl text-[15px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all mt-8"
+              className="inline-flex items-center bg-primary text-primary-foreground px-8 py-3.5 rounded-[6px] text-[15px] font-semibold hover:opacity-95 active:scale-[0.97] transition-all mt-8"
               style={{ boxShadow: "var(--hooma-shadow-primary-lg)" }}
             >
               Get Started Free
@@ -688,13 +859,18 @@ export default function LandingPage() {
         </section>
       </main>
 
-      {/* ─── 8. Footer ──────────────────────────────────────────────── */}
+      {/* ─── Footer ──────────────────────────────────────────────────── */}
 
-      <footer className="border-t border-border/40 py-10 pb-24 lg:pb-10">
+      <footer className="py-10 pb-24 lg:pb-10" style={{ borderTop: "1px solid var(--hooma-border-light)" }}>
         <div className="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-0.5">
-            <PawIcon className="w-10 h-10 text-primary" />
-            <span className="text-[16px] font-semibold text-foreground tracking-tight">Hooma</span>
+          <div className="flex items-center gap-2">
+            <span
+              className="w-6 h-6 rounded-[6px] flex items-center justify-center"
+              style={{ backgroundColor: "var(--hooma-accent-light)" }}
+            >
+              <IconPaw className="text-primary" />
+            </span>
+            <span className="text-[14px] font-semibold text-foreground tracking-tight">Hooma</span>
           </div>
 
           <nav className="flex items-center gap-6 text-[13px] text-muted-foreground" aria-label="Footer">
@@ -712,10 +888,13 @@ export default function LandingPage() {
 
       {/* ─── Mobile Sticky CTA ──────────────────────────────────────── */}
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 p-4 bg-card/80 backdrop-blur-xl border-t border-border/40 lg:hidden">
+      <div
+        className="fixed bottom-0 left-0 right-0 z-40 p-4 bg-card/80 backdrop-blur-xl lg:hidden"
+        style={{ borderTop: "1px solid var(--hooma-border-light)" }}
+      >
         <Link
           href="/auth/login"
-          className="flex items-center justify-center w-full bg-primary text-primary-foreground py-3 rounded-2xl text-[15px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all"
+          className="flex items-center justify-center w-full bg-primary text-primary-foreground py-3 rounded-[6px] text-[15px] font-semibold hover:opacity-95 active:scale-[0.97] transition-all"
           style={{ boxShadow: "var(--hooma-shadow-primary-lg)" }}
         >
           Get Started Free

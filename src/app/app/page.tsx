@@ -1,15 +1,46 @@
 "use client"
 
+import { useEffect, useState, useCallback } from "react"
 import { signOut } from "firebase/auth"
-import { auth } from "@/lib/firebase"
+import { doc, updateDoc } from "firebase/firestore"
+import { auth, db } from "@/lib/firebase"
 import { useAuth } from "@/components/auth/AuthProvider"
+import { getSalonByOwnerId } from "@/lib/salon"
+import { useOnboarding } from "@/components/onboarding-context"
 import { t } from "@/lib/tokens"
-import { ArrowRight, Sparkles, Users, CalendarDays } from "lucide-react"
+import { ArrowRight, Sparkles, Users, CalendarDays, X } from "lucide-react"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
 
 export default function AppHomePage() {
   const { user } = useAuth()
+  const { wasSkipped, openModal } = useOnboarding()
+  const [showBanner, setShowBanner] = useState(false)
+  const [salonId, setSalonId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!user || !wasSkipped) return
+    ;(async () => {
+      const salon = await getSalonByOwnerId(user.uid)
+      if (salon) {
+        const dismissals = salon.onboardingBannerDismissals ?? 0
+        if (dismissals < 3) {
+          setSalonId(salon.id)
+          setShowBanner(true)
+        }
+      }
+    })()
+  }, [user, wasSkipped])
+
+  const dismissBanner = useCallback(async () => {
+    setShowBanner(false)
+    if (!salonId) return
+    const salon = await getSalonByOwnerId(user!.uid)
+    const current = salon?.onboardingBannerDismissals ?? 0
+    await updateDoc(doc(db, "salons", salonId), {
+      onboardingBannerDismissals: current + 1,
+    })
+  }, [salonId, user])
 
   const greeting = (() => {
     const hour = new Date().getHours()
@@ -29,6 +60,34 @@ export default function AppHomePage() {
 
   return (
     <div className="space-y-6 sm:space-y-8 max-w-5xl">
+      {/* Onboarding banner for skipped users */}
+      {showBanner && (
+        <div
+          className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl"
+          style={{
+            background: t.colors.semantic.accentTint,
+            border: `1px solid ${t.colors.semantic.borderSubtle}`,
+          }}
+        >
+          <button
+            onClick={openModal}
+            className="flex-1 flex items-center gap-2 text-sm font-semibold transition-colors cursor-pointer text-left"
+            style={{ color: t.colors.semantic.primary }}
+          >
+            Finish setting up your salon
+            <ArrowRight size={14} />
+          </button>
+          <button
+            onClick={dismissBanner}
+            className="p-1 rounded-md transition-colors cursor-pointer"
+            style={{ color: t.colors.semantic.textSubtle }}
+            aria-label="Dismiss"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       {/* Welcome hero card */}
       <Card
         variant="elevated"

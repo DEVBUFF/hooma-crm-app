@@ -35,6 +35,13 @@ const inputStyle: React.CSSProperties = {
 export default function SettingsPage() {
   const { salon, loading: salonLoading } = useSalon();
 
+  // Salon details
+  const [salonName, setSalonName] = useState("");
+  const [city, setCity] = useState("");
+  const [postcode, setPostcode] = useState("");
+  const [savingSalon, setSavingSalon] = useState(false);
+
+  // Regional
   const [currency, setCurrency] = useState("");
   const [dateFormat, setDateFormat] = useState("");
   const [saving, setSaving] = useState(false);
@@ -43,18 +50,49 @@ export default function SettingsPage() {
   // Seed form from salon settings once loaded
   useEffect(() => {
     if (!salon || loaded) return;
-    setCurrency(salon.settings?.currency ?? "GEL");
+    setSalonName(salon.salonName || salon.name || "");
+    setCity(salon.city || "");
+    setPostcode(salon.postcode || "");
+    setCurrency(salon.settings?.currency ?? "GBP");
     setDateFormat(salon.settings?.dateFormat ?? "DD/MM/YYYY");
     setLoaded(true);
   }, [salon, loaded]);
 
-  const hasChanges = useCallback(() => {
+  const hasSalonChanges = useCallback(() => {
     if (!salon) return false;
     return (
-      currency !== (salon.settings?.currency ?? "GEL") ||
+      salonName.trim() !== (salon.salonName || salon.name || "") ||
+      city.trim() !== (salon.city || "") ||
+      postcode.trim() !== (salon.postcode || "")
+    );
+  }, [salon, salonName, city, postcode]);
+
+  const hasRegionalChanges = useCallback(() => {
+    if (!salon) return false;
+    return (
+      currency !== (salon.settings?.currency ?? "GBP") ||
       dateFormat !== (salon.settings?.dateFormat ?? "DD/MM/YYYY")
     );
   }, [salon, currency, dateFormat]);
+
+  async function handleSaveSalon() {
+    if (!salon || !salonName.trim() || !city.trim()) return;
+    setSavingSalon(true);
+    try {
+      await updateDoc(doc(db, "salons", salon.id), {
+        salonName: salonName.trim(),
+        city: city.trim(),
+        postcode: postcode.trim() || null,
+      });
+      toast.success("Salon details saved");
+      setTimeout(() => window.location.reload(), 400);
+    } catch (err) {
+      console.error("[Settings] save salon error:", err);
+      toast.error("Could not save. Please try again.");
+    } finally {
+      setSavingSalon(false);
+    }
+  }
 
   async function handleSave() {
     if (!salon) return;
@@ -65,7 +103,6 @@ export default function SettingsPage() {
         "settings.dateFormat": dateFormat,
       });
       toast.success("Settings saved — refreshing…");
-      // Reload to propagate new settings through useSalon everywhere
       setTimeout(() => window.location.reload(), 400);
     } catch (err) {
       console.error("[Settings] save error:", err);
@@ -108,6 +145,87 @@ export default function SettingsPage() {
           Configure your salon preferences.
         </p>
       </div>
+
+      {/* Salon details card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Salon details</CardTitle>
+          <CardDescription>Your salon name and location.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-5 mt-2">
+          {/* Salon name */}
+          <div className="space-y-1.5">
+            <label
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: t.colors.semantic.textSubtle }}
+            >
+              Salon name
+            </label>
+            <input
+              type="text"
+              value={salonName}
+              onChange={(e) => setSalonName(e.target.value)}
+              placeholder="e.g. Paws & Claws Grooming"
+              className="w-full px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* City */}
+          <div className="space-y-1.5">
+            <label
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: t.colors.semantic.textSubtle }}
+            >
+              City / town
+            </label>
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="e.g. Bristol"
+              className="w-full px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* Postcode */}
+          <div className="space-y-1.5">
+            <label
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: t.colors.semantic.textSubtle }}
+            >
+              Postcode
+              <span
+                className="ml-1 normal-case font-normal"
+                style={{ color: t.colors.semantic.placeholder }}
+              >
+                (optional)
+              </span>
+            </label>
+            <input
+              type="text"
+              value={postcode}
+              onChange={(e) => setPostcode(e.target.value)}
+              placeholder="e.g. BS1 4DJ"
+              className="w-full px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* Save */}
+          <div className="flex justify-end pt-2">
+            <Button
+              onClick={handleSaveSalon}
+              disabled={!hasSalonChanges() || !salonName.trim() || !city.trim() || savingSalon}
+              className="gap-2"
+            >
+              <Save size={15} />
+              {savingSalon ? "Saving…" : "Save changes"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Regional settings card */}
       <Card>
@@ -178,7 +296,7 @@ export default function SettingsPage() {
           <div className="flex justify-end pt-2">
             <Button
               onClick={handleSave}
-              disabled={!hasChanges() || saving}
+              disabled={!hasRegionalChanges() || saving}
               className="gap-2"
             >
               <Save size={15} />
