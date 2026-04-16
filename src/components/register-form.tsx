@@ -7,7 +7,6 @@ import { createUserWithEmailAndPassword } from "firebase/auth"
 import { setDoc, doc, serverTimestamp } from "firebase/firestore"
 import { auth, db } from "@/lib/firebase"
 import { t } from "@/lib/tokens"
-import Link from "next/link"
 
 function FieldWrapper({ children, error }: { children: React.ReactNode; error?: string }) {
   return (
@@ -251,13 +250,13 @@ export function RegisterForm({ initialEmail = "" }: { initialEmail?: string }) {
 
         <p className="text-center text-xs pt-1" style={{ color: t.colors.semantic.textSubtle }}>
           Already have an account?{" "}
-          <Link
+          <a
             href="/auth/login"
             className="font-semibold transition-colors"
             style={{ color: t.colors.semantic.text }}
           >
             Sign in
-          </Link>
+          </a>
         </p>
       </form>
     </div>

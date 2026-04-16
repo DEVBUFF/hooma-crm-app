@@ -16,11 +16,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
+    let unsub: (() => void) | undefined;
+    try {
+      unsub = onAuthStateChanged(
+        auth,
+        (u) => {
+          setUser(u);
+          setLoading(false);
+        },
+        (err) => {
+          // Firebase auth observer error — log and unblock the tree.
+          console.error("[AuthProvider] onAuthStateChanged error", err);
+          setLoading(false);
+        },
+      );
+    } catch (err) {
+      // Subscribe-time failure (e.g. misconfigured auth, iframe URL issue in
+      // Safari). Swallow so a broken auth layer can never white-screen the
+      // whole app.
+      console.error("[AuthProvider] subscribe failed", err);
       setLoading(false);
-    });
-    return () => unsub();
+    }
+    return () => {
+      try {
+        unsub?.();
+      } catch {
+        /* noop */
+      }
+    };
   }, []);
 
   const value = useMemo(() => ({ user, loading }), [user, loading]);

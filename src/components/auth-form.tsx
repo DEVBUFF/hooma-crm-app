@@ -7,7 +7,6 @@ import { SocialButton } from "./social-button"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 import { t } from "@/lib/tokens"
-import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
@@ -98,13 +97,13 @@ export function AuthForm() {
 
           <p className="text-center text-xs" style={{ color: t.colors.semantic.textSubtle }}>
             No account?{" "}
-            <Link
+            <a
               href="/auth/register"
               className="font-semibold transition-colors"
               style={{ color: t.colors.semantic.text }}
             >
               Create one free
-            </Link>
+            </a>
           </p>
         </form>
       )}
