@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import {
@@ -14,16 +14,22 @@ import {
   Menu,
   X,
 } from "lucide-react"
-import { t } from "@/lib/tokens"
+import type { LucideIcon } from "lucide-react"
 import { signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
+import { HoomaLogo } from "@/components/brand/logo"
 
-const navItems = [
+type NavItem = { href: string; label: string; icon: LucideIcon }
+
+const workspaceNav: NavItem[] = [
   { href: "/app", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/app/calendar", label: "Calendar", icon: CalendarDays },
+  { href: "/app/customers", label: "Clients", icon: Heart },
+]
+
+const setupNav: NavItem[] = [
   { href: "/app/services", label: "Services", icon: Scissors },
   { href: "/app/staff", label: "Staff", icon: Users },
-  { href: "/app/customers", label: "Customers", icon: Heart },
-  { href: "/app/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/app/settings", label: "Settings", icon: Settings },
 ]
 
@@ -32,118 +38,176 @@ export function MobileSidebar() {
   const pathname = usePathname()
   const router = useRouter()
 
+  // Lock body scroll while drawer is open
+  useEffect(() => {
+    if (!open) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [open])
+
   async function handleSignOut() {
     await signOut(auth)
+    setOpen(false)
     router.push("/auth/login")
   }
 
   return (
     <>
-      {/* Hamburger trigger */}
       <button
         onClick={() => setOpen(true)}
-        className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg transition-colors hover:bg-muted cursor-pointer"
+        className="md:hidden flex items-center justify-center w-9 h-9 rounded-md transition-colors cursor-pointer"
+        style={{ color: "#0A0A1A" }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = "#F3F4F6")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
         aria-label="Open menu"
       >
-        <Menu size={20} style={{ color: t.colors.semantic.text }} />
+        <Menu size={20} strokeWidth={1.75} />
       </button>
 
-      {/* Backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-50 md:hidden"
+          style={{ background: "rgba(10,10,26,0.35)" }}
           onClick={() => setOpen(false)}
         />
       )}
 
-      {/* Drawer */}
-      <div
-        className={`fixed inset-y-0 left-0 z-50 w-[260px] flex flex-col py-6 px-3 gap-1 md:hidden transition-transform duration-300 ease-out ${
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-[280px] flex flex-col md:hidden transition-transform duration-300 ease-out ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{
-          background: t.colors.component.card.bg,
-          borderRight: `1px solid ${t.colors.semantic.borderSubtle}`,
-          boxShadow: open ? "var(--hooma-shadow-sidebar)" : "none",
+          background: "#FFFFFF",
+          borderRight: "1px solid #E5E7EB",
+          boxShadow: "4px 0 24px rgba(10,10,26,0.08)",
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 mb-6">
-          <span
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: t.colors.semantic.textStrong }}
+        <div
+          className="flex items-center justify-between px-5"
+          style={{ height: 64, borderBottom: "1px solid #F3F4F6" }}
+        >
+          <Link
+            href="/app"
+            aria-label="Hooma home"
+            onClick={() => setOpen(false)}
           >
-            hooma
-          </span>
+            <HoomaLogo />
+          </Link>
           <button
             onClick={() => setOpen(false)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center rounded-md transition-colors cursor-pointer"
+            style={{ color: "#374151" }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#F3F4F6")}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
             aria-label="Close menu"
           >
-            <X size={18} style={{ color: t.colors.semantic.textMuted }} />
+            <X size={18} strokeWidth={1.75} />
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex flex-col gap-1">
-          {navItems.map(({ href, label, icon: Icon }) => {
-            const isActive =
-              href === "/app" ? pathname === "/app" : pathname.startsWith(href)
-
-            return (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-out"
-                style={
-                  isActive
-                    ? {
-                        background: t.colors.semantic.navActiveBg,
-                        color: t.colors.semantic.navActiveFg,
-                        boxShadow: t.shadow.sm,
-                      }
-                    : { color: t.colors.semantic.textMuted }
-                }
-              >
-                <Icon
-                  size={18}
-                  strokeWidth={1.6}
-                  style={{
-                    color: isActive
-                      ? t.colors.semantic.navActiveFg
-                      : t.colors.semantic.textSubtle,
-                  }}
-                />
-                <span>{label}</span>
-              </Link>
-            )
-          })}
-        </nav>
-
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* Divider */}
-        <div
-          className="mx-3 border-t mb-2"
-          style={{ borderColor: t.colors.semantic.divider }}
-        />
+        <div className="flex-1 overflow-y-auto px-3 pb-4">
+          <NavGroup
+            label="Workspace"
+            items={workspaceNav}
+            pathname={pathname}
+            onNavigate={() => setOpen(false)}
+          />
+          <NavGroup
+            label="Setup"
+            items={setupNav}
+            pathname={pathname}
+            onNavigate={() => setOpen(false)}
+          />
+        </div>
 
         {/* Sign out */}
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg w-full text-sm font-medium transition-all duration-200 ease-out cursor-pointer"
-          style={{ color: t.colors.semantic.textMuted }}
-        >
-          <LogOut
-            size={18}
-            strokeWidth={1.6}
-            style={{ color: t.colors.semantic.textSubtle }}
-          />
-          <span>Sign out</span>
-        </button>
-      </div>
+        <div style={{ borderTop: "1px solid #F3F4F6", padding: 12 }}>
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium cursor-pointer transition-colors"
+            style={{ color: "#1A1A2E" }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#F9FAFB")}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
+          >
+            <LogOut size={16} strokeWidth={1.75} style={{ color: "#6B7280" }} />
+            <span>Sign out</span>
+          </button>
+        </div>
+      </aside>
     </>
+  )
+}
+
+function NavGroup({
+  label,
+  items,
+  pathname,
+  onNavigate,
+}: {
+  label: string
+  items: NavItem[]
+  pathname: string
+  onNavigate: () => void
+}) {
+  return (
+    <div className="pt-4">
+      <div
+        className="px-3 mb-2 text-[11px] font-medium uppercase tracking-[0.08em]"
+        style={{ color: "#9CA3AF" }}
+      >
+        {label}
+      </div>
+      <nav className="flex flex-col gap-0.5">
+        {items.map((item) => {
+          const isActive =
+            item.href === "/app"
+              ? pathname === "/app"
+              : pathname.startsWith(item.href)
+          const Icon = item.icon
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              className="relative flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors"
+              style={{
+                color: isActive ? "#0A0A1A" : "#374151",
+                background: isActive ? "#F3F4F6" : "transparent",
+                fontWeight: isActive ? 600 : 500,
+              }}
+            >
+              {isActive && (
+                <span
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    left: -12,
+                    top: 8,
+                    bottom: 8,
+                    width: 3,
+                    borderRadius: 3,
+                    background: "#6B72C9",
+                  }}
+                />
+              )}
+              <Icon
+                size={17}
+                strokeWidth={1.75}
+                style={{ color: isActive ? "#5A61B8" : "#6B7280" }}
+              />
+              <span>{item.label}</span>
+            </Link>
+          )
+        })}
+      </nav>
+    </div>
   )
 }
