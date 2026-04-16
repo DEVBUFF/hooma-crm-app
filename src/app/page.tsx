@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 
 // ── SEO Metadata ──────────────────────────────────────────────────────────────
 
@@ -545,10 +544,10 @@ export default function LandingPage() {
       {/* ============== HEADER ============== */}
       <header className="header" role="banner">
         <div className="container header-inner">
-          <Link href="/" className="brand-mark" aria-label="Hooma home">
+          <a href="/" className="brand-mark" aria-label="Hooma home">
             <Logo />
             <span>Hooma</span>
-          </Link>
+          </a>
           <nav className="nav" aria-label="Primary">
             <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
@@ -556,8 +555,8 @@ export default function LandingPage() {
             <a href="#faq">FAQ</a>
           </nav>
           <div className="header-ctas">
-            <Link className="btn btn-ghost sign-in" href="/auth/login">Sign in</Link>
-            <Link className="btn btn-primary" href="/auth/register">Get started free</Link>
+            <a className="btn btn-ghost sign-in" href="/auth/login">Sign in</a>
+            <a className="btn btn-primary" href="/auth/register">Get started free</a>
           </div>
         </div>
       </header>
@@ -577,7 +576,7 @@ export default function LandingPage() {
                 corporate salons.
               </p>
               <div className="hero-actions">
-                <Link className="btn btn-primary btn-lg" href="/auth/register">Start free — 2 min setup</Link>
+                <a className="btn btn-primary btn-lg" href="/auth/register">Start free — 2 min setup</a>
                 <a className="btn btn-ghost btn-lg" href="#features">See how it works</a>
               </div>
               <div className="hero-meta" aria-label="Key facts">
@@ -845,11 +844,11 @@ export default function LandingPage() {
               <Logo className="paw" />
               <h2>Start today. Keep your diary quiet.</h2>
               <p>Free forever for solo groomers. Your details, your clients, your pets — yours.</p>
-              <form className="signup" action="/auth/register" method="get" noValidate>
-                <label className="sr-only" htmlFor="email">Email address</label>
-                <input id="email" name="email" type="email" inputMode="email" autoComplete="email" placeholder="you@yoursalon.co.uk" required />
-                <button type="submit" className="btn btn-brand">Get early access</button>
-              </form>
+              <div className="signup">
+                <a className="btn btn-brand" href="/auth/register" style={{ minHeight: 48, padding: "0 24px", width: "100%", maxWidth: 320 }}>
+                  Get early access
+                </a>
+              </div>
               <p className="cta-meta">No card required · 2-minute setup · British English &amp; £</p>
             </div>
           </div>
@@ -860,10 +859,10 @@ export default function LandingPage() {
       <footer className="footer" role="contentinfo">
         <div className="container">
           <div className="footer-inner">
-            <Link className="brand-mark" href="/">
+            <a className="brand-mark" href="/">
               <Logo />
               <span>Hooma</span>
-            </Link>
+            </a>
             <nav className="footer-links" aria-label="Footer">
               <a href="#features">Features</a>
               <a href="#pricing">Pricing</a>
@@ -879,8 +878,8 @@ export default function LandingPage() {
               <a href="#" aria-label="X / Twitter"><IconTwitter /></a>
             </div>
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-              <Link href="/privacy" style={{ color: "var(--ink-400)" }}>Privacy</Link>
-              <Link href="/terms" style={{ color: "var(--ink-400)" }}>Terms</Link>
+              <a href="/privacy" style={{ color: "var(--ink-400)" }}>Privacy</a>
+              <a href="/terms" style={{ color: "var(--ink-400)" }}>Terms</a>
             </div>
           </div>
         </div>
