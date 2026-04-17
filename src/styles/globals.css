@@ -597,3 +597,125 @@ textarea:focus-visible {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-border-strong);
 }
+
+
+/* ============================================================
+   8. MOTION SYSTEM
+   Project-wide animation layer. See docs/ANIMATIONS.md.
+   - Opt-in via class names (.anim-*, .reveal-on-scroll,
+     .stagger-children)
+   - Scoped global transitions on interactive elements
+   - prefers-reduced-motion override at the bottom
+   ============================================================ */
+
+:root {
+  --anim-dur-quick: 180ms;
+  --anim-dur-base:  320ms;
+  --anim-dur-slow:  520ms;
+  --anim-ease:      cubic-bezier(0.22, 0.61, 0.36, 1);
+  --anim-ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes hooma-fade-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hooma-fade-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hooma-slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes hooma-slide-in-left {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes hooma-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Entrance utility classes ──────────────────────────────── */
+
+.anim-fade-in {
+  animation: fade-in var(--anim-dur-base) var(--anim-ease) both;
+}
+.anim-rise {
+  animation: hooma-fade-rise var(--anim-dur-slow) var(--anim-ease-out) both;
+}
+.anim-fade-down {
+  animation: hooma-fade-down var(--anim-dur-base) var(--anim-ease-out) both;
+}
+.anim-slide-right {
+  animation: hooma-slide-in-right var(--anim-dur-slow) var(--anim-ease-out) both;
+}
+.anim-slide-left {
+  animation: hooma-slide-in-left var(--anim-dur-slow) var(--anim-ease-out) both;
+}
+.anim-scale-in {
+  animation: hooma-scale-in var(--anim-dur-base) var(--anim-ease-out) both;
+}
+
+/* Page-level wrapper — route-change fade + rise.
+   Parent should set a pathname-based `key` prop to force remount. */
+.anim-page {
+  animation: hooma-fade-rise var(--anim-dur-base) var(--anim-ease-out) both;
+}
+
+/* ── Stagger helpers (max 12 children) ─────────────────────── */
+.stagger-children > * { animation-fill-mode: both; }
+.stagger-children > :nth-child(1)  { animation-delay:   0ms; }
+.stagger-children > :nth-child(2)  { animation-delay:  60ms; }
+.stagger-children > :nth-child(3)  { animation-delay: 120ms; }
+.stagger-children > :nth-child(4)  { animation-delay: 180ms; }
+.stagger-children > :nth-child(5)  { animation-delay: 240ms; }
+.stagger-children > :nth-child(6)  { animation-delay: 300ms; }
+.stagger-children > :nth-child(7)  { animation-delay: 360ms; }
+.stagger-children > :nth-child(8)  { animation-delay: 420ms; }
+.stagger-children > :nth-child(9)  { animation-delay: 480ms; }
+.stagger-children > :nth-child(10) { animation-delay: 540ms; }
+.stagger-children > :nth-child(11) { animation-delay: 600ms; }
+.stagger-children > :nth-child(12) { animation-delay: 660ms; }
+
+/* ── Scroll-driven reveal (Chrome 115+, Safari 26+) ────────── */
+@supports (animation-timeline: view()) {
+  .reveal-on-scroll {
+    animation: hooma-fade-rise var(--anim-dur-slow) var(--anim-ease-out) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+}
+
+/* ── Global interactive transitions ────────────────────────── */
+/* Light touch — colour/bg/border/shadow only. Do not add
+   transform here to avoid affecting components with their own
+   hover lifts (cards, buttons). */
+a,
+button,
+[role="button"],
+input,
+select,
+textarea,
+summary {
+  transition:
+    color var(--anim-dur-quick) var(--anim-ease),
+    background-color var(--anim-dur-quick) var(--anim-ease),
+    border-color var(--anim-dur-quick) var(--anim-ease),
+    box-shadow var(--anim-dur-quick) var(--anim-ease),
+    opacity var(--anim-dur-quick) var(--anim-ease);
+}
+
+/* ── Reduced motion override ───────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -45,9 +45,14 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           }
         >
           {isCalendar ? (
-            children
+            <div key={pathname} className="anim-fade-in h-full">
+              {children}
+            </div>
           ) : (
-            <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-[1200px] mx-auto w-full">
+            <div
+              key={pathname}
+              className="anim-page px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-[1200px] mx-auto w-full"
+            >
               {children}
             </div>
           )}

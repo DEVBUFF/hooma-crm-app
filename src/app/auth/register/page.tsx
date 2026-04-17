@@ -13,7 +13,7 @@ export default async function RegisterPage({
     <main className="relative min-h-dvh flex items-center justify-center bg-background px-4 py-12">
       <BackgroundShapes />
 
-      <div className="relative z-10 w-full max-w-sm">
+      <div className="anim-scale-in relative z-10 w-full max-w-sm">
         {/* Card */}
         <div
           className="backdrop-blur-2xl px-7 py-8 sm:px-8 sm:py-9"

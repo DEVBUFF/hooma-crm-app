@@ -25,7 +25,7 @@ export default function TermsPage() {
       <LegalSection heading="1. Acceptance of Terms">
         <p>
           By accessing or using Hooma CRM (the &quot;Service&quot;), operated by
-          HOOMA (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;), you agree
+          Hooma Ltd (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;), you agree
           to be bound by these Terms of Service (&quot;Terms&quot;). If you do
           not agree with any part of these Terms, you may not use the Service.
         </p>
@@ -98,7 +98,7 @@ export default function TermsPage() {
       <LegalSection heading="6. Intellectual Property">
         <p>
           The Service and its original content, features, and functionality are
-          owned by HOOMA and are protected by international copyright,
+          owned by Hooma Ltd and are protected by international copyright,
           trademark, and other intellectual property laws. Our trademarks and
           trade dress may not be used in connection with any product or service
           without our prior written consent.
@@ -117,7 +117,7 @@ export default function TermsPage() {
 
       <LegalSection heading="8. Limitation of Liability">
         <p>
-          To the maximum extent permitted by law, HOOMA shall not be liable for
+          To the maximum extent permitted by law, Hooma Ltd shall not be liable for
           any indirect, incidental, special, consequential, or punitive damages,
           including but not limited to loss of profits, data, or business
           opportunities, arising out of or in connection with your use of the
@@ -161,7 +161,7 @@ export default function TermsPage() {
       <LegalSection heading="12. Governing Law">
         <p>
           These Terms shall be governed by and construed in accordance with the
-          laws of the jurisdiction in which HOOMA is established, without
+          laws of the jurisdiction in which Hooma Ltd is established, without
           regard to conflict of law principles. Any disputes arising from these
           Terms shall be resolved in the competent courts of that jurisdiction.
         </p>

@@ -8,7 +8,7 @@ export default function AuthPage() {
     <main className="relative min-h-dvh flex items-center justify-center bg-background px-4 py-12">
       <BackgroundShapes />
 
-      <div className="relative z-10 w-full max-w-md">
+      <div className="anim-scale-in relative z-10 w-full max-w-md">
         {/* Auth Card */}
         <Card variant="auth" className="px-8 py-9 sm:px-10 sm:py-10">
           {/* Logo inside card */}

@@ -24,7 +24,7 @@ export default function PrivacyPage() {
     >
       <LegalSection heading="1. Introduction">
         <p>
-          HOOMA (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates
+          Hooma Ltd (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates
           Hooma CRM (the &quot;Service&quot;). This Privacy Policy explains how
           we collect, use, disclose, and protect your personal information when
           you use our Service. We are committed to protecting your privacy and
@@ -124,7 +124,7 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>Safety &amp; Protection:</strong> To protect the rights,
-            safety, or property of HOOMA, our users, or the public.
+            safety, or property of Hooma Ltd, our users, or the public.
           </li>
           <li>
             <strong>Business Transfers:</strong> In connection with a merger,
@@ -296,7 +296,7 @@ export default function PrivacyPage() {
           }}
         >
           <p>
-            <strong>HOOMA</strong>
+            <strong>Hooma Ltd</strong>
           </p>
           <p>
             Email: <LegalEmail email="support@hellohooma.app" />

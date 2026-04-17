@@ -122,10 +122,20 @@ const LANDING_CSS = `
   display: flex; align-items: center; justify-content: space-between; width: 100%;
 }
 .hooma-v2 .brand-mark {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-weight: 700; letter-spacing: -0.02em; font-size: 18px; color: var(--ink-900);
+  display: inline-flex; align-items: center; gap: 4px;
+  font-weight: 800; letter-spacing: -0.03em; font-size: 22px; color: var(--ink-900);
 }
-.hooma-v2 .brand-mark svg { width: 26px; height: 26px; }
+.hooma-v2 .brand-mark svg,
+.hooma-v2 .brand-mark img {
+  width: 34px; height: 34px;
+  object-fit: contain; object-position: center;
+  flex-shrink: 0;
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  margin: -4px 0;
+}
 .hooma-v2 .nav { display: none; gap: var(--s-6); align-items: center; }
 .hooma-v2 .nav a { font-size: var(--fs-sm); color: var(--ink-700); }
 .hooma-v2 .nav a:hover { color: var(--ink-900); }
@@ -228,11 +238,19 @@ const LANDING_CSS = `
 .hooma-v2 .booking {
   position: absolute; left: 4px; right: 4px;
   background: var(--brand-50); border-left: 3px solid var(--brand-500);
-  border-radius: 4px; padding: 5px 7px; font-size: 10.5px; line-height: 1.35;
+  border-radius: 4px; padding: 6px 8px; font-size: 10.5px; line-height: 1.3;
   color: var(--ink-900); box-shadow: var(--shadow-xs);
+  display: flex; flex-direction: column; justify-content: flex-start; gap: 2px;
+  overflow: hidden;
 }
-.hooma-v2 .booking strong { display: block; font-weight: 600; color: var(--ink-900); font-size: 11px; }
-.hooma-v2 .booking span { color: var(--ink-500); font-size: 10px; }
+.hooma-v2 .booking strong {
+  display: block; font-weight: 600; color: var(--ink-900); font-size: 11px;
+  line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hooma-v2 .booking span {
+  color: var(--ink-500); font-size: 10px; line-height: 1.25;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .hooma-v2 .booking.mint { background: var(--mint-50); border-left-color: #3FB27F; }
 .hooma-v2 .booking.neutral { background: var(--ink-50); border-left-color: var(--ink-400); }
 
@@ -288,11 +306,16 @@ const LANDING_CSS = `
 
 .hooma-v2 .pain-grid { display: grid; gap: var(--s-4); grid-template-columns: 1fr; }
 @media (min-width: 640px) { .hooma-v2 .pain-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .hooma-v2 .pain-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1024px) {
+  .hooma-v2 .pain-grid { grid-template-columns: repeat(3, 1fr); gap: var(--s-5); }
+  .hooma-v2 .pain-card { grid-column: span 1; order: 0; }
+  .hooma-v2 .pain-card.featured { grid-column: span 2; order: -1; }
+}
 .hooma-v2 .pain-card {
   background: #FFFFFF; border: 1px solid var(--border);
   border-radius: var(--r-lg); padding: var(--s-6);
   transition: border-color .2s, transform .2s;
+  display: flex; flex-direction: column;
 }
 .hooma-v2 .pain-card:hover { border-color: var(--ink-300); transform: translateY(-2px); }
 .hooma-v2 .pain-card .ico {
@@ -305,6 +328,27 @@ const LANDING_CSS = `
   letter-spacing: -0.01em; margin-bottom: var(--s-2);
 }
 .hooma-v2 .pain-card p { font-size: var(--fs-sm); color: var(--ink-500); line-height: var(--lh-relaxed); }
+
+/* Featured pain (primary) */
+.hooma-v2 .pain-card.featured {
+  background: linear-gradient(180deg, var(--brand-50) 0%, #FFFFFF 70%);
+  border-color: rgba(107, 114, 201, 0.25);
+  padding: var(--s-8);
+}
+.hooma-v2 .pain-card.featured .ico {
+  width: 48px; height: 48px;
+  background: #FFFFFF;
+  border: 1px solid rgba(107, 114, 201, 0.2);
+  color: var(--brand-700);
+  margin-bottom: var(--s-5);
+}
+.hooma-v2 .pain-card.featured .ico svg { width: 24px; height: 24px; }
+.hooma-v2 .pain-card.featured h3 {
+  font-size: var(--fs-lg); margin-bottom: var(--s-3); line-height: var(--lh-snug);
+}
+.hooma-v2 .pain-card.featured p {
+  font-size: var(--fs-base); color: var(--ink-700); max-width: 44ch;
+}
 
 .hooma-v2 .benefits {
   background: var(--ink-900); color: #FFFFFF;
@@ -325,8 +369,9 @@ const LANDING_CSS = `
   background: rgba(107,114,201,0.2); color: #A5AAE6;
   display: inline-flex; align-items: center; justify-content: center;
 }
-.hooma-v2 .benefit h3 { font-size: var(--fs-base); font-weight: 600; letter-spacing: -0.01em; }
+.hooma-v2 .benefit h3 { font-size: var(--fs-base); font-weight: 600; letter-spacing: -0.01em; color: #FFFFFF; }
 .hooma-v2 .benefit p { font-size: var(--fs-sm); color: var(--ink-300); line-height: var(--lh-relaxed); }
+.hooma-v2 .benefits .eyebrow { color: #E5E7EB !important; }
 
 .hooma-v2 .proof-grid { display: grid; gap: var(--s-5); grid-template-columns: 1fr; }
 @media (min-width: 768px) { .hooma-v2 .proof-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -377,6 +422,7 @@ const LANDING_CSS = `
 .hooma-v2 .signup {
   display: flex; gap: var(--s-2); max-width: 440px;
   margin: var(--s-8) auto 0; flex-direction: column;
+  justify-content: center; align-items: center;
 }
 @media (min-width: 480px) { .hooma-v2 .signup { flex-direction: row; } }
 .hooma-v2 .signup input {
@@ -421,20 +467,123 @@ const LANDING_CSS = `
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
+
+/* === MOTION ============================================================== */
+/* See docs/ANIMATIONS.md for principles. Keep all landing motion here.       */
+
+.hooma-v2 {
+  --anim-dur-quick: 180ms;
+  --anim-dur-base:  320ms;
+  --anim-dur-slow:  520ms;
+  --anim-ease:      cubic-bezier(0.22, 0.61, 0.36, 1);
+  --anim-ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes hooma-fade-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hooma-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes hooma-slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes hooma-float-y {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+@keyframes hooma-pulse-dot {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.88); }
+}
+
+/* Hero entrance — staggered fade-rise on load */
+.hooma-v2 .hero .eyebrow     { animation: hooma-fade-rise var(--anim-dur-slow) var(--anim-ease-out) both; animation-delay: 40ms; }
+.hooma-v2 .hero h1           { animation: hooma-fade-rise var(--anim-dur-slow) var(--anim-ease-out) both; animation-delay: 120ms; }
+.hooma-v2 .hero .lede        { animation: hooma-fade-rise var(--anim-dur-slow) var(--anim-ease-out) both; animation-delay: 200ms; }
+.hooma-v2 .hero .hero-actions{ animation: hooma-fade-rise var(--anim-dur-slow) var(--anim-ease-out) both; animation-delay: 280ms; }
+.hooma-v2 .hero .hero-meta   { animation: hooma-fade-rise var(--anim-dur-slow) var(--anim-ease-out) both; animation-delay: 360ms; }
+
+/* Product shot — entrance + gentle float loop */
+.hooma-v2 .product-shot {
+  animation:
+    hooma-fade-rise var(--anim-dur-slow) var(--anim-ease-out) 280ms both,
+    hooma-float-y 6s var(--anim-ease) 1.2s infinite;
+  will-change: transform;
+}
+.hooma-v2 .pet-card {
+  animation: hooma-slide-in-right var(--anim-dur-slow) var(--anim-ease-out) 780ms both;
+}
+
+/* Eyebrow dot pulse */
+.hooma-v2 .eyebrow .dot { animation: hooma-pulse-dot 2.4s var(--anim-ease) infinite; }
+
+/* Hover micro-interactions */
+.hooma-v2 .btn { transition: background var(--anim-dur-quick) var(--anim-ease), color var(--anim-dur-quick) var(--anim-ease), border-color var(--anim-dur-quick) var(--anim-ease), transform var(--anim-dur-quick) var(--anim-ease); }
+.hooma-v2 .btn:hover { transform: translateY(-1px); }
+.hooma-v2 .btn:active { transform: translateY(1px); }
+
+.hooma-v2 .pain-card,
+.hooma-v2 .proof-card { transition: border-color var(--anim-dur-base) var(--anim-ease), transform var(--anim-dur-base) var(--anim-ease), box-shadow var(--anim-dur-base) var(--anim-ease); }
+.hooma-v2 .proof-card:hover { transform: translateY(-2px); border-color: var(--ink-300); box-shadow: var(--shadow-md); }
+
+.hooma-v2 .booking { transition: box-shadow var(--anim-dur-quick) var(--anim-ease), transform var(--anim-dur-quick) var(--anim-ease); }
+.hooma-v2 .booking:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+.hooma-v2 .nav a { transition: color var(--anim-dur-quick) var(--anim-ease); }
+.hooma-v2 .footer-links a { transition: color var(--anim-dur-quick) var(--anim-ease); }
+
+/* Scroll-driven reveal — Chrome 115+, Safari 26+. Falls back to static. */
+@supports (animation-timeline: view()) {
+  .hooma-v2 .pain-card,
+  .hooma-v2 .benefit,
+  .hooma-v2 .proof-card,
+  .hooma-v2 .section-head,
+  .hooma-v2 .final-cta {
+    animation: hooma-fade-rise var(--anim-dur-slow) var(--anim-ease-out) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+  .hooma-v2 .pain-grid > :nth-child(1),
+  .hooma-v2 .benefit-grid > :nth-child(1),
+  .hooma-v2 .proof-grid > :nth-child(1) { animation-delay: 0ms; }
+  .hooma-v2 .pain-grid > :nth-child(2),
+  .hooma-v2 .benefit-grid > :nth-child(2),
+  .hooma-v2 .proof-grid > :nth-child(2) { animation-delay: 60ms; }
+  .hooma-v2 .pain-grid > :nth-child(3),
+  .hooma-v2 .benefit-grid > :nth-child(3),
+  .hooma-v2 .proof-grid > :nth-child(3) { animation-delay: 120ms; }
+  .hooma-v2 .pain-grid > :nth-child(4),
+  .hooma-v2 .benefit-grid > :nth-child(4) { animation-delay: 180ms; }
+  .hooma-v2 .pain-grid > :nth-child(5),
+  .hooma-v2 .benefit-grid > :nth-child(5) { animation-delay: 240ms; }
+}
+
+/* Trust strip — soft fade-in so it doesn't compete with hero */
+.hooma-v2 .trust { animation: hooma-fade-in var(--anim-dur-slow) var(--anim-ease) 600ms both; }
+
+/* Reduced motion — kill loops, collapse durations */
+@media (prefers-reduced-motion: reduce) {
+  .hooma-v2 *,
+  .hooma-v2 *::before,
+  .hooma-v2 *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 `
 
 // ── Inline icon primitives (identical stroke/viewBox to spec symbols) ────────
 
 function Logo({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 200 200" aria-hidden="true">
-      <ellipse cx="75" cy="68" rx="32" ry="42" fill="#6B72C9" transform="rotate(-12 75 68)" />
-      <ellipse cx="140" cy="78" rx="16" ry="22" fill="#6B72C9" transform="rotate(8 140 78)" />
-      <ellipse cx="170" cy="118" rx="9" ry="14" fill="#6B72C9" />
-      <ellipse cx="68" cy="140" rx="26" ry="22" fill="#6B72C9" />
-      <ellipse cx="120" cy="148" rx="22" ry="26" fill="#6B72C9" />
-    </svg>
-  )
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img className={className} src="/hooma-logo.svg" alt="" aria-hidden="true" />
 }
 
 function IconCheck({ size = 9 }: { size?: number }) {
@@ -548,12 +697,8 @@ export default function LandingPage() {
             <Logo />
             <span>Hooma</span>
           </a>
-          <nav className="nav" aria-label="Primary">
-            <a href="#features">Features</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#proof">Groomers</a>
-            <a href="#faq">FAQ</a>
-          </nav>
+          <nav className="nav" aria-label="Primary" />
+
           <div className="header-ctas">
             <a className="btn btn-ghost sign-in" href="/auth/login">Sign in</a>
             <a className="btn btn-primary" href="/auth/register">Get started free</a>
@@ -566,7 +711,7 @@ export default function LandingPage() {
         <section className="hero">
           <div className="container hero-grid">
             <div>
-              <span className="eyebrow"><span className="dot" />Built for UK groomers · Free during early access</span>
+              <span className="eyebrow"><span className="dot" />Built for UK groomers · Free to start</span>
               <h1>
                 Your grooming diary, <em>but smarter.</em>
               </h1>
@@ -625,7 +770,7 @@ export default function LandingPage() {
                   </div>
                   <div className="cal-col" />
                   <div className="cal-col">
-                    <div className="booking neutral" style={{ top: 4, height: 36 }}>
+                    <div className="booking neutral" style={{ top: 4, height: 50 }}>
                       <strong>Milo · Poodle</strong>
                       <span>Nail trim · £15</span>
                     </div>
@@ -694,16 +839,6 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Trusted by strip */}
-          <div className="container trust" id="trust">
-            <p>Early access · Onboarding the first 200 UK groomers</p>
-            <div className="logos">
-              <span>Pawsome Cuts · London</span>
-              <span>The Dog House · Bristol</span>
-              <span>Snip &amp; Snap · Manchester</span>
-              <span>Muddy Paws · Leeds</span>
-            </div>
-          </div>
         </section>
 
         {/* ============== PAIN POINTS ============== */}
@@ -712,14 +847,14 @@ export default function LandingPage() {
             <div className="section-head">
               <span className="eyebrow" style={{ marginBottom: 16 }}>Sound familiar?</span>
               <h2>Running a grooming business shouldn&rsquo;t feel like this.</h2>
-              <p>We spoke to dozens of UK groomers. Every one of them mentioned at least three of these.</p>
+              <p>If even one of these sounds like your week, Hooma is built for you.</p>
             </div>
 
             <div className="pain-grid">
-              <article className="pain-card">
+              <article className="pain-card featured">
                 <span className="ico"><IconPaper /></span>
                 <h3>The paper diary&hellip; again</h3>
-                <p>Tuesday&rsquo;s bookings are in a coffee-stained notebook. If you forget it at home, the day falls apart.</p>
+                <p>Tuesday&rsquo;s bookings live in a coffee-stained notebook. If you forget it at home, the day falls apart — and the one person who can fix it is you.</p>
               </article>
 
               <article className="pain-card">
@@ -777,7 +912,7 @@ export default function LandingPage() {
                 <div className="benefit">
                   <span className="ico"><IconBolt /></span>
                   <h3>Early adopter perks</h3>
-                  <p>First 200 UK groomers keep their price locked. Join early, pay less — always.</p>
+                  <p>Join now and your price stays locked when paid plans launch. Early means cheaper — forever.</p>
                 </div>
                 <div className="benefit">
                   <span className="ico"><IconCog size={18} /></span>
@@ -799,52 +934,14 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ============== SOCIAL PROOF ============== */}
-        <section className="section" id="proof">
-          <div className="container">
-            <div className="section-head">
-              <span className="eyebrow" style={{ marginBottom: 16 }}>From groomers, to groomers</span>
-              <h2>The kind of tool we&rsquo;ve always wanted.</h2>
-              <p>Early access feedback from real UK salons. More coming soon.</p>
-            </div>
-
-            <div className="proof-grid">
-              <article className="proof-card">
-                <p className="quote">&ldquo;I binned the paper diary the day we started. No double-bookings in two months. That&rsquo;s a first.&rdquo;</p>
-                <div className="proof-author">
-                  <span className="av">SR</span>
-                  <div className="meta"><strong>Sarah R.</strong><span>Solo groomer, Bristol</span></div>
-                </div>
-              </article>
-
-              <article className="proof-card">
-                <p className="quote">&ldquo;It finally shows me what I made each week. Not in a scary way — just so I know.&rdquo;</p>
-                <div className="proof-author">
-                  <span className="av">JM</span>
-                  <div className="meta"><strong>James M.</strong><span>Salon owner, Manchester</span></div>
-                </div>
-              </article>
-
-              <article className="proof-card placeholder" aria-label="Testimonial placeholder">
-                <div>
-                  Your testimonial could live here.<br />
-                  <a href="#signup" style={{ color: "var(--brand-600)", fontWeight: 500, marginTop: 8, display: "inline-block" }}>
-                    Join early access →
-                  </a>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
         {/* ============== FINAL CTA ============== */}
         <section className="section" id="signup">
           <div className="container">
             <div className="final-cta">
               <Logo className="paw" />
               <h2>Start today. Keep your diary quiet.</h2>
-              <p>Free forever for solo groomers. Your details, your clients, your pets — yours.</p>
-              <div className="signup">
+              <p>Free to start. Your details, your clients, your pets — always yours.</p>
+              <div className="signup" style={{ justifyContent: "center" }}>
                 <a className="btn btn-brand" href="/auth/register" style={{ minHeight: 48, padding: "0 24px", width: "100%", maxWidth: 320 }}>
                   Get early access
                 </a>
@@ -864,15 +961,11 @@ export default function LandingPage() {
               <span>Hooma</span>
             </a>
             <nav className="footer-links" aria-label="Footer">
-              <a href="#features">Features</a>
-              <a href="#pricing">Pricing</a>
-              <a href="#proof">Groomers</a>
-              <a href="#faq">FAQ</a>
               <a href="#contact">Contact</a>
             </nav>
           </div>
           <div className="footer-bottom">
-            <span>© {new Date().getFullYear()} Hooma. Made in the UK for UK groomers.</span>
+            <span>© {new Date().getFullYear()} Hooma Ltd. Made in the UK for UK groomers.</span>
             <div className="social">
               <a href="#" aria-label="Instagram"><IconInstagram /></a>
               <a href="#" aria-label="X / Twitter"><IconTwitter /></a>

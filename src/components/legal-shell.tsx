@@ -38,7 +38,7 @@ export function LegalShell({
       </header>
 
       {/* ── Content ──────────────────────────────────────────────── */}
-      <article className="max-w-3xl mx-auto px-5 py-12 pb-20">
+      <article className="anim-page max-w-3xl mx-auto px-5 py-12 pb-20">
         <h1
           className="text-[28px] sm:text-[32px] font-semibold tracking-tight"
           style={{ color: "#0A0A1A", letterSpacing: "-0.025em" }}
@@ -50,7 +50,7 @@ export function LegalShell({
         </p>
 
         <div
-          className="mt-10 space-y-8 text-[15px]"
+          className="reveal-on-scroll mt-10 space-y-8 text-[15px]"
           style={{ color: "#1A1A2E", lineHeight: 1.65 }}
         >
           {children}
@@ -61,7 +61,7 @@ export function LegalShell({
       <footer style={{ borderTop: "1px solid #F3F4F6" }}>
         <div className="max-w-3xl mx-auto px-5 py-7 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[12px]" style={{ color: "#6B7280" }}>
-            © {new Date().getFullYear()} Hooma. All rights reserved.
+            © {new Date().getFullYear()} Hooma Ltd. All rights reserved.
           </p>
           <nav
             className="flex items-center gap-6 text-[13px]"
